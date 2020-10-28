@@ -1,0 +1,35 @@
+🔻
+⚡npx create-next-app project2
+
+초기 의존:
+  "dependencies": {
+    "next": "10.0.0",
+    "react": "17.0.1",
+    "react-dom": "17.0.1"
+  }
+}
+🔻작동 테스트
+⚡npm run dev
+🔻tsconfig 설정.      https://nextjs.org/docs/basic-features/typescript
+⚡$nul > tsconfig.json
+⚡yarn add --dev typescript @types/react @types/node
+⚡yarn dev
+
+🔻작동 테스트
+⚡npm run dev
+
+
+
+
+
+
+
+
+
+
+
+
+
+npm i express
+npm i -D @types/express ts-node
+
