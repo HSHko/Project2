@@ -19,6 +19,10 @@
 ⚡npm run dev
 
 
+🔻기타 라이브러리 설치
+⚡npm i styled-components '&&' npm i -D @types/styled-components
+⚡npm i @material-ui/core @material-ui/icons
+⚡npm i redux react-redux '&&' npm i -D @types/react-redux
 
 
 
