@@ -9,7 +9,7 @@ export default function fun() {
 
   return (
     <>
-      <h1>Login</h1>
+      <h1>Blog</h1>
     </>
   );
 }
