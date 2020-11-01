@@ -8,6 +8,10 @@ export const lo = () => ({
   type: LO,
 });
 
+// 모듈타입 참고: https://react-etc.vlpt.us/07.typescript-redux.html
+// type IncrementAction = ReturnType<typeof counterActions.increment>;
+// type DecrementAction = ReturnType<typeof counterActions.decrement>;
+// type Actions = IncrementAction | DecrementAction;
 type Action = ReturnType<typeof hi | typeof lo>;
 
 interface State {

@@ -38,6 +38,7 @@ export const vars = {
     zIndex: 7,
   },
   navbar: {
+    maxWidth: "1440px",
     height: "3.5rem",
     zIndex: 5,
   },

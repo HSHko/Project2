@@ -20,7 +20,9 @@
 
 
 🔻기타 라이브러리 설치
+⚡npm i react-router-dom '&&' npm i -D @types/react-router-dom
 ⚡npm i styled-components '&&' npm i -D @types/styled-components
+⚡npm i -D babel-plugin-styled-components  // styled-components 후렌더링 문제 해결. ex: react-dom.development.js:67 Warning: Prop `className` did not match. Server: "sc-jSFkmK brJIbc head" Client: "sc-gtssRu NLmLS head"
 ⚡npm i @material-ui/core @material-ui/icons
 ⚡npm i redux react-redux '&&' npm i -D @types/react-redux
 

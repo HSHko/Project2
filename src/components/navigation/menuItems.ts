@@ -6,7 +6,7 @@ import LockOpenIcon from "@material-ui/icons/LockOpen";
 export default [
   {
     name: "Home",
-    link: "/home",
+    link: "/",
     icon: HomeIcon,
   },
   {

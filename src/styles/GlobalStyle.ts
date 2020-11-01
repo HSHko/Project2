@@ -10,16 +10,8 @@ const globalStyle = createGlobalStyle`
   }
 
   a, button {
-    display: flex;
-    margin: auto 0.5rem;
-    outline: none;
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    font-weight: 700;
     text-decoration: none;
     color: inherit;
-    cursor: pointer;
   }
 
   .styledBtn {
@@ -37,3 +29,19 @@ const globalStyle = createGlobalStyle`
 `;
 
 export default globalStyle;
+
+/*
+
+  a, button {
+    display: flex;
+    margin: auto 0.5rem;
+    outline: none;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+  }
+*/

@@ -31,27 +31,27 @@ const media = {
 };
 
 interface Props {
-  mmin?: boolean;
-  mmax?: boolean;
-  tmin?: boolean;
-  tmax?: boolean;
-  lmin?: boolean;
-  lmax?: boolean;
+  minm?: boolean;
+  maxm?: boolean;
+  mint?: boolean;
+  maxt?: boolean;
+  minl?: boolean;
+  maxl?: boolean;
 }
 
 export default styled.div.attrs(() => ({}))<Props>`
   ${p => {
-    if (p.mmin) {
+    if (p.minm) {
       return `${media.mobile.min} {display:none;}`;
-    } else if (p.mmax) {
+    } else if (p.maxm) {
       return `${media.mobile.max} {display:none;}`;
-    } else if (p.tmin) {
+    } else if (p.mint) {
       return `${media.tablet.min} {display:none;}`;
-    } else if (p.tmax) {
+    } else if (p.maxt) {
       return `${media.tablet.max} {display:none;}`;
-    } else if (p.lmin) {
+    } else if (p.minl) {
       return `${media.laptop.min} {display:none;}`;
-    } else if (p.lmax) {
+    } else if (p.maxl) {
       return `${media.laptop.max} {display:none;}`;
     }
   }}

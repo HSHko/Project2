@@ -12,16 +12,17 @@ export default styled.button.attrs(() => ({}))<Props>`
   z-index: 0;
   position: relative;
   display: block;
-  margin: 0.25rem 0.5;
+  margin: auto 0.5rem;
   padding: 0.5rem 1.25rem;
 
   overflow: hidden;
+  cursor: pointer;
 
   border-width: 0;
   border-radius: 2px;
   outline: ${p => {
     switch (p.disabled) {
-      case p.disabled:
+      case true:
         return ``;
       default:
         return `none`;
@@ -38,6 +39,8 @@ export default styled.button.attrs(() => ({}))<Props>`
     }
   }};
 
+  line-height: 1.15rem;
+  font-weight: 700;
   color: ${p => (!p.color ? `${color.font.main}` : p.color)};
 
   transition: all 0.3s;
