@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { sideBars } from "store";
+import { RootState } from "store";
 import Hide from "atoms/Hide";
 import Button from "atoms/Button";
 import MenuIcon from "@material-ui/icons/Menu";
@@ -14,7 +15,6 @@ import SideBar from "./SideBar";
 export default function fun(props) {
   console.log("init");
   const dispatch = useDispatch();
-  const storeSideBar = useSelector((x: RootState) => x.sideBar);
 
   const handleOnClickLink = React.useCallback(
     e => () => {
@@ -24,10 +24,6 @@ export default function fun(props) {
     },
     [dispatch],
   );
-
-  const handleOnClickSideBar = React.useCallback(() => {
-    console.log("");
-  }, [storeSideBar]);
 
   return (
     <Wrapper>
@@ -55,7 +51,11 @@ export default function fun(props) {
               })}
             </LinksWrapper>
           </Hide>
-          <Button shadow="transparent" bg={color.nav.top.main} onClick={console.log("")}>
+          <Button
+            shadow="transparent"
+            bg={color.nav.top.main}
+            onClick={() => dispatch(sideBars.hi())}
+          >
             <MenuIcon></MenuIcon>
           </Button>
         </RWrapper>
@@ -89,6 +89,5 @@ const CorpLogo = styled.div``;
 
 const LinksWrapper = styled.div`
   display: flex;
-  justify-content: space-around;
   align-items: center;
 `;

@@ -11,7 +11,8 @@ interface Props {
 export default styled.button.attrs(() => ({}))<Props>`
   z-index: 0;
   position: relative;
-  display: block;
+  display: flex;
+  align-items: center;
   margin: auto 0.5rem;
   padding: 0.5rem 1.25rem;
 
