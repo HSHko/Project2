@@ -10,9 +10,10 @@ export default styled.button.attrs(() => ({}))<Props>`
   height: 100vh;
   animation: anime 0.25s ease forwards;
   opacity: 0.15;
+  background-color: transparent;
   @keyframes anime {
     to {
-      background-color: #000000;
+      background-color: #000;
     }
   }
 `;
