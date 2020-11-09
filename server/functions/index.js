@@ -19,15 +19,6 @@ console.log({ msg: "server started" });
 // https://expressjs.com/en/guide/error-handling.html
 // csurf, helmet 모듈 사용, 유저 요청 validate, sanitize
 
-// 클라이언트 응답. 참고: https://developer.mozilla.org/ko/docs/Web/HTTP/Status
-// 200 OK 요청이 성공적으로 되었습니다. 성공의 의미는 HTTP 메소드에 따라 달라집니다
-// 201 Created 요청이 성공적이었으며 그 결과로 새로운 리소스가 생성되었습니다.
-// 400 Bad Request 이 응답은 잘못된 문법으로 인하여 서버가 요청을 이해할 수 없음을 의미합니다.
-// 408 Request Timeout
-// 429 Too Many Requests
-// 500 Internal Server Error  서버가 처리 방법을 모르는 상황이 발생했습니다
-// 502 Bad Gateway 서버가 요청을 처리하는 데 필요한 응답을 얻기 위해 게이트웨이로 작업하는 동안 잘못된 응답을 수신했음을 의미
-
 // ⏩테스트: $ firebase emulators:start
 // ⏩데이터베이스 저장: https://console.firebase.google.com/u/0/   Cloud Firestore
 // ⏩참고: https://firebase.google.com/docs/functions/get-started
@@ -84,10 +75,37 @@ app.get("/messages2", async (req, res) => {
 // POST METHOD
 // 🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦
 
-app.post("/addmessage", async (req, res) => {
+const FBAuth = (req, res, next) => {
+  let idToken;
+  if (req.headers.authorization && req.headers.authorization.startsWith("Bearer ")) {
+    idToken = req.headers.authorization.split("Bearer ")[1];
+  } else {
+    console.error("No token found");
+    return res.status(403).json({ error: "Unauthorized" });
+  }
+
+  admin
+    .auth()
+    .verifyIdToken(idToken)
+    .then(decodedToken => {
+      req.user = decodedToken;
+      console.log(decodedToken);
+      return db.collection("users").where("userId", "==", req.user.uid).limit(1).get();
+    })
+    .then(data => {
+      req.user.handle = data.docs[0].data().handle;
+      return next();
+    })
+    .catch(e => {
+      console.error("Error while verifying token", e);
+      return res.status(403).json(e);
+    });
+};
+
+app.post("/addmessage", FBAuth, async (req, res) => {
   const newData = {
-    title: req.body.title,
-    userHandle: req.body.userHandle,
+    body: req.body.body,
+    userHandle: req.user.handle,
     createdAt: admin.firestore.Timestamp.now().toDate().toISOString(),
   };
 
@@ -101,6 +119,17 @@ app.post("/addmessage", async (req, res) => {
   }
 });
 
+function isEmpty(string) {
+  if (string.trim() === "") return true;
+  return false;
+}
+
+function isEmail(email) {
+  const regEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  if (email.match(regEx)) return true;
+  return false;
+}
+
 app.post("/signup", async (req, res) => {
   const newData = {
     email: req.body.email,
@@ -109,26 +138,38 @@ app.post("/signup", async (req, res) => {
     handle: req.body.handle,
   };
 
+  let errors = {};
+
+  if (isEmpty(newData.email)) errors.email = "empty";
+  else if (!isEmail(newData.email)) errors.email = "Invalid Email address";
+  if (isEmpty(newData.password)) errors.password = "empty";
+  if (newData.password !== newData.confirmPassword) errors.confirmPassword = "not match";
+  if (isEmpty(newData.handle)) errors.handle = "empty";
+
+  if (Object.keys(errors).length > 0) return res.status(400).json({ erros: errors });
+
   try {
-    // const snap = await db.doc(`/users/${newData.handle}`).get();
-    // if (snap.exists) {
-    //   throw { email: "Email already in use" };
-    // }
-    let token, userId;
+    await db
+      .doc(`/users/${newData.handle}`)
+      .get()
+      .then(doc => {
+        if (doc.exists) {
+          throw { error: "handle Already exist" };
+        }
+      });
 
     const data = await firebase
       .auth()
       .createUserWithEmailAndPassword(newData.email, newData.password);
 
-    userId = data.user.uid;
     token = await data.user.getIdToken();
+
     const userCredentials = {
       email: newData.email,
       handle: newData.handle,
       createdAt: admin.firestore.Timestamp.now().toDate().toISOString(),
-      userId: userId,
+      uid: data.user.uid,
     };
-
     await db.doc(`/users/${newData.handle}`).set(userCredentials);
 
     return res.status(201).json({ token: token });
@@ -140,30 +181,34 @@ app.post("/signup", async (req, res) => {
       return res.status(500).json(e);
     }
   }
+});
 
-  db.doc(`/users/${newData.handle}`)
-    .get()
-    .then(doc => {
-      if (doc.exists) {
-        return res.status(400).json({ handle: "this handle is already taken" });
-      } else {
-        return firebase.auth().createUserWithEmailAndPassword(newData.email, newData.password);
-      }
-    })
-    .then(data => {
-      return data.user.getIdToken();
-    })
-    .then(token => {
-      return res.status(201).json({ token: token });
-    })
-    .catch(e => {
-      console.error(e);
-      if (e.code === "auth/email-already-in-use") {
-        return res.status(400).json({ email: "email already used" });
-      } else {
-        return res.status(500).json({ error: e });
-      }
-    });
+app.post("/login", async (req, res) => {
+  const newData = {
+    email: req.body.email,
+    password: req.body.password,
+  };
+
+  let errors = {};
+
+  if (isEmpty(newData.email)) errors.email = "empty";
+  if (isEmpty(newData.password)) errors.password = "empty";
+
+  if (Object.keys(errors).length > 0) return res.status(400).json(errors);
+
+  try {
+    const data = await firebase.auth().signInWithEmailAndPassword(newData.email, newData.password);
+
+    token = await data.user.getIdToken();
+
+    return res.status(201).json({ token: token });
+  } catch (e) {
+    console.error(e);
+    if (e.code === "auth/wrong-password") {
+      return res.status(403).json({ error: e });
+    }
+    return res.status(500).json(e);
+  }
 });
 
 exports.api = functions.https.onRequest(app); // https://baseurl.com/api/
