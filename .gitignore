@@ -5,8 +5,7 @@
 .prettierrc*
 auth*
 pool*
-test.json
-test.http
+test.*
 *.sql
 node_modules/
 
