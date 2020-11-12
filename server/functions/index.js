@@ -1,13 +1,17 @@
 const functions = require("firebase-functions");
-const { db, admin } = require("./util/admin");
 
 const express = require("express");
 const app = express();
-app.use(express.json());
+app.use(express.json()); // for parsing application/json
 
-const fbAuth = require("./util/fbAuth");
+// firebase-busboy 이해: http://ghcksdk.com/firebase-express-multipart-form/
+// 이미지파일을 브라우저에서 서버로 전송하기 위해서는 폼에 enctype="multipart/form-data" 를 추가해서 인코딩 타입을 multipart로 해줘야 한다.
+// cloud functions에서는 요청의 body를 req.body가 아니라 req.rawBody에 저장한다.
+// multer와 비슷한 역할을 하는 미들웨어인 busBoy를 사용하여 req.rawBody를 넘겨주니 정상적으로 파일을 읽을 수 있었다.
 
-console.log({ msg: "server started" });
+// https://qiita.com/toshi0607/items/c4440d3fbfa72eac840c
+
+https: console.log({ msg: "server started" });
 
 // TODO:
 // https://www.youtube.com/watch?v=m_u6P5k0vP0&t=1989s
@@ -16,6 +20,10 @@ console.log({ msg: "server started" });
 // https://expressjs.com/en/guide/error-handling.html
 // csurf, helmet 모듈 사용, 유저 요청 validate, sanitize
 
+// firebase examples: https://firebase.google.com/docs/samples/?authuser=0
+
+const fbAuth = require("./util/fbAuth");
+
 const messages = require("./handlers/messages");
 app.get("/messages", messages.getAllMessages);
 app.post("/addmessage", fbAuth, messages.addMessages);
@@ -23,6 +31,7 @@ app.post("/addmessage", fbAuth, messages.addMessages);
 const users = require("./handlers/users");
 app.post("/signup", users.signUp);
 app.post("/login", users.login);
+app.post("/user/image", fbAuth, users.uploadImg);
 
-exports.api = functions.https.onRequest(app); // https://baseurl.com/api/
-// exports.api = functions.region("asia-northeast1").https.onRequest(app);
+// exports.api = functions.https.onRequest(app); // https://baseurl.com/api/
+exports.api = functions.region("asia-northeast1").https.onRequest(app);

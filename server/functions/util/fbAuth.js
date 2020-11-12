@@ -20,7 +20,7 @@ module.exports = async (req, res, next) => {
     // >      uid: 'A0gG6DyLs*********Hr2NKm1',
     // >      handle: 'test1'
     // >    }
-    req.user.handle = data.docs[0].data().handle;
+    req.user.signId = data.docs[0].data().signId;
     return next();
   } catch (e) {
     console.error("Error while verifying token", e);

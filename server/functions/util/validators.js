@@ -16,7 +16,7 @@ exports.validateSignUpData = data => {
   else if (!isEmail(data.email)) errors.email = "Invalid Email";
   if (isEmpty(data.password)) errors.password = "Empty";
   if (data.password !== data.confirmPassword) errors.confirmPassword = "Not Match";
-  if (isEmpty(data.handle)) errors.handle = "Empty";
+  if (isEmpty(data.signId)) errors.signId = "Empty";
 
   return {
     errors,
