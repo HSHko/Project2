@@ -15,7 +15,7 @@ firebase.initializeApp(pool);
 
 // https://qiita.com/toshi0607/items/c4440d3fbfa72eac840c
 
-https: console.log({ msg: "server started" });
+console.log({ msg: "server started" });
 
 // TODO:
 // https://www.youtube.com/watch?v=m_u6P5k0vP0&t=1989s
@@ -28,9 +28,9 @@ https: console.log({ msg: "server started" });
 const { fbAuth } = require("./util/admin");
 
 const screams = require("./handlers/screams");
-app.get("/screams", screams.getAllScreams);
+app.get("/screams", screams.getScreams);
+app.get("/screams/:screamId", screams.getScream);
 app.post("/scream", fbAuth, screams.addScreams);
-app.get("/scream/:screamid", screams.getScream);
 // TODO: delete
 // TODO: like
 // TODO: unlike

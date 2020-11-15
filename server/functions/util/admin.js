@@ -1,9 +1,12 @@
 const admin = require("firebase-admin");
 admin.initializeApp();
+exports.admin = admin;
+
 const db = admin.firestore();
+exports.db = db;
 
 // FireBaseAuthentication
-const fbAuth = async (req, res, next) => {
+exports.fbAuth = async (req, res, next) => {
   try {
     let idToken;
     if (req.headers.authorization && req.headers.authorization.startsWith("Bearer ")) {
@@ -22,5 +25,3 @@ const fbAuth = async (req, res, next) => {
     return res.status(403).json(e);
   }
 };
-
-module.exports = { admin, db, fbAuth };
