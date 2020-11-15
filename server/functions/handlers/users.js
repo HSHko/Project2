@@ -3,40 +3,39 @@ const { validateSignUpData, validateLoginData } = require("../util/validators");
 const firebase = require("firebase");
 const pool = require("../util/pool");
 
-firebase.initializeApp(pool);
-
 exports.signUp = async (req, res) => {
-  const qryData = {
+  const newData = {
     signId: req.body.signId,
     email: req.body.email,
     password: req.body.password,
     confirmPassword: req.body.confirmPassword,
   };
 
-  const { valid, errors } = validateSignUpData(qryData);
+  const { valid, errors } = validateSignUpData(newData);
   if (!valid) return res.status(400).json({ errors: errors });
 
   const noImg = "mystery-man.png";
 
   try {
-    const dbQry = await db.doc(`/users/${qryData.signId}`).get();
-    if (dbQry.exists == true) throw { error: "signId Already exist" };
+    const dbQry = await db.doc(`/users/${newData.signId}`).get();
+    if (dbQry.exists) throw { error: "signId Already exist" };
 
     const fbData = await firebase
       .auth()
-      .createUserWithEmailAndPassword(qryData.email, qryData.password);
+      .createUserWithEmailAndPassword(newData.email, newData.password);
 
     token = await fbData.user.getIdToken();
 
     const userCredentials = {
-      signId: qryData.signId,
-      email: qryData.email,
-      auth: "user",
+      signId: newData.signId,
+      email: newData.email,
+      auth: "",
+      custumId: "",
       createdAt: admin.firestore.Timestamp.now().toDate().toISOString(),
       imgUrl: `https://firebasestorage.googleapis.com/v0/b/${pool.storageBucket}/o/${noImg}?alt=media`,
       uid: fbData.user.uid,
     };
-    await db.doc(`/users/${qryData.signId}`).set(userCredentials);
+    await db.doc(`/users/${newData.signId}`).set(userCredentials);
 
     return res.status(201).json({ token: token });
   } catch (err) {
@@ -50,18 +49,20 @@ exports.signUp = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-  const qryData = {
+  const newData = {
     email: req.body.email,
     password: req.body.password,
   };
 
-  const { valid, errors } = validateLoginData(qryData);
+  const { valid, errors } = validateLoginData(newData);
   if (!valid) return res.status(400).json({ errors: errors });
 
   try {
-    const data = await firebase.auth().signInWithEmailAndPassword(qryData.email, qryData.password);
+    const qryData = await firebase
+      .auth()
+      .signInWithEmailAndPassword(newData.email, newData.password);
 
-    token = await data.user.getIdToken();
+    token = await qryData.user.getIdToken();
 
     return res.status(201).json({ token: token });
   } catch (e) {
@@ -70,6 +71,67 @@ exports.login = async (req, res) => {
       return res.status(403).json({ error: e });
     }
     return res.status(500).json(e);
+  }
+};
+
+exports.addUserDetails = async (req, res) => {
+  if (req.body.introduce.trim() !== "") req.body.introduce = req.body.introduce;
+  // if (req.body.website.trim() !== "") {
+  //   if (req.body.website.trim().substring(0, 4) !== "http") {
+  //     req.body.website = `http://${req.body.website.trim()}`;
+  //   } else {
+  //     req.body.website = req.body.website;
+  //   }
+  // }
+
+  try {
+    console.log({ "req.body": req.body });
+    await db.doc(`users/${req.user.signId}`).update(req.body);
+    return res.json({ msg: "addUserDetails Done" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json(err);
+  }
+};
+
+exports.getAuthenticatedUser = async (req, res) => {
+  let userData = {};
+
+  try {
+    const userQry = await db.doc(`/users/${req.user.signId}`).get();
+    if (userQry.exists) {
+      userData.credentials = userQry.data();
+    } else throw { "userQry.exists": userQry.exsits };
+
+    const likeQry = await db.collection("likes").where("signId", "==", req.user.signId).get();
+    userData.likes = [];
+    likeQry.forEach(doc => {
+      userData.likes.push(doc.data());
+    });
+
+    const notifyQry = await db
+      .collection("notifications")
+      .where("recipient", "==", req.user.signId)
+      .orderBy("createdAt", "desc")
+      .limit(10)
+      .get();
+    userData.notifications = [];
+    notifyQry.forEach(doc => {
+      userData.notifications.push({
+        recipient: doc.data().recipient,
+        sender: doc.data().sender,
+        createdAt: doc.data().createdAt,
+        screamId: doc.data().screamId,
+        type: doc.data().type,
+        read: doc.data().read,
+        notificationId: doc.id,
+      });
+    });
+
+    return res.json(userData);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json(err);
   }
 };
 
