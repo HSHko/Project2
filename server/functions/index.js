@@ -32,9 +32,9 @@ app.get("/screams", screams.getScreams);
 app.get("/screams/:screamId", screams.getScream);
 app.post("/scream", fbAuth, screams.addScreams);
 // TODO: delete
-// TODO: like
-// TODO: unlike
-// TODO: comment
+app.post("/scream/:screamId/like", fbAuth, screams.likeScream);
+app.post("/scream/:screamId/unlike", fbAuth, screams.unlikeScream);
+app.post("/scream/:screamId/comment", fbAuth, screams.addCommentOnScream);
 
 const users = require("./handlers/users");
 app.post("/signup", users.signUp);

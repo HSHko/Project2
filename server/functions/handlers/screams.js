@@ -24,18 +24,21 @@ exports.getScream = async (req, res) => {
 
   try {
     const screamQry = await db.doc(`/screams/${req.params.screamId}`).get();
-    if (!screamQry.exists) throw { error: "no such db" };
+    if (!screamQry.exists) throw { error: "scream doc not exist" };
     newData = screamQry.data();
     newData.screamId = screamQry.id;
-    console.log(screamQry.data());
 
-    const commentQry = db.collection("comments").where("screamId", "==", req.params.screamId).get();
+    const commentQry = await db
+      .collection("comments")
+      .orderBy("createdAt", "desc")
+      .where("screamId", "==", req.params.screamId)
+      .get();
+    // if (!commentQry.exsits) throw { error: "comment doc does not exist" };
+    console.log(commentQry);
     newData.comments = [];
-    if (commentQry.exists) {
-      commentQry.forEach(doc => {
-        newData.push(doc.data());
-      });
-    }
+    commentQry.forEach(doc => {
+      newData.comments.push(doc.data());
+    });
 
     return res.status(200).json({ newData: newData });
   } catch (err) {
@@ -46,18 +49,82 @@ exports.getScream = async (req, res) => {
 
 exports.addScreams = async (req, res) => {
   const newData = {
-    signId: req.user.signId,
+    signId: req.fbAuth.signId,
     title: req.body.title,
     body: req.body.body,
     createdAt: admin.firestore.Timestamp.now().toDate().toISOString(),
-    likeCount: 0,
-    commentCount: 0,
+    likeCnt: 0,
+    commentCnt: 0,
   };
 
   try {
-    const snap = await db.collection("screams").add(newData);
-    const result = `Scream with ID: ${snap.id} added.`;
+    const dbQry = await db.collection("screams").add(newData);
+    const result = `Scream with ID: ${dbQry.id} added.`;
     return res.status(201).json({ result: result });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json(err);
+  }
+};
+
+exports.addCommentOnScream = async (req, res) => {
+  if (req.body.body.trim() === "") return res.status(500).json({ error: "empty body" });
+
+  const newData = {
+    signId: req.fbAuth.signId,
+    screamId: req.params.screamId,
+    body: req.body.body,
+    createdAt: admin.firestore.Timestamp.now().toDate().toISOString(),
+    likeCnt: 0,
+  };
+
+  try {
+    const screamQry = await db.doc(`/screams/${req.params.screamId}`).get();
+    if (!screamQry.exists) throw { error: "scream not found" };
+
+    screamQry.ref.update({ commentCnt: screamQry.data().commentCnt + 1 });
+    db.collection("comments").add(newData);
+
+    return res.status(201).json({ newData: newData });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json(err);
+  }
+};
+
+exports.likeScream = async (req, res) => {
+  try {
+    const likeDoc = db
+      .collection(`likes`)
+      .where(`signId`, `==`, req.fbAuth.signId)
+      .where(`screamId`, `==`, req.params.screamId)
+      .limit(1);
+    const likeQry = await likeDoc.get();
+    if (!likeQry.empty) throw { error: "already liked" };
+
+    const screamDoc = db.doc(`/screams/${req.params.screamId}`);
+    const screamQry = await screamDoc.get();
+    if (!screamQry.exists) throw { error: "scream not found" };
+
+    let newData;
+    newData = screamQry.data();
+    newData.screamId = screamQry.id;
+    db.collection("likes").add({
+      screamId: req.params.screamId,
+      signId: req.fbAuth.signId,
+    });
+    newData.likeCnt += 1;
+    await screamDoc.update({ likeCnt: newData.likeCnt });
+
+    return res.status(201).json({ newData: newData });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json(err);
+  }
+};
+
+exports.unlikeScream = async (req, res) => {
+  try {
   } catch (err) {
     console.error(err);
     return res.status(500).json(err);

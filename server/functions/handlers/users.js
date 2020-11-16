@@ -86,7 +86,7 @@ exports.addUserDetails = async (req, res) => {
 
   try {
     console.log({ "req.body": req.body });
-    await db.doc(`users/${req.user.signId}`).update(req.body);
+    await db.doc(`users/${req.fbAuth.signId}`).update(req.body);
     return res.json({ msg: "addUserDetails Done" });
   } catch (err) {
     console.error(err);
@@ -98,12 +98,12 @@ exports.getAuthenticatedUser = async (req, res) => {
   let userData = {};
 
   try {
-    const userQry = await db.doc(`/users/${req.user.signId}`).get();
+    const userQry = await db.doc(`/users/${req.fbAuth.signId}`).get();
     if (userQry.exists) {
       userData.credentials = userQry.data();
     } else throw { "userQry.exists": userQry.exsits };
 
-    const likeQry = await db.collection("likes").where("signId", "==", req.user.signId).get();
+    const likeQry = await db.collection("likes").where("signId", "==", req.fbAuth.signId).get();
     userData.likes = [];
     likeQry.forEach(doc => {
       userData.likes.push(doc.data());
@@ -111,7 +111,7 @@ exports.getAuthenticatedUser = async (req, res) => {
 
     const notifyQry = await db
       .collection("notifications")
-      .where("recipient", "==", req.user.signId)
+      .where("recipient", "==", req.fbAuth.signId)
       .orderBy("createdAt", "desc")
       .limit(10)
       .get();
@@ -185,9 +185,9 @@ exports.uploadImg = async (req, res) => {
         },
       })
       .then(() => {
-        console.log({ "req.user": req.user });
+        console.log({ "req.fbAuth": req.fbAuth });
         const imgUrl = `https://firebasestorage.googleapis.com/v0/b/${pool.storageBucket}/o/${imgFileName}?alt=media`;
-        return db.doc(`/users/${req.user.signId}`).update({ imgUrl });
+        return db.doc(`/users/${req.fbAuth.signId}`).update({ imgUrl });
       })
       .then(() => {
         return res.json({ message: "img uploaded successfully" });

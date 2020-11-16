@@ -16,9 +16,9 @@ exports.fbAuth = async (req, res, next) => {
     }
 
     const decodedToken = await admin.auth().verifyIdToken(idToken);
-    req.user = decodedToken;
-    const dbQry = await db.collection("users").where("uid", "==", req.user.uid).limit(1).get();
-    req.user.signId = dbQry.docs[0].data().signId;
+    req.fbAuth = decodedToken;
+    const dbQry = await db.collection("users").where("uid", "==", req.fbAuth.uid).limit(1).get();
+    req.fbAuth.signId = dbQry.docs[0].data().signId;
     return next();
   } catch (e) {
     console.error("Error while verifying token", e);
