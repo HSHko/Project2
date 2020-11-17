@@ -30,7 +30,7 @@ let db = {
       likeCnt: 0,
     },
   ],
-  notifications: [
+  notifs: [
     {
       recipient: "user",
       sender: "john",

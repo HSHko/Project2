@@ -2,6 +2,7 @@ const { db, admin } = require("../util/admin");
 const { validateSignUpData, validateLoginData } = require("../util/validators");
 const firebase = require("firebase");
 const pool = require("../util/pool");
+firebase.initializeApp(pool);
 
 exports.signUp = async (req, res) => {
   const newData = {
@@ -65,24 +66,17 @@ exports.login = async (req, res) => {
     token = await qryData.user.getIdToken();
 
     return res.status(201).json({ token: token });
-  } catch (e) {
-    console.error(e);
+  } catch (err) {
+    console.error(err);
     if (e.code === "auth/wrong-password") {
-      return res.status(403).json({ error: e });
+      return res.status(403).json({ error: err });
     }
-    return res.status(500).json(e);
+    return res.status(500).json(err);
   }
 };
 
 exports.addUserDetails = async (req, res) => {
   if (req.body.introduce.trim() !== "") req.body.introduce = req.body.introduce;
-  // if (req.body.website.trim() !== "") {
-  //   if (req.body.website.trim().substring(0, 4) !== "http") {
-  //     req.body.website = `http://${req.body.website.trim()}`;
-  //   } else {
-  //     req.body.website = req.body.website;
-  //   }
-  // }
 
   try {
     console.log({ "req.body": req.body });
@@ -109,22 +103,22 @@ exports.getAuthenticatedUser = async (req, res) => {
       userData.likes.push(doc.data());
     });
 
-    const notifyQry = await db
-      .collection("notifications")
+    const notifQry = await db
+      .collection("notifs")
       .where("recipient", "==", req.fbAuth.signId)
       .orderBy("createdAt", "desc")
       .limit(10)
       .get();
-    userData.notifications = [];
-    notifyQry.forEach(doc => {
-      userData.notifications.push({
+    userData.notifs = [];
+    notifQry.forEach(doc => {
+      userData.notifs.push({
         recipient: doc.data().recipient,
-        sender: doc.data().sender,
+        doner: doc.data().sender,
         createdAt: doc.data().createdAt,
         screamId: doc.data().screamId,
         type: doc.data().type,
         read: doc.data().read,
-        notificationId: doc.id,
+        notifId: doc.id,
       });
     });
 

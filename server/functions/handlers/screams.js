@@ -93,16 +93,17 @@ exports.addCommentOnScream = async (req, res) => {
 };
 
 exports.likeScream = async (req, res) => {
+  const likeDoc = db
+    .collection(`likes`)
+    .where(`signId`, `==`, req.fbAuth.signId)
+    .where(`screamId`, `==`, req.params.screamId)
+    .limit(1);
+  const screamDoc = db.doc(`/screams/${req.params.screamId}`);
+
   try {
-    const likeDoc = db
-      .collection(`likes`)
-      .where(`signId`, `==`, req.fbAuth.signId)
-      .where(`screamId`, `==`, req.params.screamId)
-      .limit(1);
     const likeQry = await likeDoc.get();
     if (!likeQry.empty) throw { error: "already liked" };
 
-    const screamDoc = db.doc(`/screams/${req.params.screamId}`);
     const screamQry = await screamDoc.get();
     if (!screamQry.exists) throw { error: "scream not found" };
 
@@ -124,7 +125,41 @@ exports.likeScream = async (req, res) => {
 };
 
 exports.unlikeScream = async (req, res) => {
+  const likeDoc = db
+    .collection(`likes`)
+    .where(`signId`, `==`, req.fbAuth.signId)
+    .where(`screamId`, `==`, req.params.screamId)
+    .limit(1);
+  const screamDoc = db.doc(`/screams/${req.params.screamId}`);
+
   try {
+    const likeQry = await likeDoc.get();
+    if (likeQry.empty) throw { error: "not liked yet" };
+
+    const screamQry = await screamDoc.get();
+    if (!screamQry.exists) throw { error: "scream not found" };
+
+    await db.doc(`/likes/${likeQry.docs[0].id}`).delete();
+    await screamDoc.update({ likeCnt: screamQry.data().likeCnt - 1 });
+
+    return res.status(201).json({ unliked: likeQry.docs[0].data() });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json(err);
+  }
+};
+
+exports.deleteScream = async (req, res) => {
+  const screamDoc = db.doc(`/screams/${req.params.screamId}`);
+
+  try {
+    const screamQry = await screamDoc.get();
+    if (!screamQry.exists) throw { error: "scream not found" };
+    if (screamQry.data().signId !== req.fbAuth.signId) throw { error: "signId not match" };
+
+    await screamDoc.delete();
+
+    return res.status(200).json({ result: screamQry });
   } catch (err) {
     console.error(err);
     return res.status(500).json(err);
