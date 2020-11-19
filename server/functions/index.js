@@ -9,8 +9,9 @@ app.use(cors()); // for firebase deploy
 
 console.log({ msg: "server connected" });
 
+// https://github.com/hidjou/classsed-react-firebase-functions/tree/master/functions
 // firebase examples: https://firebase.google.com/docs/samples/?authuser=0
-const { fbAuth } = require("./util/admin");
+const { fbAuth, db } = require("./util/admin");
 
 const screams = require("./handlers/screams");
 app.get("/screams", screams.getScreams);
@@ -30,57 +31,12 @@ app.post("/user/image", fbAuth, users.uploadImg);
 
 // firebase deploy --only "functions:api,functions:createNotificationOnLike"
 // exports.unDeploy = {}
-const region = "asia-northeast1"; // "europe-west1"; //
+const { region } = require("./util/config");
 exports.api = functions.region(region).https.onRequest(app);
 
-exports.createNotifOnLike = functions
-  .region(region)
-  .firestore.document("likes/{id}")
-  .onCreate(async snapshot => {
-    const { db, admin } = require("./util/admin");
-    const screamDoc = db.doc(`/screams/${snapshot.data().screamId}`);
-    console.log(snapshot.data().screamId);
-    try {
-      const screamQry = await screamDoc.get();
-      if (!screamQry.exists) throw { error: "scream not found" };
-      if (screamQry.data().signId !== snapshot.data().signId) throw { error: "signId not match" };
-
-      const newData = {
-        screamId: screamQry.id,
-        recipient: screamQry.data().signId,
-        doner: snapshot.data().signId,
-        type: "like",
-        read: false,
-        createdAt: admin.firestore.Timestamp.now().toDate().toISOString(),
-      };
-      db.doc(`notifs/${snapshot.id}`).set(newData);
-      console.log("GGGGGGGGGGGGGGGGGGGGGGGGG");
-    } catch (err) {
-      console.error(err);
-    }
-  });
-
-// exports.createNotificationOnLike = functions
-//   .region(region)
-//   .firestore.document("likes/{id}")
-//   .onCreate(snapshot => {
-//     return db
-//       .doc(`/screams/${snapshot.data().screamId}`)
-//       .get()
-//       .then(doc => {
-//         if (doc.exists && doc.data().signId !== snapshot.data().signId) {
-//           return db.doc(`/notis/${snapshot.id}`).set({
-//             createdAt: new Date().toISOString(),
-//             recipient: doc.data().signId,
-//             doner: snapshot.data().signId,
-//             type: "like",
-//             read: false,
-//             screamId: doc.id,
-//           });
-//         }
-//       })
-//       .catch(err => console.error(err));
-//   });
+const events = require("./handlers/events");
+exports.createNotifOnLike = events.createNotifOnLike;
+exports.deleteNotifOnUnlike = events.deleteNotifOnUnlike;
 
 // firebase-busboy 이해: http://ghcksdk.com/firebase-express-multipart-form/
 // 이미지파일을 브라우저에서 서버로 전송하기 위해서는 폼에 enctype="multipart/form-data" 를 추가해서 인코딩 타입을 multipart로 해줘야 한다.

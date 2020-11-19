@@ -88,19 +88,50 @@ exports.addUserDetails = async (req, res) => {
   }
 };
 
+exports.getUserDetails = async (req, res) => {
+  let newData = {};
+
+  try {
+    const userDoc = db.doc(`/users/${req.params.signId}`);
+    const userQry = await userDoc.get();
+    if (!userQry.exists) throw { error: `userDoc: ${req.params.signId} not found` };
+
+    const screamDoc = db
+      .collection(`screams`)
+      .where(`signId`, `==`, req.params.signId)
+      .orderBy(`createdAt`, `desc`);
+    const screamQry = await screamDoc.get();
+
+    newData.screams = [];
+    screamQry.forEach(doc => {
+      newData.screams.push({
+        title: doc.data().title,
+        body: doc.data().body,
+        createdAt: doc.data().createdAt,
+        likeCnt: doc.data().likeCnt,
+        commentCnt: doc.data().commentCnt,
+      });
+    });
+
+    return res.status(200).json({ newData: newData });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json(err);
+  }
+};
+
 exports.getAuthenticatedUser = async (req, res) => {
-  let userData = {};
+  let newData = {};
 
   try {
     const userQry = await db.doc(`/users/${req.fbAuth.signId}`).get();
-    if (userQry.exists) {
-      userData.credentials = userQry.data();
-    } else throw { "userQry.exists": userQry.exsits };
+    if (!userQry.exists) throw { "userQry.exists": userQry.exsits };
+    newData.credentials = userQry.data();
 
     const likeQry = await db.collection("likes").where("signId", "==", req.fbAuth.signId).get();
-    userData.likes = [];
+    newData.likes = [];
     likeQry.forEach(doc => {
-      userData.likes.push(doc.data());
+      newData.likes.push(doc.data());
     });
 
     const notifQry = await db
@@ -109,9 +140,9 @@ exports.getAuthenticatedUser = async (req, res) => {
       .orderBy("createdAt", "desc")
       .limit(10)
       .get();
-    userData.notifs = [];
+    newData.notifs = [];
     notifQry.forEach(doc => {
-      userData.notifs.push({
+      newData.notifs.push({
         recipient: doc.data().recipient,
         doner: doc.data().sender,
         createdAt: doc.data().createdAt,
@@ -122,7 +153,7 @@ exports.getAuthenticatedUser = async (req, res) => {
       });
     });
 
-    return res.json(userData);
+    return res.json(newData);
   } catch (err) {
     console.error(err);
     return res.status(500).json(err);
@@ -192,4 +223,20 @@ exports.uploadImg = async (req, res) => {
       });
   });
   busboy.end(req.rawBody);
+};
+
+exports.markNotifsRead = async (req, res) => {
+  let batch = db.batch();
+  req.body.forEach(notifId => {
+    const notif = db.doc(`/notifs/${notifId}`);
+    batch.update(notif, { read: true });
+  });
+
+  try {
+    await batch.commit();
+    return res.status(200).json({ msg: "Notifs marked read" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json(err);
+  }
 };

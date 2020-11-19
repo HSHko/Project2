@@ -1,31 +1,31 @@
-import { color as colors } from "./colorPhalette";
+import { phalette } from "./colorPhalette";
 import { createMuiTheme } from "@material-ui/core";
 
 /* eslint-disable */
 
-export const color = {
-  ...colors,
+export const colors = {
+  ...phalette,
   primary: {
-    main: colors.indigo[7],
-    light: colors.indigo[4],
-    dark: colors.indigo[10],
+    main: phalette.indigo[7],
+    light: phalette.indigo[4],
+    dark: phalette.indigo[10],
   },
   error: {
-    main: colors.red[0],
-    light: colors.red[3],
-    dark: colors.red[14],
+    main: phalette.red[0],
+    light: phalette.red[3],
+    dark: phalette.red[14],
   },
   font: {
-    main: colors.white,
-    light: colors.white,
-    dark: colors.white,
+    main: phalette.white,
+    light: phalette.white,
+    dark: phalette.white,
   },
   nav: {
     top: {
-      main: colors.brown[3],
+      main: phalette.brown[3],
     },
     side: {
-      main: colors.brown[4],
+      main: phalette.brown[4],
     },
   },
 };
@@ -43,22 +43,22 @@ export const vars = {
     zIndex: 5,
   },
   footer: {
-    bgColor: color.black,
+    bgColor: colors.black,
   },
 };
 
 export const StyledTheme = {
-  color,
+  colors,
   vars,
 };
 
 export const MaterialTheme = createMuiTheme({
   palette: {
     primary: {
-      main: color.brown[3],
+      main: colors.brown[3],
     },
     secondary: {
-      main: color.red[0],
+      main: colors.red[0],
     },
   },
 });

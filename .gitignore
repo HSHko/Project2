@@ -12,6 +12,7 @@ node_modules/
 logs
 *.log
 
+.next/
 .firebaserc
 
 # dependencies

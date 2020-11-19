@@ -8,7 +8,7 @@ import { RootState } from "store";
 import Hide from "atoms/Hide";
 import Button from "atoms/Button";
 import MenuIcon from "@material-ui/icons/Menu";
-import { color } from "styles/theme";
+import { colors } from "styles/theme";
 import menuItems from "./menuItems";
 import SideBar from "./SideBar";
 
@@ -38,7 +38,9 @@ export default function fun(props) {
                 if (e.link) {
                   return (
                     <Link href={e.link} key={e.name}>
-                      <Button as="a">{e.name}</Button>
+                      <Button bg="transparent" shadow="none" as="a">
+                        {e.name}
+                      </Button>
                     </Link>
                   );
                 } else {
@@ -53,7 +55,7 @@ export default function fun(props) {
           </Hide>
           <Button
             shadow="transparent"
-            bg={color.nav.top.main}
+            bg={colors.nav.top.main}
             onClick={() => dispatch(sideBars.hi())}
           >
             <MenuIcon></MenuIcon>
@@ -66,7 +68,7 @@ export default function fun(props) {
 }
 
 const Wrapper = styled.div`
-  background-color: ${p => p.theme.color.lime[2]};
+  background-color: ${p => p.theme.colors.lime[2]};
 `;
 
 const Appbar = styled.div`
@@ -77,7 +79,7 @@ const Appbar = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: ${p => p.theme.color.nav.top.main};
+  background-color: ${p => p.theme.colors.nav.top.main};
 `;
 
 const RWrapper = styled.div`

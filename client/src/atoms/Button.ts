@@ -1,10 +1,14 @@
 import styled from "styled-components";
-import { color } from "styles/theme";
+import { colors } from "styles/theme";
 
 interface Props {
+  // disable outline, box-shadow, hover
   disabled?: boolean;
+  // background-color 정의, 미설정시 기본
   bg?: string;
+  // box-shadow 색상 정의, 미설정시 기본
   shadow?: string;
+  // 폰트 색상 정의, 미설정시 기본
   color?: string;
 }
 
@@ -36,13 +40,13 @@ export default styled.button.attrs(() => ({}))<Props>`
     } else if (p.shadow !== undefined) {
       return `0 1px 4px ${p.shadow}`;
     } else {
-      return `0 1px 4px ${color.primary.dark}`;
+      return `0 1px 4px ${colors.primary.dark}`;
     }
   }};
 
   line-height: 1.15rem;
   font-weight: 700;
-  color: ${p => (!p.color ? `${color.font.main}` : p.color)};
+  color: ${p => (!p.color ? `${colors.font.main}` : p.color)};
 
   transition: all 0.3s;
 
@@ -54,7 +58,7 @@ export default styled.button.attrs(() => ({}))<Props>`
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: ${p => (p.bg !== undefined ? p.bg : `${color.primary.light}`)};
+    background-color: ${p => (p.bg !== undefined ? p.bg : `${colors.primary.light}`)};
     filter: brightness(100%);
     transition: all 0.3s;
   }
