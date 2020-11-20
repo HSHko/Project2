@@ -9,8 +9,8 @@ import { dialogs } from "store";
 import BackDrop from "atoms/BackDrop";
 
 export default function fun(props) {
-  console.log("init");
   React.useEffect(() => {
+    console.log("render");
     if (props.BackDrop) {
       dispatch(dialogs.hi(undefined));
     }

@@ -15,6 +15,11 @@ export default [
     icon: BookIcon,
   },
   {
+    name: "DashBoard",
+    link: "/gallery",
+    icon: BookIcon,
+  },
+  {
     name: "Register",
     icon: HowToRegIcon,
   },

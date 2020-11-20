@@ -13,7 +13,9 @@ import menuItems from "./menuItems";
 import SideBar from "./SideBar";
 
 export default function fun(props) {
-  console.log("init");
+  React.useEffect(() => {
+    console.log("render");
+  });
   const dispatch = useDispatch();
 
   const handleOnClickLink = React.useCallback(

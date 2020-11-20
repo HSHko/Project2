@@ -12,7 +12,9 @@ import AddToHomeScreenIcon from "@material-ui/icons/AddToHomeScreen";
 import menuItems from "./menuItems";
 
 export default function fun(props) {
-  console.log("init");
+  React.useEffect(() => {
+    console.log("render");
+  });
 
   const dispatch = useDispatch();
   const storeSideAnchor = useSelector((x: RootState) => x.sideBar);

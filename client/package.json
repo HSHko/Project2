@@ -3,14 +3,19 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
+    "dev": "set CONFIG_ENV='development' && node server.js",
+    "build": "next build && next export",
+    "start": "next start",
+    "_dev": "next dev",
+    "_build": "next build",
+    "_start": "next start"
   },
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
     "axios": "^0.21.0",
+    "express": "^4.17.1",
+    "http-proxy-middleware": "^1.0.6",
     "next": "10.0.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
@@ -19,6 +24,7 @@
     "styled-components": "^5.2.0"
   },
   "devDependencies": {
+    "@types/http-proxy-middleware": "^0.19.3",
     "@types/node": "^14.14.6",
     "@types/nodemon": "^1.19.0",
     "@types/react": "^16.9.54",
@@ -27,5 +33,6 @@
     "babel-plugin-styled-components": "^1.11.1",
     "nodemon": "^2.0.6",
     "typescript": "^4.0.5"
-  }
+  },
+  "proxy": "http://localhost:3080"
 }

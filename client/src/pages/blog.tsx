@@ -4,7 +4,9 @@ import React from "react";
 // import { useDispatch } from "react-redux";
 
 export default function fun() {
-  console.log("init");
+  React.useEffect(() => {
+    console.log("render");
+  });
   // const dispatch = useDispatch();
 
   return (
