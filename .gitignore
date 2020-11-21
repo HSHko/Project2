@@ -1,22 +1,22 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-/lib
-.env*
-.prettierrc*
-auth*
-pool*
-test.*
-*.sql
+__lib/
+.next/
 node_modules/
 
-logs
-*.log
+pool.*
 
-.next/
+
+logs
+
 .firebaserc
+.prettierrc
+*.env
+*.log
+*.sql
+*.http
 
 # dependencies
-/node_modules
 /.pnp
 .pnp.js
 

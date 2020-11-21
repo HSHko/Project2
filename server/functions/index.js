@@ -50,3 +50,18 @@ exports.deleteNotifOnUnlike = events.deleteNotifOnUnlike;
 // res.status(400).json 하는거보다 next(errorWithStatusAndMessage) 식으로 하는게 나음
 // https://expressjs.com/en/guide/error-handling.html
 // csurf, helmet 모듈 사용, 유저 요청 validate, sanitize
+
+// // 시작 테스트
+// // http://localhost:5001/project2-7396c/us-central1/helloWorld
+// // Hello from Firebase!
+// exports.helloWorld = functions.https.onRequest((request, response) => {
+//   functions.logger.info("Hello logs!", { structuredData: true });
+//   response.send("Hello from Firebase!");
+// });
+
+// // 기본 구문
+// // exports.getMessage = functions.https.onRequest(async (req, res) => {
+// // app.get("/messages", async (req, res) => {
+// // exports.api = functions.https.onRequest(app);
+
+// // ⏩테스트: $ firebase emulators:start
