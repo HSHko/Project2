@@ -12,6 +12,10 @@ import LoggedOutLayout from "layouts/LoggedOutLayout";
 const store = configureStore();
 
 function MyApp({ Component, pageProps }) {
+  // Warning: Prop`className` did not match.
+  //   Server: "PrivateNotchedOutline-legendLabelled-39"
+  //   Client: "PrivateNotchedOutline-legendLabelled-3"
+  // The IDs from the server side rendered CSS are not the same as the client side CSS, hence the mismatch error.
   React.useEffect(() => {
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector("#jss-server-side");

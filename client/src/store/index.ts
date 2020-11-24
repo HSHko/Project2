@@ -6,6 +6,7 @@ import dialog, * as dialogs from "./dialog";
 // 스토어를 만들고, 내보내줌
 export { sideBars, dialogs };
 
+// 리덕스는 ducks 구조로 작성
 const rootReducer = combineReducers({
   sideBar,
   dialog,

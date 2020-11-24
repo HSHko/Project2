@@ -2,14 +2,10 @@ import styled from "styled-components";
 import { colors } from "styles/theme";
 
 interface Props {
-  // disable outline, box-shadow, hover
-  disabled?: boolean;
-  // background-color 정의, 미설정시 기본
-  bg?: string;
-  // box-shadow 색상 정의, 미설정시 기본
-  shadow?: string;
-  // 폰트 색상 정의, 미설정시 기본
-  color?: string;
+  bg?: string; // background-color 정의, 미설정시 기본
+  color?: string; // 폰트 색상 정의, 미설정시 기본
+  disabled?: boolean; // disable outline, box-shadow, hover
+  shadow?: string; // box-shadow 색상 정의, 미설정시 기본
 }
 
 export default styled.button.attrs(() => ({}))<Props>`

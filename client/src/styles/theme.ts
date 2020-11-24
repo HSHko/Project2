@@ -55,10 +55,18 @@ export const StyledTheme = {
 export const MaterialTheme = createMuiTheme({
   palette: {
     primary: {
-      main: colors.brown[3],
+      main: phalette.indigo[7],
+      light: phalette.indigo[4],
+      dark: phalette.indigo[10],
     },
     secondary: {
       main: colors.red[0],
+    },
+    error: {
+      main: colors.red[0],
+    },
+    background: {
+      default: "#fff",
     },
   },
 });
