@@ -1,15 +1,16 @@
 const { db, admin } = require("../util/admin");
 const { validateSignUpData, validateLoginData } = require("../util/validators");
+const { uuid } = require("uuidv4");
 const firebase = require("firebase");
 const pool = require("../util/pool");
 firebase.initializeApp(pool);
 
 exports.signUp = async (req, res) => {
   const newData = {
-    signId: req.body.signId,
+    sign_id: req.body.sign_id,
     email: req.body.email,
     password: req.body.password,
-    confirmPassword: req.body.confirmPassword,
+    confirm_password: req.body.confirm_password,
   };
 
   const { valid, errors } = validateSignUpData(newData);
@@ -18,25 +19,25 @@ exports.signUp = async (req, res) => {
   const noImg = "mystery-man.png";
 
   try {
-    const dbQry = await db.doc(`/users/${newData.signId}`).get();
-    if (dbQry.exists) throw { error: "signId Already exist" };
+    const dbQry = await db.doc(`/users/${newData.sign_id}`).get();
+    if (dbQry.exists) throw { error: "sign_id Already exist" };
 
     const fbData = await firebase
       .auth()
       .createUserWithEmailAndPassword(newData.email, newData.password);
-
     token = await fbData.user.getIdToken();
 
-    const userCredentials = {
-      signId: newData.signId,
+    const credentials = {
+      sign_id: newData.sign_id,
       email: newData.email,
-      auth: "",
-      custumId: "",
-      createdAt: admin.firestore.Timestamp.now().toDate().toISOString(),
-      imgUrl: `https://firebasestorage.googleapis.com/v0/b/${pool.storageBucket}/o/${noImg}?alt=media`,
       uid: fbData.user.uid,
+      custom_id: "",
+      authority: "user",
+      created_at: admin.firestore.Timestamp.now().toDate().toISOString(),
+      img_url: `https://firebasestorage.googleapis.com/v0/b/${pool.storageBucket}/o/${noImg}?alt=media`,
+      introduce: "",
     };
-    await db.doc(`/users/${newData.signId}`).set(userCredentials);
+    await db.doc(`/users/${newData.sign_id}`).set(credentials);
 
     return res.status(201).json({ token: token });
   } catch (err) {
@@ -62,10 +63,9 @@ exports.login = async (req, res) => {
     const qryData = await firebase
       .auth()
       .signInWithEmailAndPassword(newData.email, newData.password);
-
     token = await qryData.user.getIdToken();
 
-    return res.status(201).json({ token: token });
+    return res.status(200).json({ token: token });
   } catch (err) {
     console.error(err);
     if (e.code === "auth/wrong-password") {
@@ -79,8 +79,7 @@ exports.addUserDetails = async (req, res) => {
   if (req.body.introduce.trim() !== "") req.body.introduce = req.body.introduce;
 
   try {
-    console.log({ "req.body": req.body });
-    await db.doc(`users/${req.fbAuth.signId}`).update(req.body);
+    await db.doc(`users/${req.fbAuth.sign_id}`).update(req.body);
     return res.json({ msg: "addUserDetails Done" });
   } catch (err) {
     console.error(err);
@@ -92,24 +91,25 @@ exports.getUserDetails = async (req, res) => {
   let newData = {};
 
   try {
-    const userDoc = db.doc(`/users/${req.params.signId}`);
+    const userDoc = db.doc(`/users/${req.params.sign_id}`);
     const userQry = await userDoc.get();
-    if (!userQry.exists) throw { error: `userDoc: ${req.params.signId} not found` };
+    if (!userQry.exists)
+      throw { error: `userDoc: ${req.params.sign_id} not found` };
 
     const screamDoc = db
       .collection(`screams`)
-      .where(`signId`, `==`, req.params.signId)
-      .orderBy(`createdAt`, `desc`);
+      .where(`sign_id`, `==`, req.params.sign_id)
+      .orderBy(`created_at`, `desc`);
     const screamQry = await screamDoc.get();
 
     newData.screams = [];
-    screamQry.forEach(doc => {
+    screamQry.forEach((doc) => {
       newData.screams.push({
         title: doc.data().title,
         body: doc.data().body,
-        createdAt: doc.data().createdAt,
-        likeCnt: doc.data().likeCnt,
-        commentCnt: doc.data().commentCnt,
+        created_at: doc.data().created_at,
+        like_cnt: doc.data().like_cnt,
+        comment_cnt: doc.data().comment_cnt,
       });
     });
 
@@ -124,32 +124,37 @@ exports.getAuthenticatedUser = async (req, res) => {
   let newData = {};
 
   try {
-    const userQry = await db.doc(`/users/${req.fbAuth.signId}`).get();
+    const userDoc = db.doc(`/users/${req.fbAuth.sign_id}`);
+    const userQry = await userDoc.get();
     if (!userQry.exists) throw { "userQry.exists": userQry.exsits };
+
     newData.credentials = userQry.data();
 
-    const likeQry = await db.collection("likes").where("signId", "==", req.fbAuth.signId).get();
+    const likeQry = await db
+      .collection("likes")
+      .where("sign_id", "==", req.fbAuth.sign_id)
+      .get();
     newData.likes = [];
-    likeQry.forEach(doc => {
+    likeQry.forEach((doc) => {
       newData.likes.push(doc.data());
     });
 
     const notifQry = await db
-      .collection("notifs")
-      .where("recipient", "==", req.fbAuth.signId)
-      .orderBy("createdAt", "desc")
+      .collection("notifications")
+      .where("recipient", "==", req.fbAuth.sign_id)
+      .orderBy("created_at", "desc")
       .limit(10)
       .get();
-    newData.notifs = [];
-    notifQry.forEach(doc => {
-      newData.notifs.push({
+    newData.notifications = [];
+    notifQry.forEach((doc) => {
+      newData.notifications.push({
         recipient: doc.data().recipient,
-        doner: doc.data().sender,
-        createdAt: doc.data().createdAt,
-        screamId: doc.data().screamId,
+        doner: doc.data().doner,
+        created_at: doc.data().created_at,
+        scream_id: doc.data().scream_id,
         type: doc.data().type,
         read: doc.data().read,
-        notifId: doc.id,
+        notification_id: doc.id,
       });
     });
 
@@ -170,6 +175,7 @@ exports.uploadImg = async (req, res) => {
 
   let imgFileName;
   let imgToBeUploaded = {};
+  let generatedToken = uuid();
 
   busboy.on("file", (fieldname, file, filename, encoding, mimetype) => {
     // Content-Disposition: form-data; name="fieldName"; filename="filename.jpg" // fieldname, filename
@@ -191,7 +197,9 @@ exports.uploadImg = async (req, res) => {
     // my.img.png => ['my', 'img', 'png']
     const imgExtension = filename.split(".")[filename.split(".").length - 1];
     // '32756238461724837.png'
-    imgFileName = `${Math.round(Math.random() * 1000000000000).toString()}.${imgExtension}`;
+    imgFileName = `${Math.round(
+      Math.random() * 1000000000000
+    ).toString()}.${imgExtension}`;
     // 'C:\\Users\\XXX\\AppData\\Local\\Temp\\66804778864.jpg'
     const filepath = path.join(os.tmpdir(), imgFileName);
     imgToBeUploaded = { filepath, mimetype };
@@ -206,18 +214,19 @@ exports.uploadImg = async (req, res) => {
         metadata: {
           metadata: {
             contentType: imgToBeUploaded.mimetype,
+            firebaseStorageDownloadTokens: generatedToken,
           },
         },
       })
       .then(() => {
         console.log({ "req.fbAuth": req.fbAuth });
-        const imgUrl = `https://firebasestorage.googleapis.com/v0/b/${pool.storageBucket}/o/${imgFileName}?alt=media`;
-        return db.doc(`/users/${req.fbAuth.signId}`).update({ imgUrl });
+        const img_url = `https://firebasestorage.googleapis.com/v0/b/${pool.storageBucket}/o/${imgFileName}?alt=media&token=${generatedToken}`;
+        return db.doc(`/users/${req.fbAuth.sign_id}`).update({ img_url });
       })
       .then(() => {
         return res.json({ message: "img uploaded successfully" });
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
         return res.status(500).json({ error: err });
       });
@@ -225,16 +234,16 @@ exports.uploadImg = async (req, res) => {
   busboy.end(req.rawBody);
 };
 
-exports.markNotifsRead = async (req, res) => {
+exports.marknotificationsRead = async (req, res) => {
   let batch = db.batch();
-  req.body.forEach(notifId => {
-    const notif = db.doc(`/notifs/${notifId}`);
-    batch.update(notif, { read: true });
+  req.body.forEach((notification_id) => {
+    const notification = db.doc(`/notifications/${notification_id}`);
+    batch.update(notification, { read: true });
   });
 
   try {
     await batch.commit();
-    return res.status(200).json({ msg: "Notifs marked read" });
+    return res.status(200).json({ msg: "notifications marked read" });
   } catch (err) {
     console.error(err);
     return res.status(500).json(err);

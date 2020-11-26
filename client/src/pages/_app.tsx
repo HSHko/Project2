@@ -6,10 +6,8 @@ import { StyledTheme } from "styles/theme";
 import { ThemeProvider as MaterialThemeProvider } from "@material-ui/core";
 import { MaterialTheme } from "styles/theme";
 import { Provider } from "react-redux";
-import { configureStore } from "store";
+import { store } from "store";
 import LoggedOutLayout from "layouts/LoggedOutLayout";
-
-const store = configureStore();
 
 function MyApp({ Component, pageProps }) {
   // Warning: Prop`className` did not match.

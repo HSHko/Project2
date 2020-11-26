@@ -1,41 +1,41 @@
 let db = {
   users: [
     {
-      signId: "",
-      email: "email@email.com",
-      uid: "BIBID",
-      customId: "",
-      auth: "",
-      createdAt: "2020-11-12T09:06:49.316Z",
-      imageUrl: "image/aaaaaaaaaaaaaaaaaa",
-      introduce: "Hello, my name is user, nice to meet you",
+      sign_id: "gkapa",
+      email: "user@email.com",
+      uid: "E3ewYiKD1ebVXggoHitxG5YJeqm1",
+      custom_id: "りんご",
+      authoriy: "user",
+      created_at: "2020-11-12T09:06:49.316Z",
+      img_url: "1be160537d8b",
+      introduce: "Hello, World!",
     },
   ],
   screams: [
     {
-      signId: "",
+      uid: "",
       title: "",
       body: "",
-      createdAt: "2019-03-15T10:59:52.798Z",
-      likeCnt: 5,
-      commentCnt: 3,
+      created_at: "2019-03-15T10:59:52.798Z",
+      like_cnt: 5,
+      comment_cnt: 3,
     },
   ],
   comments: [
     {
-      signId: "",
-      screamId: "",
+      uid: "",
+      scream_id: "",
       body: "This is a sample scream",
-      createdAt: "2019-03-15T10:59:52.798Z",
+      created_at: "2019-03-15T10:59:52.798Z",
       likeCnt: 0,
     },
   ],
-  notifs: [
+  notifications: [
     {
       recipient: "user",
-      sender: "john",
+      doner: "john",
+      screamId: "E3ewYiKD1ebVXggoHitxG5YJeqm1",
       read: "true | false",
-      screamId: "kdjsfgdksuufhgkdsufky",
       type: "like | comment",
       createdAt: "2019-03-15T10:59:52.798Z",
     },
@@ -45,23 +45,23 @@ let db = {
 const userDetails = {
   // Redux data
   credentials: {
-    signId: "id",
-    email: "email@email.com",
-    uid: "BIBID",
-    customId: "id",
-    auth: "",
-    createdAt: "2020-11-12T09:06:49.316Z",
-    imageUrl: "image/aaaaaaaaaaaaaaaaaa",
-    introduce: "Hello, my name is user, nice to meet you",
+    sign_id: "gkapa",
+    email: "user@email.com",
+    uid: "E3ewYiKD1ebVXggoHitxG5YJeqm1",
+    custom_id: "りんご",
+    authoriy: "user",
+    created_at: "2020-11-12T09:06:49.316Z",
+    img_url: "1be160537d8b",
+    introduce: "Hello, World!",
   },
   likes: [
     {
-      signId: "user",
-      screamId: "hh7O5oWfWucVzGbHH2pa",
+      sign_id: "user",
+      scream_id: "hh7O5oWfWucVzGbHH2pa",
     },
     {
-      signId: "user",
-      screamId: "3IOnFoQexRcofs5OhBXO",
+      sign_id: "user",
+      scream_id: "3IOnFoQexRcofs5OhBXO",
     },
   ],
 };

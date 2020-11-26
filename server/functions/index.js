@@ -15,17 +15,17 @@ const { fbAuth, db } = require("./util/admin");
 
 const screams = require("./handlers/screams");
 app.get("/screams", screams.getScreams);
-app.get("/screams/:screamId", screams.getScream);
+app.get("/screams/:scream_id", screams.getScream);
 app.post("/scream", fbAuth, screams.addScreams);
-app.delete("/scream/:screamId", fbAuth, screams.deleteScream);
-app.get("/scream/:screamId/like", fbAuth, screams.likeScream);
-app.get("/scream/:screamId/unlike", fbAuth, screams.unlikeScream);
-app.post("/scream/:screamId/comment", fbAuth, screams.addCommentOnScream);
+app.delete("/scream/:scream_id", fbAuth, screams.deleteScream);
+app.get("/scream/:scream_id/like", fbAuth, screams.likeScream);
+app.get("/scream/:scream_id/unlike", fbAuth, screams.unlikeScream);
+app.post("/scream/:scream_id/comment", fbAuth, screams.addCommentOnScream);
 
 const users = require("./handlers/users");
 app.post("/signup", users.signUp);
 app.post("/login", users.login);
-app.get("/getauthuser", fbAuth, users.getAuthenticatedUser);
+app.get("/user", fbAuth, users.getAuthenticatedUser);
 app.post("/adduserdetails", fbAuth, users.addUserDetails);
 app.post("/user/image", fbAuth, users.uploadImg);
 

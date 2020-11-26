@@ -1,5 +1,3 @@
-import { Input } from "@material-ui/core";
-
 const HI = "dialog/HI" as const;
 const LO = "dialog/LO" as const;
 

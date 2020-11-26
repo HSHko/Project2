@@ -3,7 +3,7 @@ import Link from "next/link";
 import styled from "styled-components";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import { sideBars } from "store";
+import { sideBarAction } from "store";
 import { RootState } from "store";
 import Hide from "atoms/Hide";
 import Button from "atoms/Button";
@@ -20,7 +20,7 @@ export default function fun(props) {
 
   const handleOnClickLink = React.useCallback(
     e => () => {
-      dispatch(sideBars.lo());
+      dispatch(sideBarAction.lo());
       if (e.label == "login") {
       }
     },
@@ -58,7 +58,7 @@ export default function fun(props) {
           <Button
             shadow="transparent"
             bg={colors.nav.top.main}
-            onClick={() => dispatch(sideBars.hi())}
+            onClick={() => dispatch(sideBarAction.hi())}
           >
             <MenuIcon></MenuIcon>
           </Button>

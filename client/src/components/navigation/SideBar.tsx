@@ -7,7 +7,6 @@ import { useDispatch } from "react-redux";
 import { RootState } from "store";
 import Button from "atoms/Button";
 import CloseIcon from "@material-ui/icons/Close";
-import { sideBars, dialogs } from "store";
 import AddToHomeScreenIcon from "@material-ui/icons/AddToHomeScreen";
 import menuItems from "./menuItems";
 
@@ -17,22 +16,22 @@ export default function fun(props) {
   });
 
   const dispatch = useDispatch();
-  const storeSideAnchor = useSelector((x: RootState) => x.sideBar);
+  const storeSideBar = useSelector((x: RootState) => x.sideBarReducer);
 
   const handleOnClickListItem = React.useCallback(
     e => () => {
-      dispatch(sideBars.lo());
+      dispatch({ type: "sideBar/HI" });
       if (e.label === "login") {
-        dispatch(dialogs.hi("login"));
+        dispatch({ type: "dialog/HI", payload: "login" });
       }
     },
     [dispatch],
   );
 
   return (
-    <Wrapper active={storeSideAnchor.isHi}>
+    <Wrapper active={storeSideBar.isHi}>
       <AppBar className="head">
-        <Button onClick={() => dispatch(sideBars.lo())}>
+        <Button onClick={() => dispatch({ type: "sideBar/LO" })}>
           <CloseIcon color="primary"></CloseIcon>
           CLOSE
         </Button>

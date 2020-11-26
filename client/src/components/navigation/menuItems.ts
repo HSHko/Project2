@@ -25,12 +25,12 @@ export default [
     icon: BookIcon,
   },
   {
-    name: "Register",
-    icon: HowToRegIcon,
+    name: "Login",
+    link: "/login",
+    icon: LockOpenIcon,
   },
   {
-    name: "Login",
-    label: "login",
-    icon: LockOpenIcon,
+    name: "Register",
+    icon: HowToRegIcon,
   },
 ];

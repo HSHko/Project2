@@ -1,9 +1,9 @@
-const isEmpty = data => {
+const isEmpty = (data) => {
   if (data.trim() === "") return true;
   return false;
 };
 
-const isSignId = data => {
+const issign_id = (data) => {
   if (isEmpty(data)) return false;
 
   const regax = /^[a-z0-9]{4,20}$/;
@@ -11,7 +11,7 @@ const isSignId = data => {
   return false;
 };
 
-const isPassword = data => {
+const isPassword = (data) => {
   if (isEmpty(data)) return false;
 
   const regax = /^.{4,100}$/;
@@ -19,7 +19,7 @@ const isPassword = data => {
   return false;
 };
 
-const isEmail = data => {
+const isEmail = (data) => {
   if (isEmpty(data)) return false;
 
   const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -27,13 +27,14 @@ const isEmail = data => {
   return false;
 };
 
-exports.validateSignUpData = data => {
+exports.validateSignUpData = (data) => {
   let errors = {};
 
-  if (!isSignId(data.signId)) errors.signId = "Invalid";
-  if (!isPassword(data.password)) errors.signId = "Invalid";
+  if (!issign_id(data.sign_id)) errors.sign_id = "Invalid";
+  if (!isPassword(data.password)) errors.sign_id = "Invalid";
   if (!isEmail(data.email)) errors.email = "Invalid";
-  if (data.password !== data.confirmPassword) errors.confirmPassword = "Not Match";
+  if (data.password !== data.confirm_password)
+    errors.confirm_password = "Not Match";
 
   return {
     errors,
@@ -41,7 +42,7 @@ exports.validateSignUpData = data => {
   };
 };
 
-exports.validateLoginData = data => {
+exports.validateLoginData = (data) => {
   let errors = {};
 
   if (isEmpty(data.email)) errors.email = "Empty";
@@ -53,7 +54,7 @@ exports.validateLoginData = data => {
   };
 };
 
-exports.validateLoginData = data => {
+exports.validateLoginData = (data) => {
   let errors = {};
 
   if (isEmpty(data.email)) errors.email = "Must not be empty";

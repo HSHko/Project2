@@ -13,8 +13,9 @@ import PersonIcon from "@material-ui/icons/Person";
 
 // Redux stuff
 // import { useSelector } from "react-redux";
-// import { useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 // import { RootState } from "store";
+import { userAction } from "store";
 
 // Components
 import Button from "atoms/Button";
@@ -46,12 +47,15 @@ export default function fun(props) {
     console.log("render");
   });
 
-  const handleOnSubmit = React.useCallback(async e => {
+  const dispatch = useDispatch();
+
+  const handleOnSubmit = React.useCallback(e => {
     e.preventDefault();
     const submitData = {
       email: refs.email.current.value,
       password: refs.password.current.value,
     };
+    dispatch(userAction.login(submitData, history));
   }, []);
 
   return (

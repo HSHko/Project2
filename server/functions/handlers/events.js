@@ -5,24 +5,25 @@ const { db, admin } = require("../util/admin");
 exports.createNotifOnLike = functions
   .region(region)
   .firestore.document("likes/{id}")
-  .onCreate(async snapshot => {
-    const screamDoc = db.doc(`/screams/${snapshot.data().screamId}`);
+  .onCreate(async (snapshot) => {
+    const screamDoc = db.doc(`/screams/${snapshot.data().scream_id}`);
 
     try {
       const screamQry = await screamDoc.get();
       if (!screamQry.exists) throw { error: "scream not found" };
-      if (screamQry.data().signId !== snapshot.data().signId) throw { error: "signId not match" };
+      if (screamQry.data().sign_id !== snapshot.data().sign_id)
+        throw { error: "sign_id not match" };
 
       console.log({ checkpoint: "0" });
       const newData = {
-        screamId: screamQry.id,
-        recipient: screamQry.data().signId,
-        doner: snapshot.data().signId,
+        scream_id: screamQry.id,
+        recipient: screamQry.data().sign_id,
+        doner: snapshot.data().sign_id,
         type: "like",
         read: false,
-        createdAt: admin.firestore.Timestamp.now().toDate().toISOString(),
+        created_at: admin.firestore.Timestamp.now().toDate().toISOString(),
       };
-      await db.doc(`notifs/${snapshot.id}`).set(newData);
+      await db.doc(`notifications/${snapshot.id}`).set(newData);
     } catch (err) {
       console.error(err);
     }
@@ -31,9 +32,9 @@ exports.createNotifOnLike = functions
 exports.deleteNotifOnUnlike = functions
   .region(region)
   .firestore.document("likes/{id}")
-  .onDelete(async snapshot => {
+  .onDelete(async (snapshot) => {
     try {
-      await db.doc(`notifs/${snapshot.id}`).delete();
+      await db.doc(`notifications/${snapshot.id}`).delete();
     } catch (err) {
       console.error(err);
     }
@@ -52,7 +53,7 @@ exports.onUserImageChange = functions
       if (change.before.data().imgUrl !== change.after.data().imgUrl)
         throw { error: "imgUrl not changed" };
 
-      const screamDoc = db.collection(`screams`).where(`signId`, `==`, change.before.data().signId);
+      const screamDoc = db.collection(`screams`).where(`sign_id`, `==`, change.before.data().sign_id);
       const screamQry = await screamDoc.get();
       screamQry.forEach(doc => {
         const scream = db.doc(`/screams/${doc.id}`);
