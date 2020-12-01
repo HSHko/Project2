@@ -10,7 +10,6 @@ pool.*
 logs
 
 .firebaserc
-.prettierrc
 *.env
 *.log
 *.sql

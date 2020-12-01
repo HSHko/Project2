@@ -7,20 +7,20 @@ firebase.initializeApp(pool);
 
 exports.signUp = async (req, res) => {
   const newData = {
-    sign_id: req.body.sign_id,
+    sign_id: req.body.email.split(/@/)[0],
     email: req.body.email,
     password: req.body.password,
     confirm_password: req.body.confirm_password,
   };
 
-  const { valid, errors } = validateSignUpData(newData);
-  if (!valid) return res.status(400).json({ errors: errors });
+  const { isValid, errors } = validateSignUpData(newData);
+  if (!isValid) return res.status(400).json(errors);
 
   const noImg = "mystery-man.png";
 
   try {
     const dbQry = await db.doc(`/users/${newData.sign_id}`).get();
-    if (dbQry.exists) throw { error: "sign_id Already exist" };
+    if (dbQry.exists) throw { code: "registered" };
 
     const fbData = await firebase
       .auth()
@@ -38,39 +38,36 @@ exports.signUp = async (req, res) => {
       introduce: "",
     };
     await db.doc(`/users/${newData.sign_id}`).set(credentials);
-
     return res.status(201).json({ token: token });
   } catch (err) {
     console.error(err);
-    if (err.code === "auth/email-already-in-use") {
-      return res.status(400).json(err);
-    } else {
-      return res.status(500).json(err);
-    }
+    // err.code === "auth/email-already-in-use";
+    return res.status(500).json(err);
   }
 };
 
-exports.login = async (req, res) => {
+exports.signIn = async (req, res) => {
   const newData = {
     email: req.body.email,
     password: req.body.password,
   };
 
-  const { valid, errors } = validateLoginData(newData);
-  if (!valid) return res.status(400).json({ errors: errors });
+  const { isValid, errors } = validateSignInData(newData);
+  if (!isValid) return res.status(400).json(errors);
 
   try {
     const qryData = await firebase
       .auth()
       .signInWithEmailAndPassword(newData.email, newData.password);
-    token = await qryData.user.getIdToken();
 
+    token = await qryData.user.getIdToken();
+    console.log("here!");
     return res.status(200).json({ token: token });
   } catch (err) {
     console.error(err);
-    if (e.code === "auth/wrong-password") {
-      return res.status(403).json({ error: err });
-    }
+    // err.code === "auth/user-not-found";
+    // err.code === "auth/wrong-password";
+    // err.code === "too-many-requests";
     return res.status(500).json(err);
   }
 };
@@ -198,7 +195,7 @@ exports.uploadImg = async (req, res) => {
     const imgExtension = filename.split(".")[filename.split(".").length - 1];
     // '32756238461724837.png'
     imgFileName = `${Math.round(
-      Math.random() * 1000000000000
+      Math.random() * 1000000000000,
     ).toString()}.${imgExtension}`;
     // 'C:\\Users\\XXX\\AppData\\Local\\Temp\\66804778864.jpg'
     const filepath = path.join(os.tmpdir(), imgFileName);

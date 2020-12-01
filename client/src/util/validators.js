@@ -1,21 +1,21 @@
 const { regex } = require("./regex");
 
-const isEmpty = (data) => {
+exports.isEmpty = (data) => {
   if (data.trim() === "") return true;
   return false;
 };
 
-const isSignId = (data) => {
+exports.isSignId = (data) => {
   if (data.match(regex.validSignId)) return true;
   return false;
 };
 
-const isPassword = (data) => {
+exports.isPassword = (data) => {
   if (data.match(regex.validPassword)) return true;
   return false;
 };
 
-const isEmail = (data) => {
+exports.isEmail = (data) => {
   if (data.match(regex.isEmail)) return true;
   return false;
 };
@@ -23,15 +23,15 @@ const isEmail = (data) => {
 exports.validateSignUpData = (data) => {
   let errors = {};
 
-  if (isEmpty(data.sign_id)) errors.sign_id = "empty";
-  else if (!isSignId(data.sign_id)) errors.sign_id = "invalid";
-  if (isEmpty(data.email)) errors.email = "empty";
-  else if (!isEmail(data.email)) errors.email = "invalid";
-  if (isEmpty(data.password)) errors.password = "empty";
-  else if (!isPassword(data.password)) errors.password = "invalid";
-  if (isEmpty(data.confirm_password)) errors.confirm_password = "empty";
+  if (!isEmpty(data.sign_id)) errors.sign_id = "empty";
+  else if (!isSignId(data.sign_id)) errors.sign_id = "invalid format";
+  if (!isEmpty(data.email)) errors.email = "empty";
+  else if (!isEmail(data.email)) errors.email = "invalid format";
+  if (!isEmpty(data.password)) errors.password = "empty";
+  else if (!isPassword(data.password)) errors.password = "invalid format";
+  if (!isEmpty(data.confirm_password)) errors.confirm_password = "empty";
   else if (data.password !== data.confirm_password)
-    errors.confirm_password = "invalid";
+    errors.confirm_password = "confirm password is not matching";
 
   return {
     errors,
@@ -39,11 +39,10 @@ exports.validateSignUpData = (data) => {
   };
 };
 
-exports.validateSignInData = (data) => {
+exports.validateLoginData = (data) => {
   let errors = {};
 
   if (isEmpty(data.email)) errors.email = "empty";
-  else if (!isEmail(data.email)) errors.email = "invalid";
   if (isEmpty(data.password)) errors.password = "empty";
 
   return {

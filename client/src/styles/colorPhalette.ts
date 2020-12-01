@@ -303,7 +303,7 @@ export const phalette = {
     "#424242",
     "#212121",
   ],
-  bluegrey: [
+  bluegray: [
     "#607d8b",
     "#eceff1",
     "#cfd8dc",

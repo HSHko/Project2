@@ -20,12 +20,12 @@ export const colors = {
     light: phalette.white,
     dark: phalette.white,
   },
-  nav: {
+  navbar: {
     top: {
-      main: phalette.brown[3],
+      bg: phalette.brown[3],
     },
     side: {
-      main: phalette.brown[4],
+      bg: phalette.brown[4],
     },
   },
 };
@@ -33,6 +33,9 @@ export const colors = {
 export const vars = {
   backdrop: {
     zIndex: 1200,
+  },
+  overlay: {
+    zIndex: 700,
   },
   sidebar: {
     zIndex: 7,

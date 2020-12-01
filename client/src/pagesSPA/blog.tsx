@@ -1,12 +1,13 @@
 import React from "react";
-import styled from "styled-components";
-import { colors } from "styles/theme";
+// import styled from "styled-components";
 
 // import Link from "next/link";
 // import axios from 'axios';
 
 // Material-ui stuff
 // import Grid from "@material-ui/core/Grid";
+// import TextField from "@material-ui/core/TextField";
+// import PersonIcon from "@material-ui/icons/Person";
 
 // Redux stuff
 // import { useSelector } from "react-redux";
@@ -14,26 +15,24 @@ import { colors } from "styles/theme";
 // import { RootState } from "store";
 
 // Components
-import Button from "atoms/Button";
-import LoginForm from "components/LoginForm";
-import Overlay from "atoms/Overlay";
-import { useRouter } from "next/router";
+// import Button from 'atoms/Button';
 
 // interface Props {}
 
 export default function fun(props) {
-  const router = useRouter();
   React.useEffect(() => {
-    console.log(router.pathname);
+    console.log("render");
   });
 
   // const dispatch = useDispatch();
 
   return (
     <>
-      <h1>Script</h1>
-
-      <LoginForm></LoginForm>
+      <h1>Blog</h1>
+      <h1>Blog</h1>
+      <h1>Blog</h1>
+      <h1>Blog</h1>
+      <h1>Blog</h1>
     </>
   );
 }

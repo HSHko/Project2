@@ -1,11 +1,13 @@
 import styled from "styled-components";
+import { css } from "styled-components";
 import { colors } from "styles/theme";
 
 interface Props {
-  bg?: string; // background-color 정의, 미설정시 기본
-  color?: string; // 폰트 색상 정의, 미설정시 기본
-  disabled?: boolean; // disable outline, box-shadow, hover
-  shadow?: string; // box-shadow 색상 정의, 미설정시 기본
+  bg?: string;
+  outline?: string;
+  color?: string;
+  disabled?: boolean;
+  shadow?: string;
 }
 
 export default styled.button.attrs(() => ({}))<Props>`
@@ -21,28 +23,14 @@ export default styled.button.attrs(() => ({}))<Props>`
 
   border-width: 0;
   border-radius: 2px;
-  outline: ${p => {
-    switch (p.disabled) {
-      case true:
-        return ``;
-      default:
-        return `none`;
-    }
-  }};
+  outline: ${(p) => (p.outline ? p.outline : `none`)};
 
-  box-shadow: ${p => {
-    if (p.disabled) {
-      return ``;
-    } else if (p.shadow !== undefined) {
-      return `0 1px 4px ${p.shadow}`;
-    } else {
-      return `0 1px 4px ${colors.primary.dark}`;
-    }
-  }};
+  box-shadow: ${(p) =>
+    p.shadow ? `0 1px 4px ${p.shadow}` : `0 1px 4px ${colors.primary.dark}`};
 
   line-height: 1.15rem;
   font-weight: 700;
-  color: ${p => (!p.color ? `${colors.font.main}` : p.color)};
+  color: ${(p) => (p.color ? p.color : `${colors.font.main}`)};
 
   transition: all 0.3s;
 
@@ -54,23 +42,36 @@ export default styled.button.attrs(() => ({}))<Props>`
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: ${p => (p.bg !== undefined ? p.bg : `${colors.primary.light}`)};
+    background-color: ${(p) => (p.bg ? p.bg : `${colors.primary.light}`)};
     filter: brightness(100%);
     transition: all 0.3s;
   }
 
   &:hover::before {
-    ${p =>
-      p.disabled
-        ? ``
-        : `filter: brightness(75%);
-    transition: all 0.3s;`}
+    filter: brightness(75%);
+    transition: all 0.3s;
   }
 
   &:active::before {
     filter: brightness(100%);
     transition: all 0.3s ease-out;
   }
+
+  ${(p) => {
+    if (p.disabled) {
+      return css`
+        cursor: auto;
+        box-shadow: none;
+        color: ${colors.bluegray[3]};
+        &::before {
+          background-color: ${colors.gray[4]};
+        }
+        &:hover::before {
+          filter: brightness(100%);
+        }
+      `;
+    }
+  }}
 `;
 
 /*

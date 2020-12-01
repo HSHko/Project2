@@ -2,42 +2,51 @@ import React from "react";
 import Link from "next/link";
 import styled from "styled-components";
 import { css } from "styled-components";
-import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
-import { RootState } from "store";
-import Button from "atoms/Button";
+
+// Material-ui stuff
 import CloseIcon from "@material-ui/icons/Close";
 import AddToHomeScreenIcon from "@material-ui/icons/AddToHomeScreen";
+
+// Redux stuff
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { sideBarAction } from "store";
+import { dialogAction } from "store";
+import { RootState } from "store";
+
+// Components
+import { colors } from "styles/theme";
 import menuItems from "./menuItems";
+import Button from "atoms/Button";
 
 export default function fun(props) {
   React.useEffect(() => {
     console.log("render");
-  });
+  }, []);
 
   const dispatch = useDispatch();
   const storeSideBar = useSelector((x: RootState) => x.sideBarReducer);
 
   const handleOnClickListItem = React.useCallback(
-    e => () => {
-      dispatch({ type: "sideBar/HI" });
+    (e) => () => {
+      dispatch(sideBarAction.hi());
       if (e.label === "login") {
-        dispatch({ type: "dialog/HI", payload: "login" });
+        dispatch(dialogAction.hi("login"));
       }
     },
-    [dispatch],
+    [],
   );
 
   return (
     <Wrapper active={storeSideBar.isHi}>
       <AppBar className="head">
-        <Button onClick={() => dispatch({ type: "sideBar/LO" })}>
+        <Button onClick={() => dispatch(sideBarAction.lo())}>
           <CloseIcon color="primary"></CloseIcon>
           CLOSE
         </Button>
       </AppBar>
       <AppBar className="list">
-        {menuItems.map(e => {
+        {menuItems.map((e) => {
           if (e.link) {
             return (
               <Link key={e.name} href={e.link}>
@@ -68,8 +77,8 @@ const Wrapper = styled.div<{ active?: boolean }>`
   width: 14rem;
   max-width: 50vh;
   height: 100vh;
-  background-color: ${p => p.theme.colors.nav.side.main};
-  ${p =>
+  background-color: ${colors.navbar.side.bg};
+  ${(p) =>
     p.active === false
       ? css`
           right: -100%;
@@ -83,8 +92,8 @@ const Wrapper = styled.div<{ active?: boolean }>`
 
 const AppBar = styled.div`
   &.head {
-    height: ${p => p.theme.vars.navbar.height};
-    background-color: ${p => p.theme.colors.nav.top.main};
+    height: ${(p) => p.theme.vars.navbar.height};
+    background-color: ${(p) => p.theme.colors.navbar.top.main};
     display: flex;
     align-items: center;
   }

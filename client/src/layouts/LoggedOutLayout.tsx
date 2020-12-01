@@ -7,13 +7,8 @@ import Dialog from "components/Dialog";
 
 export default function fun(props) {
   React.useEffect(() => {
-    console.log(history);
+    console.log("render");
   }, []);
-  return (
-    <>
-      <Dialog></Dialog>
-      <NavBar></NavBar>
-      {props.children}
-    </>
-  );
+
+  return <>{props.children}</>;
 }

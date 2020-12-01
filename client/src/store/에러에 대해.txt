@@ -1,0 +1,40 @@
+
+에러는 다음과 같이 주어진다
+
+밑의 코드에 대해
+  } catch (err) {
+    console.error(err);
+    // err.code === "auth/user-not-found";
+    // err.code === "auth/wrong-password";
+    return res.status(500).json(err);
+  }
+
+응답은
+{err: Error: Request failed with status code 400
+    at createError (http://localhost:3000/_next/static/c…}
+err: Error: Request failed with status code 400 at createError (http://localhost:3000/_next/static/chunks/pages/_app.js?ts=1606523286344:43133:15) at settle (http://localhost:3000/_next/static/chunks/pages/_app.js?ts=1606523286344:43408:12) at XMLHttpRequest.handleLoad (http://localhost:3000/_next/static/chunks/pages/_app.js?ts=1606523286344:42603:7)
+config:
+adapter: ƒ xhrAdapter(config)
+data: "{"email":"test1@email.com","password":"vbrvrv"}"
+headers: {Accept: "application/json, text/plain, */*", Content-Type: "application/json;charset=utf-8"}
+maxBodyLength: -1
+maxContentLength: -1
+method: "post"
+timeout: 0
+transformRequest: [ƒ]
+transformResponse: [ƒ]
+url: "/api/login"
+validateStatus: ƒ validateStatus(status)
+xsrfCookieName: "XSRF-TOKEN"
+xsrfHeaderName: "X-XSRF-TOKEN"
+__proto__: Object
+isAxiosError: true
+request: XMLHttpRequest {readyState: 4, timeout: 0, withCredentials: false, upload: XMLHttpRequestUpload, onreadystatechange: ƒ, …}
+response: {data: {…}, status: 400, statusText: "Bad Request", headers: {…}, config: {…}, …}
+toJSON: ƒ toJSON()
+message: "Request failed with status code 400"
+stack: "Error: Request failed with status code 400↵    at createError (http://localhost:3000/_next/static/chunks/pages/_app.js?ts=1606523286344:43133:15)↵    at settle (http://localhost:3000/_next/static/chunks/pages/_app.js?ts=1606523286344:43408:12)↵    at XMLHttpRequest.handleLoad (http://localhost:3000/_next/static/chunks/pages/_app.js?ts=1606523286344:42603:7)"
+__proto__: Object
+__proto__: Object
+
+

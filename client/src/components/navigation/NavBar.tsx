@@ -1,30 +1,43 @@
 import React from "react";
-import Link from "next/link";
 import styled from "styled-components";
+import NextLink from "next/link";
+import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
+import { useRouter } from "next/router";
+
+// Redux stuff
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import { sideBarAction } from "store";
 import { RootState } from "store";
+import { sideBarAction } from "store";
+
+// Material-ui stuff
+import MenuIcon from "@material-ui/icons/Menu";
+
+// Components
+import SideBar from "./SideBar";
+import menuItems from "./menuItems";
+import { colors } from "styles/theme";
 import Hide from "atoms/Hide";
 import Button from "atoms/Button";
-import MenuIcon from "@material-ui/icons/Menu";
-import { colors } from "styles/theme";
-import menuItems from "./menuItems";
-import SideBar from "./SideBar";
+import Overlay from "atoms/Overlay";
 
 export default function fun(props) {
-  React.useEffect(() => {
-    console.log("render");
-  });
+  const router = useRouter();
   const dispatch = useDispatch();
 
+  React.useEffect(() => {
+    console.log("render");
+  }, []);
+
+  console.log("renderrender");
+
   const handleOnClickLink = React.useCallback(
-    e => () => {
+    (e) => () => {
       dispatch(sideBarAction.lo());
       if (e.label == "login") {
       }
     },
-    [dispatch],
+    [],
   );
 
   return (
@@ -36,11 +49,11 @@ export default function fun(props) {
         <RWrapper>
           <Hide maxm>
             <LinksWrapper>
-              {menuItems.map(e => {
+              {menuItems.map((e) => {
                 if (e.link) {
                   return (
-                    <Link href={e.link} key={e.name}>
-                      <Button bg="transparent" shadow="none" as="a">
+                    <Link to={e.link} key={e.name}>
+                      <Button bg={colors.navbar.top.bg} shadow="none" as="a">
                         {e.name}
                       </Button>
                     </Link>
@@ -57,9 +70,8 @@ export default function fun(props) {
           </Hide>
           <Button
             shadow="transparent"
-            bg={colors.nav.top.main}
-            onClick={() => dispatch(sideBarAction.hi())}
-          >
+            bg={colors.navbar.top.bg}
+            onClick={() => dispatch(sideBarAction.hi())}>
             <MenuIcon></MenuIcon>
           </Button>
         </RWrapper>
@@ -70,18 +82,18 @@ export default function fun(props) {
 }
 
 const Wrapper = styled.div`
-  background-color: ${p => p.theme.colors.lime[2]};
+  background-color: ${(p) => p.theme.colors.lime[2]};
 `;
 
 const Appbar = styled.div`
   width: 90%;
-  max-width: ${p => p.theme.vars.navbar.maxWidth};
-  height: ${p => p.theme.vars.navbar.height};
+  max-width: ${(p) => p.theme.vars.navbar.maxWidth};
+  height: ${(p) => p.theme.vars.navbar.height};
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: ${p => p.theme.colors.nav.top.main};
+  background-color: ${colors.navbar.top.bg};
 `;
 
 const RWrapper = styled.div`
@@ -95,3 +107,23 @@ const LinksWrapper = styled.div`
   display: flex;
   align-items: center;
 `;
+
+// <LinksWrapper>
+//   {menuItems.map((e) => {
+//     if (e.link) {
+//       return (
+//         <NextLink href={e.link} key={e.name}>
+//           <Button bg={colors.navbar.top.bg} shadow="none" as="a">
+//             {e.name}
+//           </Button>
+//         </NextLink>
+//       );
+//     } else {
+//       return (
+//         <Button key={e.name} onClick={handleOnClickLink(e)}>
+//           {e.name}
+//         </Button>
+//       );
+//     }
+//   })}
+// </LinksWrapper>;
