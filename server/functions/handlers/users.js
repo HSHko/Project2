@@ -1,5 +1,8 @@
 const { db, admin } = require("../util/admin");
-const { validateSignUpData, validateLoginData } = require("../util/validators");
+const {
+  validateSignUpData,
+  validateSignInData,
+} = require("../util/validators");
 const { uuid } = require("uuidv4");
 const firebase = require("firebase");
 const pool = require("../util/pool");
