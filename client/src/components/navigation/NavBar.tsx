@@ -7,21 +7,20 @@ import { useRouter } from "next/router";
 // Redux stuff
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import { RootState } from "store";
-import { sideBarAction } from "store";
+import { backdropAction, RootState } from "store";
+import { sidebarAction } from "store";
 
 // Material-ui stuff
 import MenuIcon from "@material-ui/icons/Menu";
 
 // Components
-import SideBar from "./SideBar";
+import Sidebar from "./Sidebar";
 import menuItems from "./menuItems";
 import { colors } from "styles/theme";
 import Hide from "atoms/Hide";
 import Button from "atoms/Button";
-import Overlay from "atoms/Overlay";
 
-export default function fun(props) {
+export default function fun() {
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -29,11 +28,9 @@ export default function fun(props) {
     console.log("render");
   }, []);
 
-  console.log("renderrender");
-
   const handleOnClickLink = React.useCallback(
     (e) => () => {
-      dispatch(sideBarAction.lo());
+      dispatch(sidebarAction.lo());
       if (e.label == "login") {
       }
     },
@@ -47,16 +44,16 @@ export default function fun(props) {
           <CorpLogo>CorpLogo</CorpLogo>
         </div>
         <RWrapper>
-          <Hide maxm>
+          <Hide shorterThan={"tablet"}>
             <LinksWrapper>
               {menuItems.map((e) => {
-                if (e.link) {
+                if (e.aim == "link") {
                   return (
-                    <Link to={e.link} key={e.name}>
+                    <NextLink key={e.name} href={e.link}>
                       <Button bg={colors.navbar.top.bg} shadow="none" as="a">
                         {e.name}
                       </Button>
-                    </Link>
+                    </NextLink>
                   );
                 } else {
                   return (
@@ -71,12 +68,15 @@ export default function fun(props) {
           <Button
             shadow="transparent"
             bg={colors.navbar.top.bg}
-            onClick={() => dispatch(sideBarAction.hi())}>
+            onClick={() => {
+              dispatch(sidebarAction.hi());
+              dispatch(backdropAction.hi(sidebarAction.lo()));
+            }}>
             <MenuIcon></MenuIcon>
           </Button>
         </RWrapper>
       </Appbar>
-      <SideBar></SideBar>
+      <Sidebar></Sidebar>
     </Wrapper>
   );
 }
@@ -107,23 +107,3 @@ const LinksWrapper = styled.div`
   display: flex;
   align-items: center;
 `;
-
-// <LinksWrapper>
-//   {menuItems.map((e) => {
-//     if (e.link) {
-//       return (
-//         <NextLink href={e.link} key={e.name}>
-//           <Button bg={colors.navbar.top.bg} shadow="none" as="a">
-//             {e.name}
-//           </Button>
-//         </NextLink>
-//       );
-//     } else {
-//       return (
-//         <Button key={e.name} onClick={handleOnClickLink(e)}>
-//           {e.name}
-//         </Button>
-//       );
-//     }
-//   })}
-// </LinksWrapper>;

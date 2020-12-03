@@ -1,11 +1,10 @@
 import { createGlobalStyle } from "styled-components";
 
 const globalStyle = createGlobalStyle`
-  * {margin: 0; padding: 0;}
+  * {margin: 0; padding: 0; box-sizing: border-border-box;}
   *, *::before, *::after {box-sizing: border-box;}
 
   body {
-    padding: 0;
     font-family: 'Noto Sans KR', sans-serif;
   }
 
@@ -13,19 +12,10 @@ const globalStyle = createGlobalStyle`
     text-decoration: none;
     color: inherit;
   }
-
-  .styledBtn {
-    
-  }
   
   .text-center {text-align: center;}
   .disp-flex {display: flex;}
   .disp-inline {display: inline;}
-  .width80 {width: 80%;}
-  .width60 {width: 60%;}
-  .width50 {width: 50%;}
-  .width40 {width: 40%;}
-  .width20 {width: 20%;}
 `;
 
 export default globalStyle;

@@ -35,7 +35,7 @@ const CssTextField = withStyles({
         borderColor: MaterialTheme.palette.primary.dark,
       },
     },
-    width: "80%",
+    width: 360,
   },
 })(TextField);
 
@@ -44,15 +44,13 @@ export default function fun(props) {
     email: React.useRef<any>(""),
     password: React.useRef<any>(""),
   };
-
-  const errors = useSelector(
-    (x: RootState) => x.userReducer.errors,
-    shallowEqual,
-  );
-  const isLoading = useSelector(
-    (x: RootState) => x.userReducer.isLoading,
-    shallowEqual,
-  );
+  const { errors, isLoading } = {
+    errors: useSelector((x: RootState) => x.userReducer.errors, shallowEqual),
+    isLoading: useSelector(
+      (x: RootState) => x.userReducer.isLoading,
+      shallowEqual,
+    ),
+  };
 
   const dispatch = useDispatch();
 
@@ -71,7 +69,7 @@ export default function fun(props) {
 
   return (
     <>
-      <DynamicWrapper align="center" padding="3rem 1.5rem">
+      <DynamicWrapper margin="3rem auto" padding="3rem 1.5rem">
         {isLoading && (
           <LoadingIndicator top={"7rem"} size={120}></LoadingIndicator>
         )}
@@ -94,12 +92,12 @@ export default function fun(props) {
             type="email"
             autoComplete="email"
             fullWidth
-            style={{ margin: 8 }}
+            style={{ margin: 4 }}
             label="Eメール"
             placeholder="email@email.com"
             inputRef={refs.email}
             defaultValue={refs.email.current}
-            helperText={errors.email}
+            helperText={errors.email ? errors.email : " "}
             error={errors.email ? true : false}
             margin="normal"
             InputLabelProps={{
@@ -107,18 +105,19 @@ export default function fun(props) {
             }}
             variant="outlined"
           />
+          <br />
           <CssTextField
             id="passwordInput"
             name="password"
             type="password"
             autoComplete="current-password"
             fullWidth
-            style={{ margin: 8 }}
+            style={{ margin: 4 }}
             label="パスワード"
             placeholder="パスワードを入力してください。"
             inputRef={refs.password}
             defaultValue={refs.password.current}
-            helperText={errors.password}
+            helperText={errors.password ? errors.password : " "}
             error={errors.password ? true : false}
             InputLabelProps={{
               shrink: true,

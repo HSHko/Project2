@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-const deviceSize = {
+export const deviceSize = {
   mobile: {
     min: "1px",
     max: "768px",
@@ -15,6 +15,40 @@ const deviceSize = {
   },
 };
 
+interface Props {
+  shorterThan?: "mobile" | "tablet" | "laptop";
+  longerThan?: "mobile" | "tablet" | "laptop";
+}
+
+export default styled.div.attrs(() => ({}))<Props>`
+  ${(p) => {
+    if (p.shorterThan) {
+      switch (p.shorterThan) {
+        case "mobile":
+          return `@media(max-width: ${deviceSize.mobile.min}) {display:none;}`;
+        case "tablet":
+          return `@media(max-width: ${deviceSize.tablet.min}) {display:none;}`;
+        case "laptop":
+          return `@media(max-width: ${deviceSize.laptop.min}) {display:none;}`;
+        default:
+          break;
+      }
+    } else if (p.longerThan) {
+      switch (p.longerThan) {
+        case "mobile":
+          return `@media(min-width: ${deviceSize.mobile.max}) {display:none;}`;
+        case "tablet":
+          return `@media(min-width: ${deviceSize.tablet.max}) {display:none;}`;
+        case "laptop":
+          return `@media(min-width: ${deviceSize.laptop.max}) {display:none;}`;
+        default:
+          break;
+      }
+    }
+  }}
+`;
+
+/*
 const media = {
   mobile: {
     min: `@media(min-width: ${deviceSize.mobile.min})`,
@@ -31,16 +65,16 @@ const media = {
 };
 
 interface Props {
+  shorterThan?: "mobile" | "tablet" | "laptop";
+  longerThan?: "mobile" | "tablet" | "laptop";
   minm?: boolean;
   maxm?: boolean;
   mint?: boolean;
   maxt?: boolean;
   minl?: boolean;
   maxl?: boolean;
-}
 
-export default styled.div.attrs(() => ({}))<Props>`
-  ${p => {
+  ${(p) => {
     if (p.minm) {
       return `${media.mobile.min} {display:none;}`;
     } else if (p.maxm) {
@@ -55,4 +89,5 @@ export default styled.div.attrs(() => ({}))<Props>`
       return `${media.laptop.max} {display:none;}`;
     }
   }}
-`;
+}
+*/

@@ -1,7 +1,7 @@
 import React from "react";
-import Link from "next/link";
 import styled from "styled-components";
 import { css } from "styled-components";
+import Link from "next/link";
 
 // Material-ui stuff
 import CloseIcon from "@material-ui/icons/Close";
@@ -10,14 +10,15 @@ import AddToHomeScreenIcon from "@material-ui/icons/AddToHomeScreen";
 // Redux stuff
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import { sideBarAction } from "store";
-import { dialogAction } from "store";
+import { sidebarAction } from "store";
+import { backdropAction } from "store";
 import { RootState } from "store";
 
 // Components
 import { colors } from "styles/theme";
 import menuItems from "./menuItems";
 import Button from "atoms/Button";
+import { vars } from "styles/theme";
 
 export default function fun(props) {
   React.useEffect(() => {
@@ -25,34 +26,31 @@ export default function fun(props) {
   }, []);
 
   const dispatch = useDispatch();
-  const storeSideBar = useSelector((x: RootState) => x.sideBarReducer);
+  const storeSidebar = useSelector((x: RootState) => x.sidebarReducer);
 
   const handleOnClickListItem = React.useCallback(
     (e) => () => {
-      dispatch(sideBarAction.hi());
-      if (e.label === "login") {
-        dispatch(dialogAction.hi("login"));
-      }
+      dispatch(sidebarAction.hi());
+      dispatch(backdropAction.lo());
     },
     [],
   );
 
   return (
-    <Wrapper active={storeSideBar.isHi}>
+    <Wrapper active={storeSidebar.isHi}>
       <AppBar className="head">
-        <Button onClick={() => dispatch(sideBarAction.lo())}>
+        <Button onClick={() => dispatch(backdropAction.lo())}>
           <CloseIcon color="primary"></CloseIcon>
           CLOSE
         </Button>
       </AppBar>
       <AppBar className="list">
         {menuItems.map((e) => {
-          if (e.link) {
+          if (e.aim == "link") {
             return (
               <Link key={e.name} href={e.link}>
-                <Button as="a">
-                  {" "}
-                  <AddToHomeScreenIcon></AddToHomeScreenIcon>
+                <Button as="a" onClick={() => dispatch(backdropAction.lo())}>
+                  {e.icon}
                   {e.name}
                 </Button>
               </Link>
@@ -60,7 +58,7 @@ export default function fun(props) {
           } else {
             return (
               <Button key={e.name} onClick={handleOnClickListItem(e)}>
-                <AddToHomeScreenIcon></AddToHomeScreenIcon>
+                {e.icon}
                 {e.name}
               </Button>
             );
@@ -73,8 +71,9 @@ export default function fun(props) {
 
 const Wrapper = styled.div<{ active?: boolean }>`
   position: fixed;
+  z-index: ${vars.sidebar.zIndex};
   top: 0;
-  width: 14rem;
+  width: 16rem;
   max-width: 50vh;
   height: 100vh;
   background-color: ${colors.navbar.side.bg};

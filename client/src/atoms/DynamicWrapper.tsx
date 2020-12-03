@@ -1,6 +1,9 @@
 import styled from "styled-components";
 
-interface Props {
+// 박스 css 참고:
+// webdir.tistory.com/413
+
+https: interface Props {
   align?: "left" | "center" | "right";
   border?: string;
   margin?: string;
@@ -11,7 +14,10 @@ interface Props {
 export default function fun(props: Props) {
   return (
     <OuterWrapper align={props.align}>
-      <InnerWrapper border={props.border} padding={props.padding}>
+      <InnerWrapper
+        margin={props.margin}
+        border={props.border}
+        padding={props.padding}>
         {props.children}
       </InnerWrapper>
     </OuterWrapper>

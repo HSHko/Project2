@@ -1,22 +1,19 @@
 import { createStore, applyMiddleware } from "redux";
 import { combineReducers } from "redux";
 import reduxThunk from "redux-thunk";
-import sideBarReducer, * as sideBarAction from "./redux/sideBar";
-import dialogReducer, * as dialogAction from "./redux/dialog";
+import backdropReducer, * as backdropAction from "./redux/backdrop";
+import sidebarReducer, * as sidebarAction from "./redux/sidebar";
 import userReducer, * as userAction from "./redux/user";
 import uiReducer, * as uiAction from "./redux/ui";
 
-// 스토어를 만들고, 내보내줌
-// 액션모듈타입 참고: https://react-etc.vlpt.us/07.typescript-redux.html
-// type IncrementAction = ReturnType<typeof counterActions.increment>;
-// type DecrementAction = ReturnType<typeof counterActions.decrement>;
-// type Actions = IncrementAction | DecrementAction;
-// 리덕스는 ducks 구조로 작성
-export { sideBarAction, dialogAction, userAction, uiAction };
+// 액션모듈타입 참고:
+// https://react-etc.vlpt.us/07.typescript-redux.html
+// ducks 구조로 작성
+export { sidebarAction, backdropAction, userAction, uiAction };
 
 const rootReducer = combineReducers({
-  sideBarReducer,
-  dialogReducer,
+  sidebarReducer,
+  backdropReducer,
   userReducer,
   uiReducer,
 });

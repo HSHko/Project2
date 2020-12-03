@@ -1,8 +1,10 @@
 import React from "react";
 // import styled from "styled-components";
 
+// Communication stuff
 // import Link from "next/link";
 // import axios from 'axios';
+import { useRouter } from "next/router";
 
 // Material-ui stuff
 // import Grid from "@material-ui/core/Grid";
@@ -20,8 +22,10 @@ import React from "react";
 // interface Props {}
 
 export default function fun(props) {
+  const nextRouter = useRouter();
+
   React.useEffect(() => {
-    console.log("render");
+    console.log(nextRouter.pathname);
   });
 
   // const dispatch = useDispatch();

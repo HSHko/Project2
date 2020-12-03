@@ -30,7 +30,7 @@ function MyApp({ Component, pageProps }) {
     }
 
     refreshToken();
-    console.log({ "localStorage.fbIdToken": localStorage.fbIdToken });
+    // console.log({ "localStorage.fbIdToken": localStorage.fbIdToken });
   }, []);
 
   return (
@@ -41,11 +41,7 @@ function MyApp({ Component, pageProps }) {
         <MaterialThemeProvider theme={MaterialTheme}>
           <Provider store={store}>
             <LoggedOutLayout>
-              <div suppressHydrationWarning>
-                {typeof window === "undefined" ? null : (
-                  <Component {...pageProps} />
-                )}
-              </div>
+              <Component {...pageProps} />
             </LoggedOutLayout>
           </Provider>
         </MaterialThemeProvider>

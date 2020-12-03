@@ -1,5 +1,5 @@
-const HI = "sideBar/HI" as const;
-const LO = "sideBar/LO" as const;
+const HI = "sidebar/HI" as const;
+const LO = "sidebar/LO" as const;
 
 export const hi = () => ({
   type: HI,
@@ -12,10 +12,12 @@ type Action = ReturnType<typeof hi | typeof lo>;
 
 interface State {
   isHi: boolean;
+  isLo: any[];
 }
 
 const initialState = {
   isHi: false,
+  isLo: [],
 };
 
 export default function fun(state: State = initialState, action: Action) {

@@ -32,13 +32,13 @@ export const colors = {
 
 export const vars = {
   backdrop: {
-    zIndex: 1200,
+    zIndex: 100,
   },
   overlay: {
-    zIndex: 700,
+    zIndex: 80,
   },
   sidebar: {
-    zIndex: 7,
+    zIndex: 120,
   },
   navbar: {
     maxWidth: "1440px",

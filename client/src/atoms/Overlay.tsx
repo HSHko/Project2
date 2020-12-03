@@ -22,6 +22,13 @@ export default styled.div.attrs(() => ({}))<Props>`
         text-align: center;
         background-color: ${p.bg ? p.bg : `transparent`};
       `;
+    } else if (p.type === "static") {
+      return css`
+        position: absolute;
+        z-index: ${vars.overlay.zIndex};
+        left: 50%;
+        top: 50%;
+      `;
     }
   }};
 `;

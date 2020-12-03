@@ -22,7 +22,10 @@ interface State {
 
 const initialState = {
   isLoading: false,
-  errors: {},
+  errors: {
+    email: "",
+    password: "",
+  },
   authenticated: false,
   credentials: {},
   likes: [],
@@ -30,12 +33,12 @@ const initialState = {
 };
 
 const setAuthorizationHeader = (token) => {
-  const fbIdToken = `Bearer ${token}`;
-  localStorage.setItem("fbIdToken", fbIdToken);
-  axios.defaults.headers.common["Authorization"] = fbIdToken;
+  console.log({ token: token });
+  localStorage.setItem("fbIdToken", token);
+  axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 };
 
-export const getUserData = () => async (dispatch) => {
+export const setUser = () => async (dispatch) => {
   try {
     const userQry = await axios.get("/api/userdetails");
     dispatch({
@@ -54,7 +57,7 @@ export const signIn = (userData) => async (dispatch) => {
     const signInQry = await axios.post("/api/signin", userData);
     setAuthorizationHeader(signInQry.data.token);
 
-    await getUserData();
+    await setUser();
 
     dispatch({ type: CLEAR_ERRORS });
     Router.push("/");
@@ -103,18 +106,19 @@ export const signUp = (userData) => async (dispatch) => {
     const signUpQry = await axios.post("/api/signup", userData);
     setAuthorizationHeader(signUpQry.data.token);
 
-    await getUserData();
+    await setUser();
 
     dispatch({ type: CLEAR_ERRORS });
     Router.push("/");
   } catch (err) {
     const res = err.response.data;
-    let errors: any = {};
+    let errors: any = { ...initialState.errors };
 
-    if (res.email) errors.email = "Eメールを正しく入力してください。";
-    if (res.password) errors.password = "パスワードを正しく入力してください。";
+    if (res.email) errors.email = "正しいEメール入力してください。";
+    if (res.password)
+      errors.password = "正しいパスワードをく入力してください。";
     if (res.confirmPassword)
-      errors.confirmPassword = "パスワードが一致したいません。";
+      errors.confirmPassword = "パスワードが一致していないです。";
 
     if (res.code) {
       let msg = "";
@@ -138,34 +142,30 @@ export const signUp = (userData) => async (dispatch) => {
   }
 };
 
-type Action = ReturnType<typeof logout>;
-
 export const logout = () => (dispatch) => {
   localStorage.removeItem("fbIdToken");
   delete axios.defaults.headers.common["Authorization"];
+  console.log("token expired");
   dispatch({ type: SET_UNAUTHENTICATED });
 };
 
 export default function fun(state: State = initialState, action) {
   switch (action.type) {
     case SET_LOADING:
-      console.log(action.type);
       return {
         ...state,
         isLoading: true,
       };
     case SET_ERRORS:
-      console.log(action.type);
       return {
         ...state,
         errors: action.payload,
         isLoading: false,
       };
     case CLEAR_ERRORS:
-      console.log(action.type);
       return {
         ...state,
-        errors: null,
+        errors: {},
         isLoading: false,
       };
     case SET_AUTHENTICATED:
@@ -181,20 +181,9 @@ export default function fun(state: State = initialState, action) {
     case SET_USER:
       console.log(action.type);
       return {
-        authenticated: true,
-        isLoading: false,
-        ...action.payload,
-      };
-    case LIKE_SCREAM:
-      return {
         ...state,
-        likes: [
-          ...state.likes,
-          {
-            userHandle: state.credentials.handle,
-            screamId: action.payload.screamId,
-          },
-        ],
+        authenticated: true,
+        ...action.payload,
       };
     case UNLIKE_SCREAM:
       return {
@@ -218,7 +207,7 @@ export const uploadImage = (formData) => (dispatch) => {
   axios
     .post("/user/image", formData)
     .then(() => {
-      dispatch(getUserData());
+      dispatch(setUser());
     })
     .catch((err) => console.log(err));
 };
@@ -228,7 +217,7 @@ export const editUserDetails = (userDetails) => (dispatch) => {
   axios
     .post("/user", userDetails)
     .then(() => {
-      dispatch(getUserData());
+      dispatch(setUser());
     })
     .catch((err) => console.log(err));
 };

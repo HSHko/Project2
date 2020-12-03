@@ -2,8 +2,8 @@ import React from "react";
 import styled from "styled-components";
 import { colors } from "styles/theme";
 
-// import Link from "next/link";
-// import axios from 'axios';
+// Communication stuff
+import { useRouter } from "next/router";
 
 // Material-ui stuff
 // import Grid from "@material-ui/core/Grid";
@@ -15,25 +15,23 @@ import { colors } from "styles/theme";
 
 // Components
 import Button from "atoms/Button";
-import LoginForm from "components/LoginForm";
+import SignInForm from "components/SignInForm";
 import Overlay from "atoms/Overlay";
-import { useRouter } from "next/router";
 
-// interface Props {}
+import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
 
 export default function fun(props) {
-  const router = useRouter();
+  const nextRouter = useRouter();
+
   React.useEffect(() => {
-    console.log(router.pathname);
+    console.log(nextRouter.pathname);
   });
 
   // const dispatch = useDispatch();
 
   return (
     <>
-      <h1>Script</h1>
-
-      <LoginForm></LoginForm>
+      <SignInForm></SignInForm>
     </>
   );
 }
