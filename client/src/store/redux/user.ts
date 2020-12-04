@@ -13,19 +13,16 @@ export const UNLIKE_SCREAM = "user/UNLIKE_SCREAM" as const;
 
 interface State {
   isLoading: boolean;
-  errors: any;
+  errors: object;
   authenticated: boolean;
-  credentials: any;
-  likes: any;
-  notifications: any;
+  credentials: object;
+  likes: [];
+  notifications: [];
 }
 
-const initialState = {
+const initialState: State = {
   isLoading: false,
-  errors: {
-    email: "",
-    password: "",
-  },
+  errors: {},
   authenticated: false,
   credentials: {},
   likes: [],
@@ -50,6 +47,54 @@ export const setUser = () => async (dispatch) => {
   }
 };
 
+export const signUp = (userData) => async (dispatch) => {
+  try {
+    console.log({ "signup submit data": userData });
+    dispatch({ type: SET_LOADING });
+    const signUpQry = await axios.post("/api/signup", userData);
+
+    dispatch({ type: CLEAR_ERRORS });
+    Router.push("/join/signin");
+  } catch (err) {
+    console.error({ err });
+    const res = err.response.data;
+    let errors: any = {};
+
+    // if (res.signId) errors.signId = ""
+    if (res.email) errors.email = "正しいEメール入力してください。";
+    if (res.password) {
+      errors.password = "正しいパスワードをく入力してください。";
+      errors.password += "パスワードは6文字以上を入力してください。";
+    }
+
+    if (res.confirm_password)
+      errors.confirm_password = "パスワードが一致していないです。";
+
+    if (res.code) {
+      let msg = "";
+      switch (res.code) {
+        case "registered":
+          msg = "既に登録されているIDです。";
+          errors.sign_id = msg;
+          break;
+        case "auth/email-already-in-use":
+          msg = "既に登録されているEメールです。";
+          errors.email = msg;
+        default:
+          msg = "未設定エラーです。";
+          msg += `\nERROR CODE: ${res.code}`;
+          break;
+      }
+      alert(msg);
+    }
+
+    dispatch({
+      type: SET_ERRORS,
+      payload: errors,
+    });
+  }
+};
+
 export const signIn = (userData) => async (dispatch) => {
   try {
     dispatch({ type: SET_LOADING });
@@ -62,6 +107,7 @@ export const signIn = (userData) => async (dispatch) => {
     dispatch({ type: CLEAR_ERRORS });
     Router.push("/");
   } catch (err) {
+    console.error(err);
     const res = err.response.data;
     let errors: any = {};
 
@@ -99,49 +145,6 @@ export const signIn = (userData) => async (dispatch) => {
   }
 };
 
-export const signUp = (userData) => async (dispatch) => {
-  try {
-    dispatch({ trpe: SET_LOADING });
-
-    const signUpQry = await axios.post("/api/signup", userData);
-    setAuthorizationHeader(signUpQry.data.token);
-
-    await setUser();
-
-    dispatch({ type: CLEAR_ERRORS });
-    Router.push("/");
-  } catch (err) {
-    const res = err.response.data;
-    let errors: any = { ...initialState.errors };
-
-    if (res.email) errors.email = "正しいEメール入力してください。";
-    if (res.password)
-      errors.password = "正しいパスワードをく入力してください。";
-    if (res.confirmPassword)
-      errors.confirmPassword = "パスワードが一致していないです。";
-
-    if (res.code) {
-      let msg = "";
-      switch (res.code) {
-        case "registered":
-          msg = "すでに登録されているメールです。";
-          errors.email = msg;
-          break;
-        default:
-          msg = "未設定エラーです。";
-          msg += `\nERROR CODE: ${res.code}`;
-          break;
-      }
-      alert(msg);
-    }
-
-    dispatch({
-      type: SET_ERRORS,
-      payload: errors,
-    });
-  }
-};
-
 export const logout = () => (dispatch) => {
   localStorage.removeItem("fbIdToken");
   delete axios.defaults.headers.common["Authorization"];
@@ -149,7 +152,7 @@ export const logout = () => (dispatch) => {
   dispatch({ type: SET_UNAUTHENTICATED });
 };
 
-export default function fun(state: State = initialState, action) {
+export default function fun(state = initialState, action) {
   switch (action.type) {
     case SET_LOADING:
       return {
@@ -185,18 +188,18 @@ export default function fun(state: State = initialState, action) {
         authenticated: true,
         ...action.payload,
       };
-    case UNLIKE_SCREAM:
-      return {
-        ...state,
-        likes: state.likes.filter(
-          (like) => like.screamId !== action.payload.screamId,
-        ),
-      };
-    case MARK_NOTIFICATIONS_READ:
-      state.notifications.forEach((not) => (not.read = true));
-      return {
-        ...state,
-      };
+    // case UNLIKE_SCREAM:
+    //   return {
+    //     ...state,
+    //     likes: state.likes.filter(
+    //       (like) => like.screamId !== action.payload.screamId,
+    //     ),
+    //   };
+    // case MARK_NOTIFICATIONS_READ:
+    //   state.notifications.forEach((not) => (not.read = true));
+    //   return {
+    //     ...state,
+    //   };
     default:
       return state;
   }

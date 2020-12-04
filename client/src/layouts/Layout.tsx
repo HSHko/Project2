@@ -14,7 +14,6 @@ export default function fun(props) {
   const nextRouter = useRouter();
 
   React.useEffect(() => {
-    console.log("render");
     console.log(nextRouter.pathname);
   }, []);
 

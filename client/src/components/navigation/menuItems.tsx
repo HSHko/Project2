@@ -5,20 +5,19 @@ import LockOpenIcon from "@material-ui/icons/LockOpen";
 
 interface Props {
   name: string;
-  aim: "link";
-  qualification: "none" | "unAuthenticated" | "authenticted";
+  event: "link" | "event";
   link: string;
+  label?: string;
   icon?: any;
 }
 
 const initialState: Props = {
   name: "",
-  aim: "link",
+  event: "link",
   link: "/",
-  qualification: "none",
 };
 
-const menuItems: Props[] = [
+const common: Props[] = [
   {
     ...initialState,
     name: "Test",
@@ -43,21 +42,36 @@ const menuItems: Props[] = [
     link: "/gallery",
     icon: <HowToRegIcon />,
   },
+];
+
+const authenticated: Props[] = [
+  {
+    ...initialState,
+    name: "Logout",
+    event: "event",
+    label: "logout",
+    icon: <HomeIcon />,
+  },
+];
+
+const unAuthenticated: Props[] = [
   {
     ...initialState,
     name: "Login",
     link: "/join/signin",
-    qualification: "unAuthenticated",
     icon: <LockOpenIcon />,
   },
   {
     ...initialState,
     name: "SignUp",
-    aim: "link",
-    qualification: "unAuthenticated",
+    event: "link",
     link: "/join/signup",
     icon: <LockOpenIcon />,
   },
 ];
 
-export default menuItems;
+export default {
+  common,
+  authenticated,
+  unAuthenticated,
+};

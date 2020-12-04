@@ -1,5 +1,5 @@
 import React from "react";
-// import styled from "styled-components";
+import styled from "styled-components";
 
 // Communication stuff
 // import axios from 'axios';
@@ -18,6 +18,7 @@ import Grid from "@material-ui/core/Grid";
 
 // Components
 // import Button from 'atoms/Button';
+import * as table from "./skeleton";
 
 // interface Props {}
 
@@ -26,6 +27,7 @@ export default function fun(props) {
 
   React.useEffect(() => {
     console.log(nextRouter.pathname);
+    console.log(table.posts.map((el) => el));
   });
 
   // const dispatch = useDispatch();
@@ -33,12 +35,81 @@ export default function fun(props) {
   return (
     <>
       <h1>GALLERY</h1>
-      <Grid container spacing={8}></Grid>
+      <Wrapper>
+        <Table>
+          <thead>
+            <tr>
+              {Object.entries(table.head).map((el) => {
+                return (
+                  <th key={el[0]} className={el[0]}>
+                    {el[1]}
+                  </th>
+                );
+              })}
+            </tr>
+          </thead>
+          <tbody>
+            {table.posts.map((el) => {
+              return (
+                <tr key={el.uid}>
+                  <td>{el.uid}</td>
+                  <td>{el.title}</td>
+                  <td>{el.doner}</td>
+                  <td>{el.created_at}</td>
+                  <td>{el.like_cnt}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </Table>
+      </Wrapper>
     </>
   );
 }
 
-// const Wrapper = styled.div``;
+const Wrapper = styled.div`
+  border: 3px dotted red;
+  width: 80%;
+  margin: 0 auto;
+  margin-top: 3rem;
+  padding: 1.5rem;
+`;
+
+const Table = styled.table`
+  width: 100%;
+  border: 1px solid cyan;
+  border-collapse: collapse;
+
+  th,
+  td {
+    text-align: center;
+    border-bottom: 1px solid green;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  th {
+    border-top: 1px solid red;
+  }
+
+  th.uid {
+    width: 5rem;
+  }
+  th.title,
+  td.title {
+    width: 7rem;
+  }
+  th.created_at {
+    width: 5rem;
+  }
+  th.doner {
+    width: 5rem;
+  }
+  th.like_cnt {
+    width: 5rem;
+  }
+`;
 
 // const dispatch = useDispatch();
 

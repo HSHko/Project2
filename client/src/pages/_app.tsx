@@ -14,7 +14,7 @@ import { store } from "store";
 import { refreshToken } from "util/refreshToken";
 
 // Components
-import LoggedOutLayout from "layouts/LoggedOutLayout";
+import Layout from "layouts/Layout";
 
 function MyApp({ Component, pageProps }) {
   React.useEffect(() => {
@@ -40,9 +40,9 @@ function MyApp({ Component, pageProps }) {
       <StyledThemeProvider theme={StyledTheme}>
         <MaterialThemeProvider theme={MaterialTheme}>
           <Provider store={store}>
-            <LoggedOutLayout>
+            <Layout>
               <Component {...pageProps} />
-            </LoggedOutLayout>
+            </Layout>
           </Provider>
         </MaterialThemeProvider>
       </StyledThemeProvider>

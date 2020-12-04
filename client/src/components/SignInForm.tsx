@@ -5,7 +5,7 @@ import styled from "styled-components";
 // import axios from 'axios';
 
 // Material-ui stuff
-import { withStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { MaterialTheme } from "styles/theme";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
@@ -25,8 +25,8 @@ import LoadingIndicator from "blocks/LoadingIndicator";
 
 // interface Props {}
 
-const CssTextField = withStyles({
-  root: {
+const styles = makeStyles((theme) => ({
+  hover: {
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
         borderColor: MaterialTheme.palette.primary.main,
@@ -35,15 +35,21 @@ const CssTextField = withStyles({
         borderColor: MaterialTheme.palette.primary.dark,
       },
     },
-    width: 360,
   },
-})(TextField);
+  size: {
+    width: 360,
+    margin: 12,
+  },
+}));
 
 export default function fun(props) {
+  const classes = styles();
+
   const refs = {
     email: React.useRef<any>(""),
     password: React.useRef<any>(""),
   };
+
   const { errors, isLoading } = {
     errors: useSelector((x: RootState) => x.userReducer.errors, shallowEqual),
     isLoading: useSelector(
@@ -55,6 +61,7 @@ export default function fun(props) {
   const dispatch = useDispatch();
 
   React.useEffect(() => {
+    dispatch({ type: userAction.CLEAR_ERRORS });
     console.log("render");
   }, []);
 
@@ -69,7 +76,7 @@ export default function fun(props) {
 
   return (
     <>
-      <DynamicWrapper margin="3rem auto" padding="3rem 1.5rem">
+      <DynamicWrapper margin="5rem auto" padding="3rem 1.5rem">
         {isLoading && (
           <LoadingIndicator top={"7rem"} size={120}></LoadingIndicator>
         )}
@@ -86,13 +93,12 @@ export default function fun(props) {
           <br></br>
         </h6>
         <form noValidate onSubmit={handleOnSubmit}>
-          <CssTextField
+          <TextField
+            className={`${classes.hover} ${classes.size}`}
             id="emailInput"
             name="email"
             type="email"
             autoComplete="email"
-            fullWidth
-            style={{ margin: 4 }}
             label="Eメール"
             placeholder="email@email.com"
             inputRef={refs.email}
@@ -106,13 +112,12 @@ export default function fun(props) {
             variant="outlined"
           />
           <br />
-          <CssTextField
+          <TextField
+            className={`${classes.hover} ${classes.size}`}
             id="passwordInput"
             name="password"
             type="password"
             autoComplete="current-password"
-            fullWidth
-            style={{ margin: 4 }}
             label="パスワード"
             placeholder="パスワードを入力してください。"
             inputRef={refs.password}
@@ -124,6 +129,7 @@ export default function fun(props) {
             }}
             variant="outlined"
           />
+          <br />
           <Button type="submit" disabled={isLoading}>
             Login
           </Button>

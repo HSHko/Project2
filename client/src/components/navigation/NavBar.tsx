@@ -5,9 +5,11 @@ import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
 import { useRouter } from "next/router";
 
 // Redux stuff
-import { useSelector } from "react-redux";
+import { shallowEqual, useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import { backdropAction, RootState } from "store";
+import { userAction } from "store";
+import { backdropAction } from "store";
+import { RootState } from "store";
 import { sidebarAction } from "store";
 
 // Material-ui stuff
@@ -24,18 +26,30 @@ export default function fun() {
   const router = useRouter();
   const dispatch = useDispatch();
 
+  const isAuthenticated = useSelector(
+    (x: RootState) => x.userReducer.authenticated,
+    shallowEqual,
+  );
+
+  const [currentMenuItems, setCurrentMenuItems] = React.useState([]);
+
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      setCurrentMenuItems([...menuItems.common, ...menuItems.authenticated]);
+    } else {
+      setCurrentMenuItems([...menuItems.common, ...menuItems.unAuthenticated]);
+    }
+  }, [isAuthenticated]);
+
   React.useEffect(() => {
     console.log("render");
   }, []);
 
-  const handleOnClickLink = React.useCallback(
-    (e) => () => {
-      dispatch(sidebarAction.lo());
-      if (e.label == "login") {
-      }
-    },
-    [],
-  );
+  const handleOnClickMenuItem = React.useCallback((e) => {
+    if (e.name == "logout") {
+      userAction.logout();
+    }
+  }, []);
 
   return (
     <Wrapper>
@@ -46,8 +60,8 @@ export default function fun() {
         <RWrapper>
           <Hide shorterThan={"tablet"}>
             <LinksWrapper>
-              {menuItems.map((e) => {
-                if (e.aim == "link") {
+              {currentMenuItems.map((e) => {
+                if (e.event == "link") {
                   return (
                     <NextLink key={e.name} href={e.link}>
                       <Button bg={colors.navbar.top.bg} shadow="none" as="a">
@@ -57,7 +71,9 @@ export default function fun() {
                   );
                 } else {
                   return (
-                    <Button key={e.name} onClick={handleOnClickLink(e)}>
+                    <Button
+                      key={e.name}
+                      onClick={(e) => handleOnClickMenuItem(e)}>
                       {e.name}
                     </Button>
                   );

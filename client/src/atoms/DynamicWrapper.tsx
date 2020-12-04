@@ -3,7 +3,7 @@ import styled from "styled-components";
 // 박스 css 참고:
 // webdir.tistory.com/413
 
-https: interface Props {
+interface Props {
   align?: "left" | "center" | "right";
   border?: string;
   margin?: string;

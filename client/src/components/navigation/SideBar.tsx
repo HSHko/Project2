@@ -28,13 +28,12 @@ export default function fun(props) {
   const dispatch = useDispatch();
   const storeSidebar = useSelector((x: RootState) => x.sidebarReducer);
 
-  const handleOnClickListItem = React.useCallback(
-    (e) => () => {
-      dispatch(sidebarAction.hi());
-      dispatch(backdropAction.lo());
-    },
-    [],
-  );
+  const handleOnClickMenuItem = React.useCallback((e) => {
+    dispatch(sidebarAction.hi());
+    dispatch(backdropAction.lo());
+  }, []);
+
+  const currentMenuItems = [...menuItems.common, ...menuItems.unAuthenticated];
 
   return (
     <Wrapper active={storeSidebar.isHi}>
@@ -45,8 +44,8 @@ export default function fun(props) {
         </Button>
       </AppBar>
       <AppBar className="list">
-        {menuItems.map((e) => {
-          if (e.aim == "link") {
+        {currentMenuItems.map((e) => {
+          if (e.event == "link") {
             return (
               <Link key={e.name} href={e.link}>
                 <Button as="a" onClick={() => dispatch(backdropAction.lo())}>
@@ -57,7 +56,7 @@ export default function fun(props) {
             );
           } else {
             return (
-              <Button key={e.name} onClick={handleOnClickListItem(e)}>
+              <Button key={e.name} onClick={(e) => handleOnClickMenuItem(e)}>
                 {e.icon}
                 {e.name}
               </Button>
