@@ -1,6 +1,7 @@
 const { regex } = require("./regex");
 
 const isEmpty = (data) => {
+  if (data === undefined) return true;
   if (data.trim() === "") return true;
   return false;
 };

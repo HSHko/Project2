@@ -10,7 +10,7 @@ firebase.initializeApp(pool);
 
 exports.signUp = async (req, res) => {
   const newData = {
-    sign_id: req.body.email.split(/@/)[0],
+    sign_id: req.body.sign_id,
     email: req.body.email,
     password: req.body.password,
     confirm_password: req.body.confirm_password,
@@ -64,7 +64,6 @@ exports.signIn = async (req, res) => {
       .signInWithEmailAndPassword(newData.email, newData.password);
 
     token = await qryData.user.getIdToken();
-    console.log("here!");
     return res.status(200).json({ token: token });
   } catch (err) {
     console.error(err);

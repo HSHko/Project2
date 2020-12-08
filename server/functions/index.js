@@ -25,7 +25,7 @@ app.post("/scream/:scream_id/comment", fbAuth, screams.addCommentOnScream);
 const users = require("./handlers/users");
 app.post("/signup", users.signUp);
 app.post("/signin", users.signIn);
-app.get("/userdetails", fbAuth, users.getAuthenticatedUser);
+app.post("/userdetails", fbAuth, users.getAuthenticatedUser);
 app.post("/adduserdetails", fbAuth, users.addUserDetails);
 app.post("/user/image", fbAuth, users.uploadImg);
 
