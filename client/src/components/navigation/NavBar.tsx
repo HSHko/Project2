@@ -11,6 +11,7 @@ import { userAction } from "store";
 import { backdropAction } from "store";
 import { RootState } from "store";
 import { sidebarAction } from "store";
+import { store } from "store";
 
 // Material-ui stuff
 import MenuIcon from "@material-ui/icons/Menu";
@@ -22,18 +23,21 @@ import { colors } from "styles/theme";
 import Hide from "atoms/Hide";
 import Button from "atoms/Button";
 
+import { refreshToken } from "util/refreshToken";
+
 export default function fun() {
-  const router = useRouter();
+  const nextRouter = useRouter();
   const dispatch = useDispatch();
 
   const isAuthenticated = useSelector(
-    (x: RootState) => x.userReducer.authenticated,
+    (x: RootState) => x.userReducer.isAuthenticated,
     shallowEqual,
   );
 
   const [currentMenuItems, setCurrentMenuItems] = React.useState([]);
 
   React.useEffect(() => {
+    console.log("rendered");
     if (isAuthenticated) {
       setCurrentMenuItems([...menuItems.common, ...menuItems.authenticated]);
     } else {
@@ -41,13 +45,9 @@ export default function fun() {
     }
   }, [isAuthenticated]);
 
-  React.useEffect(() => {
-    console.log("render");
-  }, []);
-
   const handleOnClickMenuItem = React.useCallback((e) => {
-    if (e.name == "logout") {
-      userAction.logout();
+    if (e.name == "Logout") {
+      dispatch(userAction.logout());
     }
   }, []);
 
@@ -73,7 +73,7 @@ export default function fun() {
                   return (
                     <Button
                       key={e.name}
-                      onClick={(e) => handleOnClickMenuItem(e)}>
+                      onClick={() => handleOnClickMenuItem(e)}>
                       {e.name}
                     </Button>
                   );

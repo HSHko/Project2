@@ -1,5 +1,9 @@
 import axios from "axios";
-import Router from "next/router";
+import NextRouter from "next/router";
+import { NextPageContext } from "next";
+import * as nookies from "nookies";
+import cookieCutter from "cookie-cutter";
+import { getCookie } from "util/getCookie";
 
 export const SET_LOADING = "user/SET_LOADING" as const;
 export const SET_ERRORS = "user/SET_ERRORS" as const;
@@ -14,7 +18,7 @@ export const UNLIKE_SCREAM = "user/UNLIKE_SCREAM" as const;
 interface State {
   isLoading: boolean;
   errors: object;
-  authenticated: boolean;
+  isAuthenticated: boolean;
   credentials: object;
   likes: [];
   notifications: [];
@@ -23,28 +27,33 @@ interface State {
 const initialState: State = {
   isLoading: false,
   errors: {},
-  authenticated: false,
+  isAuthenticated: false,
   credentials: {},
   likes: [],
   notifications: [],
 };
 
-const setAuthorizationHeader = (token) => {
-  console.log({ token: token });
-  localStorage.setItem("fbIdToken", token);
+export const setAuthorizationHeader = (token) => {
+  // localStorage.setItem("fbIdToken", token);
+  cookieCutter.set("fbIdToken", token);
   axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  console.log("token cookie & axios headers setted");
 };
 
-export const setUser = () => async (dispatch) => {
-  try {
-    const userQry = await axios.get("/api/userdetails");
-    dispatch({
-      type: SET_USER,
-      payload: userQry.data,
-    });
-  } catch (err) {
-    console.error(err);
-  }
+export const logout = () => (dispatch) => {
+  // localStorage.removeItem("fbIdToken");
+  cookieCutter.set("fbIdToken", "", { expires: new Date(0) });
+  delete axios.defaults.headers.common["Authorization"];
+  dispatch({ type: SET_UNAUTHENTICATED });
+  console.log("token expired");
+  window.location.reload();
+};
+
+export const setUser = (userDetailsQry) => (dispatch) => {
+  dispatch({
+    type: SET_USER,
+    payload: userDetailsQry.data,
+  });
 };
 
 export const signUp = (userData) => async (dispatch) => {
@@ -54,7 +63,7 @@ export const signUp = (userData) => async (dispatch) => {
     const signUpQry = await axios.post("/api/signup", userData);
 
     dispatch({ type: CLEAR_ERRORS });
-    Router.push("/join/signin");
+    NextRouter.push("/join/signin");
   } catch (err) {
     console.error({ err });
     const res = err.response.data;
@@ -102,10 +111,11 @@ export const signIn = (userData) => async (dispatch) => {
     const signInQry = await axios.post("/api/signin", userData);
     setAuthorizationHeader(signInQry.data.token);
 
-    await setUser();
+    const userDetailsQry = await axios.post("/api/userdetails");
+    dispatch(setUser(userDetailsQry));
 
     dispatch({ type: CLEAR_ERRORS });
-    Router.push("/");
+    // window.location.reload();
   } catch (err) {
     console.error(err);
     const res = err.response.data;
@@ -145,13 +155,6 @@ export const signIn = (userData) => async (dispatch) => {
   }
 };
 
-export const logout = () => (dispatch) => {
-  localStorage.removeItem("fbIdToken");
-  delete axios.defaults.headers.common["Authorization"];
-  console.log("token expired");
-  dispatch({ type: SET_UNAUTHENTICATED });
-};
-
 export default function fun(state = initialState, action) {
   switch (action.type) {
     case SET_LOADING:
@@ -172,20 +175,22 @@ export default function fun(state = initialState, action) {
         isLoading: false,
       };
     case SET_AUTHENTICATED:
+      console.log(action.type);
       return {
         ...state,
-        authenticated: true,
+        isAuthenticated: true,
       };
     case SET_UNAUTHENTICATED:
+      console.log(action.type);
       return {
         ...state,
-        authenticated: false,
+        isAuthenticated: false,
       };
     case SET_USER:
       console.log(action.type);
       return {
         ...state,
-        authenticated: true,
+        isAuthenticated: true,
         ...action.payload,
       };
     // case UNLIKE_SCREAM:

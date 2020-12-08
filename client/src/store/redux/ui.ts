@@ -1,43 +1,36 @@
-export const SET_ERRORS = "ui/SET_ERRORS" as const;
-export const CLEAR_ERRORS = "ui/CLEAR_ERRORS" as const;
-export const SET_LOADING = "ui/SET_LOADING" as const;
-export const CLEAR_LOADING = "ui/CLEAR_LOADING" as const;
+const HI = "ui/HI" as const;
+const LO = "ui/LO" as const;
+
+export const hi = () => ({
+  type: HI,
+});
+export const lo = () => ({
+  type: LO,
+});
+
+type Action = ReturnType<typeof hi | typeof lo>;
 
 interface State {
-  isLoading: boolean;
-  errors: any;
+  isHi: boolean;
 }
 
 const initialState = {
-  isLoading: false,
-  errors: null,
+  isHi: false,
 };
 
-export default function fun(state: State = initialState, action) {
+export default function fun(state: State = initialState, action: Action) {
   switch (action.type) {
-    case SET_ERRORS:
+    case HI:
       console.log(action.type);
       return {
         ...state,
-        errors: action.payload,
+        isHi: true,
       };
-    case CLEAR_ERRORS:
+    case LO:
       console.log(action.type);
       return {
         ...state,
-        errors: null,
-      };
-    case SET_LOADING:
-      console.log(action.type);
-      return {
-        ...state,
-        isLoading: true,
-      };
-    case CLEAR_LOADING:
-      console.log(action.type);
-      return {
-        ...state,
-        isLoading: false,
+        isHi: false,
       };
     default:
       return state;

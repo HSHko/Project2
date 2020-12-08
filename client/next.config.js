@@ -1,3 +1,10 @@
+module.exports = {
+  env: {
+    // baseUrl: "http://localhost:5001/project2-7396c/asia-northeast1",
+    baseUrl: "http://asia-northeast1-project2-7396c.cloudfunctions.net",
+  },
+};
+
 // // 참고:
 // // https://colinhacks.com/essays/building-a-spa-with-nextjs
 // // https://qiita.com/thesugar/items/73a169c4d23e4bd91554

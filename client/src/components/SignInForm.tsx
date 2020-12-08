@@ -1,6 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 
+// Communication stuff
+import NextRouter from "next/router";
 // import Link from "next/link";
 // import axios from 'axios';
 
@@ -50,20 +52,30 @@ export default function fun(props) {
     password: React.useRef<any>(""),
   };
 
-  const { errors, isLoading } = {
-    errors: useSelector((x: RootState) => x.userReducer.errors, shallowEqual),
-    isLoading: useSelector(
-      (x: RootState) => x.userReducer.isLoading,
-      shallowEqual,
-    ),
-  };
+  const errors = useSelector(
+    (x: RootState) => x.userReducer.errors,
+    shallowEqual,
+  );
+
+  const isLoading = useSelector(
+    (x: RootState) => x.userReducer.isLoading,
+    shallowEqual,
+  );
+
+  const isAuthenticated = useSelector(
+    (x: RootState) => x.userReducer.isAuthenticated,
+    shallowEqual,
+  );
 
   const dispatch = useDispatch();
 
   React.useEffect(() => {
+    if (isAuthenticated) {
+      NextRouter.push("/");
+    }
     dispatch({ type: userAction.CLEAR_ERRORS });
     console.log("render");
-  }, []);
+  }, [isAuthenticated]);
 
   const handleOnSubmit = React.useCallback((e) => {
     e.preventDefault();

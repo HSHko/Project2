@@ -3,6 +3,9 @@ import GlobalStyle from "styles/GlobalStyle";
 import { ThemeProvider as StyledThemeProvider } from "styled-components";
 import { StyledTheme } from "styles/theme";
 
+// Communication stuff
+import axios from "axios";
+
 // Material-ui stuff
 import { CssBaseline } from "@material-ui/core";
 import { ThemeProvider as MaterialThemeProvider } from "@material-ui/core";
@@ -11,12 +14,18 @@ import { MaterialTheme } from "styles/theme";
 // Redux stuff
 import { Provider } from "react-redux";
 import { store } from "store";
+import { userAction } from "store";
 import { refreshToken } from "util/refreshToken";
 
 // Components
 import Layout from "layouts/Layout";
 
-function MyApp({ Component, pageProps }) {
+import jwtDecode from "jwt-decode";
+import { getCookie } from "util/getCookie";
+import { setAuthorizationHeader } from "store/redux/user";
+import Axios from "axios";
+
+function MyApp({ Component, pageProps, preStore }) {
   React.useEffect(() => {
     // 오류처리
     // Warning: Prop`className` did not match.
@@ -29,8 +38,11 @@ function MyApp({ Component, pageProps }) {
       jssStyles.parentElement.removeChild(jssStyles);
     }
 
-    refreshToken();
-    // console.log({ "localStorage.fbIdToken": localStorage.fbIdToken });
+    console.log(preStore);
+    if (preStore.isAuthenticated) {
+      userAction.setAuthorizationHeader(preStore.token);
+      store.dispatch(userAction.setUser(preStore.userDetailsQry) as any);
+    }
   }, []);
 
   return (
@@ -50,29 +62,48 @@ function MyApp({ Component, pageProps }) {
   );
 }
 
+MyApp.getInitialProps = async (context) => {
+  // ssr에서 쿠키의 정보는 ctx에 들어있다.
+  const { ctx, Component } = context;
+
+  let preStore = {
+    isAuthenticated: null,
+    userDetailsQry: null,
+    token: null,
+  };
+
+  // client side
+  try {
+    if (!ctx.req) throw { error: "not client side" };
+
+    const token = getCookie("fbIdToken", ctx.req.headers.cookie);
+    if (!token) throw { error: "token not found" };
+
+    const decodedToken: any = jwtDecode(token);
+
+    if (Date.now() - decodedToken.exp * 1000 > 0)
+      throw { error: "token expired" };
+
+    const userDetailsQry = await fetch(
+      `${process.env.baseUrl}/api/userdetails`,
+      {
+        method: "POST",
+        headers: new Headers({
+          Authorization: `Bearer ${token}`,
+        }),
+      },
+    );
+
+    preStore.isAuthenticated = true;
+    preStore.userDetailsQry = userDetailsQry;
+    preStore.token = token;
+  } catch (err) {
+    console.error(err);
+  }
+
+  // server side
+  // if (typeof window === "undefined")
+  return { preStore };
+};
+
 export default MyApp;
-
-/*
-export async function getServerSideProps(context) {
-  return {
-    props: {},
-  }
-}
-
-export async function getServerSideProps(context) {
-  return {
-    props: {
-      layout: true,
-    },
-  }
-}
-
-function MyApp({ Component, pageProps }) {
-  return pageProps.layout ? (
-    <Layout>
-      <Component {...pageProps} />
-    </Layout>
-  ) : (
-    <Component {...pageProps} />
-  )
-*/
