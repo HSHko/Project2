@@ -19,6 +19,7 @@ import Grid from "@material-ui/core/Grid";
 // Components
 // import Button from 'atoms/Button';
 import Table from "components/gallery/Table";
+import TableFooter from "components/gallery/TableFooter";
 
 // interface Props {}
 
@@ -35,11 +36,14 @@ export default function fun(props) {
     <>
       <h1>GALLERY</h1>
       <Wrapper>
-        <Table routeName="/gallery/tests"></Table>
+        <Table preProps={props.preProps} routeName="/gallery/view"></Table>
+        <TableFooter></TableFooter>
       </Wrapper>
     </>
   );
 }
+
+// <Table preProps={props.preProps} routeName="/gallery/tests"></Table>
 
 const Wrapper = styled.div`
   border: 3px dotted red;
@@ -47,3 +51,20 @@ const Wrapper = styled.div`
   margin: 0 auto;
   margin-top: 1rem;
 `;
+
+export async function getServerSideProps(context) {
+  let preProps = {
+    postsQry: null,
+  };
+
+  try {
+    const postsQry = await fetch(`${process.env.baseUrl}/api/posts/getposts`, {
+      method: "GET",
+    }).then((res) => res.json());
+    preProps.postsQry = postsQry;
+  } catch (err) {
+    // console.error(err);
+  }
+
+  return { props: { preProps } };
+}

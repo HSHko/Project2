@@ -7,8 +7,8 @@ const dev = process.env.CONFIG_ENV !== "production";
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
-const baseUrl = "http://asia-northeast1-project2-7396c.cloudfunctions.net";
-// const baseUrl = "http://localhost:5001/project2-7396c/asia-northeast1";
+// const baseUrl = "http://asia-northeast1-project2-7396c.cloudfunctions.net";
+const baseUrl = "http://localhost:5001/project2-7396c/asia-northeast1";
 
 // 참조:
 // https://medium.com/bb-tutorials-and-thoughts/next-js-how-to-proxy-to-backend-server-987174737331

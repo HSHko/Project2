@@ -11,6 +11,20 @@ let db = {
       introduce: "Hello, World!",
     },
   ],
+  posts: [
+    {
+      idx: 0,
+      status: "",
+      category: "normal",
+      title: "post title",
+      body: "",
+      created_at: "20.12.09",
+      donor: "writerNickName",
+      like_cnt: 0,
+      view_cnt: 0,
+      comment_cnt: 0,
+    },
+  ],
   screams: [
     {
       uid: "",
@@ -33,7 +47,7 @@ let db = {
   notifications: [
     {
       recipient: "user",
-      doner: "john",
+      donor: "john",
       screamId: "E3ewYiKD1ebVXggoHitxG5YJeqm1",
       read: "true | false",
       type: "like | comment",

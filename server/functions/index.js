@@ -13,6 +13,8 @@ console.log({ msg: "server connected" });
 // firebase examples: https://firebase.google.com/docs/samples/?authuser=0
 const { fbAuth, db } = require("./util/admin");
 
+// firebase deploy --only functions:func1,functions:func2
+
 const screams = require("./handlers/screams");
 app.get("/screams", screams.getScreams);
 app.get("/screams/:scream_id", screams.getScream);
@@ -22,12 +24,17 @@ app.get("/scream/:scream_id/like", fbAuth, screams.likeScream);
 app.get("/scream/:scream_id/unlike", fbAuth, screams.unlikeScream);
 app.post("/scream/:scream_id/comment", fbAuth, screams.addCommentOnScream);
 
+const posts = require("./handlers/posts");
+app.get("/posts/getpost", posts.getPost);
+app.get("/posts/getposts", posts.getPosts);
+app.post("/posts/addpost", fbAuth, posts.addPost);
+
 const users = require("./handlers/users");
-app.post("/signup", users.signUp);
-app.post("/signin", users.signIn);
-app.post("/userdetails", fbAuth, users.getAuthenticatedUser);
-app.post("/adduserdetails", fbAuth, users.addUserDetails);
-app.post("/user/image", fbAuth, users.uploadImg);
+app.post("/users/signup", users.signUp);
+app.post("/users/signin", users.signIn);
+app.post("/users/userdetails", fbAuth, users.getUserDetails);
+app.post("/users/adduserdetails", fbAuth, users.addUserDetails);
+app.post("/users/image", fbAuth, users.uploadImg);
 
 // firebase deploy --only "functions:api,functions:createNotificationOnLike"
 // exports.unDeploy = {}

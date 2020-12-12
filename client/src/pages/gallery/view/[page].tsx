@@ -35,8 +35,31 @@ export default function fun(props) {
     <>
       <h1>Script</h1>
       <h1>this is a test {nextRouter.query.page}</h1>
+      <h2>{props.preProps.postQry.body}</h2>
     </>
   );
 }
 
 // const Wrapper = styled.div``;
+
+export async function getServerSideProps(context) {
+  let preProps = {
+    postQry: null,
+  };
+
+  try {
+    const postQry = await fetch(
+      `${process.env.baseUrl}/api/posts/getpost?idx=${context.query.page}`,
+      {
+        method: "GET",
+      },
+    ).then((res) => res.json());
+
+    if (postQry.status === "disabled") throw { error: "disabled post" };
+    preProps.postQry = postQry;
+  } catch (err) {
+    // console.error(err);
+  }
+
+  return { props: { preProps } };
+}

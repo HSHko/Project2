@@ -4,6 +4,8 @@ import { colors } from "styles/theme";
 
 interface Props {
   bg?: string;
+  margin?: string;
+  borderRadius?: string;
   outline?: string;
   color?: string;
   disabled?: boolean;
@@ -15,14 +17,14 @@ export default styled.button.attrs(() => ({}))<Props>`
   position: relative;
   display: flex;
   align-items: center;
-  margin: auto 0.5rem;
+  margin: ${(p) => (p.margin ? p.margin : `auto 0.5rem`)};
   padding: 0.5rem 1rem;
 
   overflow: hidden;
   cursor: pointer;
 
   border-width: 0;
-  border-radius: 2px;
+  border-radius: ${(p) => (p.borderRadius ? p.borderRadius : `2px`)};
   outline: ${(p) => (p.outline ? p.outline : `none`)};
 
   box-shadow: ${(p) =>

@@ -58,9 +58,9 @@ export const setUser = (userDetailsQry) => (dispatch) => {
 
 export const signUp = (userData) => async (dispatch) => {
   try {
-    console.log({ "signup submit data": userData });
+    // console.log({ "signup submit data": userData });
     dispatch({ type: SET_LOADING });
-    const signUpQry = await axios.post("/api/signup", userData);
+    const signUpQry = await axios.post("/api/users/signup", userData);
 
     dispatch({ type: CLEAR_ERRORS });
     NextRouter.push("/join/signin");
@@ -108,10 +108,10 @@ export const signIn = (userData) => async (dispatch) => {
   try {
     dispatch({ type: SET_LOADING });
 
-    const signInQry = await axios.post("/api/signin", userData);
+    const signInQry = await axios.post("/api/users/signin", userData);
     setAuthorizationHeader(signInQry.data.token);
 
-    const userDetailsQry = await axios.post("/api/userdetails");
+    const userDetailsQry = await axios.post("/api/users/userdetails");
     dispatch(setUser(userDetailsQry));
 
     dispatch({ type: CLEAR_ERRORS });

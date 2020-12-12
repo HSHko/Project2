@@ -8,6 +8,9 @@ const firebase = require("firebase");
 const pool = require("../util/pool");
 firebase.initializeApp(pool);
 
+// created_at: admin.firestore.Timestamp.now().toDate().toISOString(),
+// created_at: admin.firestore.Timestamp.now()
+
 exports.signUp = async (req, res) => {
   const newData = {
     sign_id: req.body.sign_id,
@@ -40,7 +43,7 @@ exports.signUp = async (req, res) => {
       img_url: `https://firebasestorage.googleapis.com/v0/b/${pool.storageBucket}/o/${noImg}?alt=media`,
       introduce: "",
     };
-    await db.doc(`/users/${newData.sign_id}`).set(credentials);
+    await db.doc(`/users/${fbData.user.uid}`).set(credentials);
     return res.status(201).json({ token: token });
   } catch (err) {
     console.error(err);
@@ -87,7 +90,7 @@ exports.addUserDetails = async (req, res) => {
 };
 
 exports.getUserDetails = async (req, res) => {
-  let newData = {};
+  const reqData = {};
 
   try {
     const userDoc = db.doc(`/users/${req.params.sign_id}`);
@@ -95,22 +98,22 @@ exports.getUserDetails = async (req, res) => {
     if (!userQry.exists)
       throw { error: `userDoc: ${req.params.sign_id} not found` };
 
-    const screamDoc = db
-      .collection(`screams`)
-      .where(`sign_id`, `==`, req.params.sign_id)
-      .orderBy(`created_at`, `desc`);
-    const screamQry = await screamDoc.get();
+    // const screamDoc = db
+    //   .collection(`screams`)
+    //   .where(`sign_id`, `==`, userQry.data().sign_id)
+    //   .orderBy(`created_at`, `desc`);
+    // const screamQry = await screamDoc.get();
 
-    newData.screams = [];
-    screamQry.forEach((doc) => {
-      newData.screams.push({
-        title: doc.data().title,
-        body: doc.data().body,
-        created_at: doc.data().created_at,
-        like_cnt: doc.data().like_cnt,
-        comment_cnt: doc.data().comment_cnt,
-      });
-    });
+    // newData.screams = [];
+    // screamQry.forEach((doc) => {
+    //   newData.screams.push({
+    //     title: doc.data().title,
+    //     body: doc.data().body,
+    //     created_at: doc.data().created_at,
+    //     like_cnt: doc.data().like_cnt,
+    //     comment_cnt: doc.data().comment_cnt,
+    //   });
+    // });
 
     return res.status(200).json({ newData: newData });
   } catch (err) {
@@ -119,19 +122,27 @@ exports.getUserDetails = async (req, res) => {
   }
 };
 
-exports.getAuthenticatedUser = async (req, res) => {
+exports.getUserDetails = async (req, res) => {
+  let reqData = {
+    decodedToken: req.fbAuth,
+    sign_id: req.fbAuth.sign_id,
+  };
   let newData = {};
 
   try {
-    const userDoc = db.doc(`/users/${req.fbAuth.sign_id}`);
-    const userQry = await userDoc.get();
-    if (!userQry.exists) throw { "userQry.exists": userQry.exsits };
+    console.log({ sign_id: reqData.sign_id });
+    const userQry = await db
+      .collection(`users`)
+      .where(`sign_id`, `==`, reqData.sign_id)
+      .limit(1)
+      .get();
+    if (!userQry.docs[0].exists) throw { error: "userQry not found" };
 
-    newData.credentials = userQry.data();
+    newData.credentials = userQry.docs[0].data();
 
     const likeQry = await db
       .collection("likes")
-      .where("sign_id", "==", req.fbAuth.sign_id)
+      .where("sign_id", "==", reqData.sign_id)
       .get();
     newData.likes = [];
     likeQry.forEach((doc) => {
@@ -140,7 +151,7 @@ exports.getAuthenticatedUser = async (req, res) => {
 
     const notifQry = await db
       .collection("notifications")
-      .where("recipient", "==", req.fbAuth.sign_id)
+      .where("recipient", "==", reqData.sign_id)
       .orderBy("created_at", "desc")
       .limit(10)
       .get();
@@ -148,7 +159,7 @@ exports.getAuthenticatedUser = async (req, res) => {
     notifQry.forEach((doc) => {
       newData.notifications.push({
         recipient: doc.data().recipient,
-        doner: doc.data().doner,
+        donor: doc.data().donor,
         created_at: doc.data().created_at,
         scream_id: doc.data().scream_id,
         type: doc.data().type,

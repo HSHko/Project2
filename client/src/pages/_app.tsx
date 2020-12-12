@@ -38,10 +38,11 @@ function MyApp({ Component, pageProps, preStore }) {
       jssStyles.parentElement.removeChild(jssStyles);
     }
 
-    console.log(preStore);
+    // console.log(preStore);
     if (preStore.isAuthenticated) {
       userAction.setAuthorizationHeader(preStore.token);
       store.dispatch(userAction.setUser(preStore.userDetailsQry) as any);
+      console.log({ userDetails: preStore.userDetailsQry.data });
     }
   }, []);
 
@@ -85,25 +86,36 @@ MyApp.getInitialProps = async (context) => {
       throw { error: "token expired" };
 
     const userDetailsQry = await fetch(
-      `${process.env.baseUrl}/api/userdetails`,
+      `${process.env.baseUrl}/api/users/userdetails`,
       {
         method: "POST",
         headers: new Headers({
           Authorization: `Bearer ${token}`,
+          "Content-Type": `application/json`,
         }),
       },
     );
 
     preStore.isAuthenticated = true;
-    preStore.userDetailsQry = userDetailsQry;
+    preStore.userDetailsQry = userDetailsQry.json();
     preStore.token = token;
   } catch (err) {
-    console.error(err);
+    // console.error(err);
   }
 
   // server side
   // if (typeof window === "undefined")
+  // console.log({ preStore: preStore });
   return { preStore };
 };
 
 export default MyApp;
+
+// https://qiita.com/matamatanot/items/1735984f40540b8bdf91%E3%80%80
+// getInitialPropsを加えた4つのメソッドの実行環境とタイミングは以下の通りです。
+
+// サーバーサイド	クライアントサイド	実行タイミング
+// getStaticProps	◯	✗	ビルド時 (+ fallback=trueならリクエストに応じて)
+// getStaticPaths	◯	✗	ビルド時のみ
+// getServerSideProps	◯	✗	リクエストに応じて
+// getInitialProps	◯	◯	リクエストに応じて

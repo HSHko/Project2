@@ -17,21 +17,28 @@ import Grid from "@material-ui/core/Grid";
 
 // Components
 // import Button from 'atoms/Button';
-import * as table from "./skeleton";
 import { colors } from "styles/theme";
 
-// interface Props {}
+const headSkeleton = {
+  idx: "番号",
+  category: "分類",
+  title: "タイトル",
+  donor: "作成者",
+  created_at: "作成日", // 2019-03-15T10:59:52.798Z => 19.03.15
+  view_cnt: "アクセス",
+  like_cnt: "いいね",
+};
 
 export default function fun(props) {
   React.useEffect(() => {
-    console.log(table.posts.map((el) => el));
+    console.log({ ppp: props.preProps.postsQry });
   });
 
   return (
     <Table>
       <thead>
         <tr>
-          {Object.entries(table.head).map((el) => {
+          {Object.entries(headSkeleton).map((el) => {
             return (
               <th key={el[0]} className={el[0]}>
                 {el[1]}
@@ -41,21 +48,21 @@ export default function fun(props) {
         </tr>
       </thead>
       <tbody>
-        {table.posts.map((el) => {
+        {props.preProps.postsQry.map((el) => {
           return (
-            <tr key={el.uid}>
-              <td className="uid">{el.uid}</td>
+            <tr key={el.idx}>
+              <td className="idx">{el.idx}</td>
               <td className="category">{el.category}</td>
               <td className="title">
                 <NextLink
                   href={`${props.routeName}/[page]`}
-                  as={`${props.routeName}/${el.uid}`}>
+                  as={`${props.routeName}/${el.idx}`}>
                   <a>
                     {el.title} [{el.comment_cnt}]
                   </a>
                 </NextLink>
               </td>
-              <td className="doner">{el.doner}</td>
+              <td className="donor">{el.donor}</td>
               <td className="created_at">{el.created_at}</td>
               <td className="view_cnt">{el.view_cnt}</td>
               <td className="like_cnt">{el.like_cnt}</td>
@@ -70,7 +77,7 @@ export default function fun(props) {
 const Table = styled.table`
   table-layout: fixed;
   width: 100%;
-  margin: 3rem 0;
+  margin: 0;
   border-collapse: collapse;
 
   thead {
@@ -101,7 +108,7 @@ const Table = styled.table`
   th {
     border-top: 1px solid red;
 
-    &.uid {
+    &.idx {
       width: 4rem;
     }
     &.category {
@@ -109,7 +116,7 @@ const Table = styled.table`
     }
     &.title {
     }
-    &.doner {
+    &.donor {
       width: 8rem;
     }
     &.created_at {
