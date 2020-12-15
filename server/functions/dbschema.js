@@ -18,11 +18,20 @@ let db = {
       category: "normal",
       title: "post title",
       body: "",
-      created_at: "20.12.09",
+      created_at: "2019-03-15T10:59:52.798Z",
       donor: "writerNickName",
       like_cnt: 0,
       view_cnt: 0,
       comment_cnt: 0,
+    },
+  ],
+  comments: [
+    {
+      recipient: "",
+      donor: "",
+      body: "",
+      created_at: "2019-03-15T10:59:52.798Z",
+      like_cnt: 0,
     },
   ],
   screams: [
@@ -35,15 +44,7 @@ let db = {
       comment_cnt: 3,
     },
   ],
-  comments: [
-    {
-      uid: "",
-      scream_id: "",
-      body: "This is a sample scream",
-      created_at: "2019-03-15T10:59:52.798Z",
-      likeCnt: 0,
-    },
-  ],
+
   notifications: [
     {
       recipient: "user",

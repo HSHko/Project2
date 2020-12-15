@@ -3,7 +3,8 @@ import NextRouter from "next/router";
 import { NextPageContext } from "next";
 import * as nookies from "nookies";
 import cookieCutter from "cookie-cutter";
-import { getCookie } from "util/getCookie";
+import Cookies from "universal-cookie";
+import jwtDecode from "jwt-decode";
 
 export const SET_LOADING = "user/SET_LOADING" as const;
 export const SET_ERRORS = "user/SET_ERRORS" as const;
@@ -35,14 +36,17 @@ const initialState: State = {
 
 export const setAuthorizationHeader = (token) => {
   // localStorage.setItem("fbIdToken", token);
-  cookieCutter.set("fbIdToken", token);
+  // cookieCutter.set("fbIdToken", token);
+  const cookies = new Cookies();
+  cookies.set("fbIdToken", token, { path: "/" });
   axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-  console.log("token cookie & axios headers setted");
 };
 
 export const logout = () => (dispatch) => {
   // localStorage.removeItem("fbIdToken");
-  cookieCutter.set("fbIdToken", "", { expires: new Date(0) });
+  // document.cookie = "fbIdToken" + `=; expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
+  const cookies = new Cookies();
+  cookies.remove("fbIdToken", { path: "/" });
   delete axios.defaults.headers.common["Authorization"];
   dispatch({ type: SET_UNAUTHENTICATED });
   console.log("token expired");
@@ -52,7 +56,7 @@ export const logout = () => (dispatch) => {
 export const setUser = (userDetailsQry) => (dispatch) => {
   dispatch({
     type: SET_USER,
-    payload: userDetailsQry.data,
+    payload: userDetailsQry,
   });
 };
 
@@ -111,11 +115,12 @@ export const signIn = (userData) => async (dispatch) => {
     const signInQry = await axios.post("/api/users/signin", userData);
     setAuthorizationHeader(signInQry.data.token);
 
-    const userDetailsQry = await axios.post("/api/users/userdetails");
+    const decodedToken: any = jwtDecode(signInQry.data.token);
+    const userDetailsQry = await axios.post("/api/users/getuserdetails");
     dispatch(setUser(userDetailsQry));
 
     dispatch({ type: CLEAR_ERRORS });
-    // window.location.reload();
+    NextRouter.push("/");
   } catch (err) {
     console.error(err);
     const res = err.response.data;

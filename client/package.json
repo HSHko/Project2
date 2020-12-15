@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "set CONFIG_ENV='development' && node server.js",
-    "build": "next build && next export",
+    "build": "next build",
     "start": "next start",
     "_dev": "next dev",
     "_build": "next build",
@@ -27,7 +27,8 @@
     "react-router-dom": "^5.2.0",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
-    "styled-components": "^5.2.0"
+    "styled-components": "^5.2.0",
+    "universal-cookie": "^4.0.4"
   },
   "devDependencies": {
     "@types/http-proxy-middleware": "^0.19.3",

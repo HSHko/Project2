@@ -92,11 +92,14 @@ exports.addUserDetails = async (req, res) => {
 exports.getUserDetails = async (req, res) => {
   const reqData = {};
 
+  let resData = {};
+
   try {
-    const userDoc = db.doc(`/users/${req.params.sign_id}`);
-    const userQry = await userDoc.get();
+    const userQry = await db.doc(`/users/${req.params.user_id}`).get();
     if (!userQry.exists)
-      throw { error: `userDoc: ${req.params.sign_id} not found` };
+      throw { error: `userDoc: ${req.params.user_id} not found` };
+
+    resData = userQry.data();
 
     // const screamDoc = db
     //   .collection(`screams`)
@@ -115,7 +118,7 @@ exports.getUserDetails = async (req, res) => {
     //   });
     // });
 
-    return res.status(200).json({ newData: newData });
+    return res.status(200).json(resData);
   } catch (err) {
     console.error(err);
     return res.status(500).json(err);
@@ -130,43 +133,42 @@ exports.getUserDetails = async (req, res) => {
   let newData = {};
 
   try {
-    console.log({ sign_id: reqData.sign_id });
     const userQry = await db
       .collection(`users`)
       .where(`sign_id`, `==`, reqData.sign_id)
       .limit(1)
       .get();
-    if (!userQry.docs[0].exists) throw { error: "userQry not found" };
+    if (userQry.empty) throw { error: "userQry not found" };
 
     newData.credentials = userQry.docs[0].data();
 
-    const likeQry = await db
-      .collection("likes")
-      .where("sign_id", "==", reqData.sign_id)
-      .get();
-    newData.likes = [];
-    likeQry.forEach((doc) => {
-      newData.likes.push(doc.data());
-    });
+    // const likeQry = await db
+    //   .collection("likes")
+    //   .where("sign_id", "==", reqData.sign_id)
+    //   .get();
+    // newData.likes = [];
+    // likeQry.forEach((doc) => {
+    //   newData.likes.push(doc.data());
+    // });
 
-    const notifQry = await db
-      .collection("notifications")
-      .where("recipient", "==", reqData.sign_id)
-      .orderBy("created_at", "desc")
-      .limit(10)
-      .get();
-    newData.notifications = [];
-    notifQry.forEach((doc) => {
-      newData.notifications.push({
-        recipient: doc.data().recipient,
-        donor: doc.data().donor,
-        created_at: doc.data().created_at,
-        scream_id: doc.data().scream_id,
-        type: doc.data().type,
-        read: doc.data().read,
-        notification_id: doc.id,
-      });
-    });
+    // const notifQry = await db
+    //   .collection("notifications")
+    //   .where("recipient", "==", reqData.sign_id)
+    //   .orderBy("created_at", "desc")
+    //   .limit(10)
+    //   .get();
+    // newData.notifications = [];
+    // notifQry.forEach((doc) => {
+    //   newData.notifications.push({
+    //     recipient: doc.data().recipient,
+    //     donor: doc.data().donor,
+    //     created_at: doc.data().created_at,
+    //     scream_id: doc.data().scream_id,
+    //     type: doc.data().type,
+    //     read: doc.data().read,
+    //     notification_id: doc.id,
+    //   });
+    // });
 
     return res.json(newData);
   } catch (err) {

@@ -39,7 +39,7 @@ const common: Props[] = [
   {
     ...initialState,
     name: "DashBoard",
-    link: "/gallery/list",
+    link: "/gallery/list?page=1",
     icon: <HowToRegIcon />,
   },
 ];

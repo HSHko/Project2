@@ -1,31 +1,41 @@
 import React from "react";
-// import styled from "styled-components";
-// import Link from "next/link";
-// import axios from 'axios';
-// import { useSelector } from "react-redux";
-// import { useDispatch } from "react-redux";
-// import { RootState } from "store";
+import NextLink from "next/link";
 import { useRouter } from "next/router";
 
-/*
-interface Props {
-
-}
-*/
+import Button from "atoms/Button";
 
 export default function fun(props) {
   React.useEffect(() => {
     console.log("render");
   });
 
-  const router = useRouter();
+  const nextRouter = useRouter();
 
   // const dispatch = useDispatch();
 
   return (
     <>
+      <NextLink href={`/test/page?page=17`}>
+        <Button as="a">
+          <h1>171717</h1>
+        </Button>
+      </NextLink>
+      <NextLink href={`/test/page?page=26`}>
+        <Button as="a">
+          <h1>262626</h1>
+        </Button>
+      </NextLink>
+      <NextLink href={`page=26`}>
+        <Button as="a">
+          <h1>262626</h1>
+        </Button>
+      </NextLink>
       <h1>Script</h1>
-      <h1>this is a test {router.query.note}</h1>
+      <h1>
+        nextRouter.query.note: {nextRouter.query.note} <br />
+        nextRouter.query.page: {nextRouter.query.page} <br />
+        nextRouter.pathname: {nextRouter.pathname} <br />
+      </h1>
     </>
   );
 }

@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 // Communication stuff
-// import axios from 'axios';
+import axios from "axios";
 // import Link from "next/link";
 import { useRouter } from "next/router";
 
@@ -18,8 +18,7 @@ import Grid from "@material-ui/core/Grid";
 
 // Components
 // import Button from 'atoms/Button';
-import Table from "components/gallery/Table";
-import TableFooter from "components/gallery/TableFooter";
+import List from "components/gallery/List";
 
 // interface Props {}
 
@@ -28,6 +27,7 @@ export default function fun(props) {
 
   React.useEffect(() => {
     console.log(nextRouter.pathname);
+    // console.log(nextRouter.query);
   });
 
   // const dispatch = useDispatch();
@@ -36,14 +36,11 @@ export default function fun(props) {
     <>
       <h1>GALLERY</h1>
       <Wrapper>
-        <Table preProps={props.preProps} routeName="/gallery/view"></Table>
-        <TableFooter></TableFooter>
+        <List preProps={props.preProps} routeName="/gallery"></List>
       </Wrapper>
     </>
   );
 }
-
-// <Table preProps={props.preProps} routeName="/gallery/tests"></Table>
 
 const Wrapper = styled.div`
   border: 3px dotted red;
@@ -54,17 +51,22 @@ const Wrapper = styled.div`
 
 export async function getServerSideProps(context) {
   let preProps = {
-    postsQry: null,
+    postsQry: [],
   };
 
   try {
-    const postsQry = await fetch(`${process.env.baseUrl}/api/posts/getposts`, {
-      method: "GET",
-    }).then((res) => res.json());
-    preProps.postsQry = postsQry;
+    const postsQry = await fetch(
+      `${process.env.baseUrl}/api/posts/getposts/${context.query.page}`,
+      {
+        method: "GET",
+      },
+    ).then((res) => res.json());
+    if (!postsQry.errors) preProps.postsQry = postsQry;
   } catch (err) {
-    // console.error(err);
+    console.error(err);
   }
+
+  console.log({ preProps: preProps });
 
   return { props: { preProps } };
 }

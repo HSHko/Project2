@@ -1,11 +1,11 @@
 import React from "react";
 // import styled from "styled-components";
-import Link from "next/link";
+import NextLink from "next/link";
 // import axios from 'axios';
 // import { useSelector } from "react-redux";
 // import { useDispatch } from "react-redux";
 // import { RootState } from "store";
-import Router from "next/router";
+import NextRouter from "next/router";
 
 // https://nextjs.org/docs/basic-features/data-fetching
 // getStaticProps (Static Generation): Fetch data at build time.
@@ -21,36 +21,55 @@ import Router from "next/router";
 //   }
 // }
 
-const notes = [{ name: "my-note" }, { name: "my-note2" }, { name: "another-note" }];
+import Button from "atoms/Button";
+
+const notes = [
+  { name: "my-note" },
+  { name: "my-note2" },
+  { name: "another-note" },
+];
 
 export default function fun(props) {
   React.useEffect(() => {
     console.log("render");
+    console.log({ test: props.test });
   });
 
   return (
     <>
       <h1>Script</h1>
-      {notes.map(note => {
+      <NextLink href={`/test/page?=1`}>
+        <Button as="a">
+          <h1>Dynamic page Moving Test</h1>
+        </Button>
+      </NextLink>
+      {notes.map((note) => {
         return (
           <div key={note.name}>
             <button
-              onClick={() => Router.push(`/test/[note]`, `/test/${note.name}`, { shallow: true })}
-            >
+              onClick={() =>
+                NextRouter.push(`/test/[note]`, `/test/${note.name}`, {
+                  shallow: true,
+                })
+              }>
               {note.name}
             </button>
           </div>
         );
       })}
-      {notes.map(note => {
+      {notes.map((note) => {
         return (
           <div key={note.name}>
-            <Link href={`/test/[note]`} as={`/test/${note.name}`}>
+            <NextLink href={`/test/[note]`} as={`/test/${note.name}`}>
               <a>{note.name}</a>
-            </Link>
+            </NextLink>
           </div>
         );
       })}
     </>
   );
+}
+
+export async function getServerSideProps(context) {
+  return {};
 }

@@ -24,8 +24,9 @@ import jwtDecode from "jwt-decode";
 import { getCookie } from "util/getCookie";
 import { setAuthorizationHeader } from "store/redux/user";
 import Axios from "axios";
+import Cookies from "universal-cookie";
 
-function MyApp({ Component, pageProps, preStore }) {
+function MyApp({ Component, pageProps, preProps }) {
   React.useEffect(() => {
     // 오류처리
     // Warning: Prop`className` did not match.
@@ -38,12 +39,14 @@ function MyApp({ Component, pageProps, preStore }) {
       jssStyles.parentElement.removeChild(jssStyles);
     }
 
-    // console.log(preStore);
-    if (preStore.isAuthenticated) {
-      userAction.setAuthorizationHeader(preStore.token);
-      store.dispatch(userAction.setUser(preStore.userDetailsQry) as any);
-      console.log({ userDetails: preStore.userDetailsQry.data });
+    if (preProps.isAuthenticated) {
+      userAction.setAuthorizationHeader(preProps.token);
+      store.dispatch(userAction.setUser(preProps.userDetailsQry) as any);
     }
+
+    const cookies = new Cookies();
+    console.log({ clientToken: cookies.get("fbIdToken") });
+    console.log({ axiosHeader: axios.defaults.headers.common });
   }, []);
 
   return (
@@ -64,49 +67,72 @@ function MyApp({ Component, pageProps, preStore }) {
 }
 
 MyApp.getInitialProps = async (context) => {
-  // ssr에서 쿠키의 정보는 ctx에 들어있다.
-  const { ctx, Component } = context;
-
-  let preStore = {
+  let preProps = {
     isAuthenticated: null,
     userDetailsQry: null,
     token: null,
+    cookie: null,
   };
 
   // client side
   try {
-    if (!ctx.req) throw { error: "not client side" };
+    if (!context.ctx.req) throw { error: "not client side" };
 
-    const token = getCookie("fbIdToken", ctx.req.headers.cookie);
+    // ssr에서 쿠키의 정보는 ctx에 들어있다.
+    const cookies = new Cookies(context.ctx.req.headers.cookie);
+    const token = cookies.get("fbIdToken");
+
     if (!token) throw { error: "token not found" };
 
+    // console.log({ serverToken: token });
+
     const decodedToken: any = jwtDecode(token);
+    // const decodedToken = {
+    //   iss: "https://securetoken.google.com/${projcetName}",
+    //   aud: projectName,
+    //   auth_time: 1608039359,
+    //   user_id: "nRMEyIUNajc71zhN4yyuXxU7Wz83",
+    //   sub: "nRMEyIUNajc71zhN4yyuXxU7Wz83",
+    //   iat: 1608039359,
+    //   exp: 1608042959,
+    //   email: "test1@email.com",
+    //   email_verified: false,
+    //   firebase: { identities: [Object], sign_in_provider: "password" },
+    // };
 
     if (Date.now() - decodedToken.exp * 1000 > 0)
       throw { error: "token expired" };
 
     const userDetailsQry = await fetch(
-      `${process.env.baseUrl}/api/users/userdetails`,
+      `${process.env.baseUrl}/api/users/getuserdetails`,
       {
         method: "POST",
-        headers: new Headers({
+        headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": `application/json`,
-        }),
+        },
       },
-    );
+    ).then((res) => res.json());
 
-    preStore.isAuthenticated = true;
-    preStore.userDetailsQry = userDetailsQry.json();
-    preStore.token = token;
+    preProps = {
+      ...preProps,
+      isAuthenticated: true,
+      userDetailsQry: userDetailsQry,
+      token: token,
+    };
+  } catch (err) {
+    console.error(err);
+  }
+
+  // server side
+  try {
+    if (typeof window !== "undefined") throw { error: "not server side" };
   } catch (err) {
     // console.error(err);
   }
 
-  // server side
-  // if (typeof window === "undefined")
-  // console.log({ preStore: preStore });
-  return { preStore };
+  // console.log({ preProps: preProps });
+  return { preProps };
 };
 
 export default MyApp;

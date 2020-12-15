@@ -15,24 +15,27 @@ const { fbAuth, db } = require("./util/admin");
 
 // firebase deploy --only functions:func1,functions:func2
 
-const screams = require("./handlers/screams");
-app.get("/screams", screams.getScreams);
-app.get("/screams/:scream_id", screams.getScream);
-app.post("/scream", fbAuth, screams.addScreams);
-app.delete("/scream/:scream_id", fbAuth, screams.deleteScream);
-app.get("/scream/:scream_id/like", fbAuth, screams.likeScream);
-app.get("/scream/:scream_id/unlike", fbAuth, screams.unlikeScream);
-app.post("/scream/:scream_id/comment", fbAuth, screams.addCommentOnScream);
+// const screams = require("./handlers/screams");
+// app.get("/screams", screams.getScreams);
+// app.get("/screams/:scream_id", screams.getScream);
+// app.post("/scream", fbAuth, screams.addScreams);
+// app.delete("/scream/:scream_id", fbAuth, screams.deleteScream);
+// app.get("/scream/:scream_id/like", fbAuth, screams.likeScream);
+// app.get("/scream/:scream_id/unlike", fbAuth, screams.unlikeScream);
+// app.post("/scream/:scream_id/comment", fbAuth, screams.addCommentOnScream);
 
 const posts = require("./handlers/posts");
 app.get("/posts/getpost", posts.getPost);
-app.get("/posts/getposts", posts.getPosts);
+app.get("/posts/getposts/:page", posts.getPosts);
 app.post("/posts/addpost", fbAuth, posts.addPost);
+
+const comments = require("./handlers/comments");
+app.post("/comments/addcomment", fbAuth, comments.addComment);
 
 const users = require("./handlers/users");
 app.post("/users/signup", users.signUp);
 app.post("/users/signin", users.signIn);
-app.post("/users/userdetails", fbAuth, users.getUserDetails);
+app.post("/users/getuserdetails", fbAuth, users.getUserDetails);
 app.post("/users/adduserdetails", fbAuth, users.addUserDetails);
 app.post("/users/image", fbAuth, users.uploadImg);
 

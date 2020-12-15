@@ -10,6 +10,7 @@ interface Props {
   color?: string;
   disabled?: boolean;
   shadow?: string;
+  hover?: boolean;
 }
 
 export default styled.button.attrs(() => ({}))<Props>`
@@ -26,9 +27,24 @@ export default styled.button.attrs(() => ({}))<Props>`
   border-width: 0;
   border-radius: ${(p) => (p.borderRadius ? p.borderRadius : `2px`)};
   outline: ${(p) => (p.outline ? p.outline : `none`)};
-
-  box-shadow: ${(p) =>
-    p.shadow ? `0 1px 4px ${p.shadow}` : `0 1px 4px ${colors.primary.dark}`};
+  box-shadow: ${(p) => {
+    if (p.shadow) {
+      if (p.shadow === "none") {
+        return css`
+        none
+        `;
+      } else {
+        return css`
+        0 1px 4px ${p.shadow}
+        `;
+      }
+    } else {
+      return css`
+      0 1px 4px ${colors.primary.dark};
+      `;
+    }
+  }};
+  background-color: inherit;
 
   line-height: 1.15rem;
   font-weight: 700;
@@ -50,8 +66,21 @@ export default styled.button.attrs(() => ({}))<Props>`
   }
 
   &:hover::before {
-    filter: brightness(75%);
-    transition: all 0.3s;
+    ${(p) => {
+      if (p.hover !== false) {
+        return css`
+          filter: brightness(75%);
+          transition: all 0.3s;
+        `;
+      }
+    }}
+    ${(p) => {
+      if (p.bg === "transparent") {
+        return css`
+          box-shadow: inset 0 0 100px 100px rgba(255, 255, 255, 0.75);
+        `;
+      }
+    }}
   }
 
   &:active::before {

@@ -20,12 +20,13 @@ import { shallowEqual } from "react-redux";
 
 // Components
 import Button from "atoms/Button";
-import WriteForm from "components/gallery/WriteForm";
-
-// interface Props {}
+import Write from "components/gallery/Write";
 
 export default function fun(props) {
-  // const nextRouter = useRouter();
+  const isAuthenticated = useSelector(
+    (x: RootState) => x.userReducer.isAuthenticated,
+    shallowEqual,
+  );
 
   React.useEffect(() => {
     // if (!isAuthenticated) {
@@ -35,20 +36,10 @@ export default function fun(props) {
   }, []);
 
   // const dispatch = useDispatch();
-  // const nextRouter = useRouter();
 
   return (
     <Wrapper>
-      <Dropdown>
-        <input className="head" type="checkbox"></input>
-        <div className="contents">
-          <div>111111</div>
-          <div>122211</div>
-          <div>133311</div>
-          <div>144411</div>
-        </div>
-      </Dropdown>
-      <WriteForm></WriteForm>
+      <Write></Write>
     </Wrapper>
   );
 }
@@ -57,22 +48,4 @@ const Wrapper = styled.div`
   width: 80%;
   max-width: 1200px;
   margin: 0 auto;
-`;
-
-const Dropdown = styled.div`
-  & > {
-    &.head {
-      position: relative;
-    }
-
-    &.contents {
-      display: none;
-      position: absolute;
-      background-color: orange;
-    }
-
-    &.head:checked + .contents {
-      display: block;
-    }
-  }
 `;

@@ -1,5 +1,4 @@
 import React from "react";
-// import styled from "styled-components";
 
 // Communication stuff
 // import axios from 'axios';
@@ -7,9 +6,6 @@ import React from "react";
 import { useRouter } from "next/router";
 
 // Material-ui stuff
-// import Grid from "@material-ui/core/Grid";
-// import TextField from "@material-ui/core/TextField";
-// import PersonIcon from "@material-ui/icons/Person";
 
 // Redux stuff
 // import { useSelector } from "react-redux";
@@ -18,6 +14,7 @@ import { useRouter } from "next/router";
 
 // Components
 // import Button from 'atoms/Button';
+import View from "components/gallery/View";
 
 // interface Props {}
 
@@ -33,23 +30,19 @@ export default function fun(props) {
 
   return (
     <>
-      <h1>Script</h1>
-      <h1>this is a test {nextRouter.query.page}</h1>
-      <h2>{props.preProps.postQry.body}</h2>
+      <View preProps={props.preProps}></View>
     </>
   );
 }
 
-// const Wrapper = styled.div``;
-
 export async function getServerSideProps(context) {
   let preProps = {
-    postQry: null,
+    postQry: {},
   };
 
   try {
     const postQry = await fetch(
-      `${process.env.baseUrl}/api/posts/getpost?idx=${context.query.page}`,
+      `${process.env.baseUrl}/api/posts/getpost?idx=${context.query.idx}`,
       {
         method: "GET",
       },

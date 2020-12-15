@@ -17,6 +17,7 @@ import Grid from "@material-ui/core/Grid";
 
 // Components
 // import Button from 'atoms/Button';
+import ListFooter from "./ListFooter";
 import { colors } from "styles/theme";
 
 const headSkeleton = {
@@ -31,50 +32,51 @@ const headSkeleton = {
 
 export default function fun(props) {
   React.useEffect(() => {
-    console.log({ ppp: props.preProps.postsQry });
-  });
+    // console.log({ postsQry: props.preProps.postsQry });
+  }, []);
 
   return (
-    <Table>
-      <thead>
-        <tr>
-          {Object.entries(headSkeleton).map((el) => {
+    <>
+      <ListBody>
+        <thead>
+          <tr>
+            {Object.entries(headSkeleton).map((el) => {
+              return (
+                <th key={el[0]} className={el[0]}>
+                  {el[1]}
+                </th>
+              );
+            })}
+          </tr>
+        </thead>
+        <tbody>
+          {props.preProps.postsQry.map((el) => {
             return (
-              <th key={el[0]} className={el[0]}>
-                {el[1]}
-              </th>
+              <tr key={el.idx}>
+                <td className="idx">{el.idx}</td>
+                <td className="category">{el.category}</td>
+                <td className="title">
+                  <NextLink href={`${props.routeName}/view?idx=${el.idx}`}>
+                    <a>
+                      {el.title} [{el.comment_cnt}]
+                    </a>
+                  </NextLink>
+                </td>
+                <td className="donor">{el.donor}</td>
+                <td className="created_at">{el.created_at}</td>
+                <td className="view_cnt">{el.view_cnt}</td>
+                <td className="like_cnt">{el.like_cnt}</td>
+              </tr>
             );
           })}
-        </tr>
-      </thead>
-      <tbody>
-        {props.preProps.postsQry.map((el) => {
-          return (
-            <tr key={el.idx}>
-              <td className="idx">{el.idx}</td>
-              <td className="category">{el.category}</td>
-              <td className="title">
-                <NextLink
-                  href={`${props.routeName}/[page]`}
-                  as={`${props.routeName}/${el.idx}`}>
-                  <a>
-                    {el.title} [{el.comment_cnt}]
-                  </a>
-                </NextLink>
-              </td>
-              <td className="donor">{el.donor}</td>
-              <td className="created_at">{el.created_at}</td>
-              <td className="view_cnt">{el.view_cnt}</td>
-              <td className="like_cnt">{el.like_cnt}</td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </Table>
+        </tbody>
+      </ListBody>
+      <ListFooter props={props}></ListFooter>
+    </>
   );
 }
 
-const Table = styled.table`
+const ListBody = styled.table`
   table-layout: fixed;
   width: 100%;
   margin: 0;
