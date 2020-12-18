@@ -86,8 +86,8 @@ export default function fun(props) {
         </NextLink>
       </PageMover>
       <WriteMover>
-        <div className="Left"></div>
-        <div className="Right">
+        <div className="left"></div>
+        <div className="right">
           <Button
             margin="0"
             borderRadius="none"

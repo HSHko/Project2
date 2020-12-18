@@ -1,7 +1,7 @@
 import React from "react";
 
 // Communication stuff
-// import axios from 'axios';
+import axios from "axios";
 // import NextLink from "next/link";
 import { useRouter } from "next/router";
 
@@ -23,7 +23,7 @@ export default function fun(props) {
 
   React.useEffect(() => {
     console.log(nextRouter.pathname);
-  });
+  }, []);
 
   // const dispatch = useDispatch();
   // const nextRouter = useRouter();
@@ -37,22 +37,24 @@ export default function fun(props) {
 
 export async function getServerSideProps(context) {
   let preProps = {
-    postQry: {},
+    postData: null,
   };
 
   try {
     const postQry = await fetch(
-      `${process.env.baseUrl}/api/posts/getpost?idx=${context.query.idx}`,
+      `${process.env.baseUrl}/api/posts/getpost/${context.query.idx}`,
       {
         method: "GET",
       },
-    ).then((res) => res.json());
+    );
+    if (!postQry.ok) throw { errors: await postQry.json() };
+    const postData = await postQry.json();
 
-    if (postQry.status === "disabled") throw { error: "disabled post" };
-    preProps.postQry = postQry;
+    if (postData.status === "disabled") throw { error: "disabled post" };
+
+    preProps.postData = postData;
   } catch (err) {
     // console.error(err);
   }
-
   return { props: { preProps } };
 }

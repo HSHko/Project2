@@ -18,7 +18,7 @@ exports.createNotifOnLike = functions
       const newData = {
         scream_id: screamQry.id,
         recipient: screamQry.data().sign_id,
-        doner: snapshot.data().sign_id,
+        donor: snapshot.data().sign_id,
         type: "like",
         read: false,
         created_at: admin.firestore.Timestamp.now().toDate().toISOString(),

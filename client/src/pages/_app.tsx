@@ -21,10 +21,9 @@ import { refreshToken } from "util/refreshToken";
 import Layout from "layouts/Layout";
 
 import jwtDecode from "jwt-decode";
-import { getCookie } from "util/getCookie";
-import { setAuthorizationHeader } from "store/redux/user";
 import Axios from "axios";
-import Cookies from "universal-cookie";
+// import Cookies from "universal-cookie";
+import Cookies from "util/CookieHandler";
 
 function MyApp({ Component, pageProps, preProps }) {
   React.useEffect(() => {
@@ -39,14 +38,15 @@ function MyApp({ Component, pageProps, preProps }) {
       jssStyles.parentElement.removeChild(jssStyles);
     }
 
-    if (preProps.isAuthenticated) {
-      userAction.setAuthorizationHeader(preProps.token);
-      store.dispatch(userAction.setUser(preProps.userDetailsQry) as any);
+    if (preProps.alert) {
+      store.dispatch(userAction.logout() as any);
+      alert(preProps.alert);
     }
 
-    const cookies = new Cookies();
-    console.log({ clientToken: cookies.get("fbIdToken") });
-    console.log({ axiosHeader: axios.defaults.headers.common });
+    if (preProps.userDetailsData) {
+      store.dispatch(userAction.setAuthorizationHeader(preProps.token) as any);
+      store.dispatch(userAction.setUser(preProps.userDetailsData) as any);
+    }
   }, []);
 
   return (
@@ -68,10 +68,9 @@ function MyApp({ Component, pageProps, preProps }) {
 
 MyApp.getInitialProps = async (context) => {
   let preProps = {
-    isAuthenticated: null,
-    userDetailsQry: null,
+    userDetailsData: null,
     token: null,
-    cookie: null,
+    alert: null,
   };
 
   // client side
@@ -83,8 +82,7 @@ MyApp.getInitialProps = async (context) => {
     const token = cookies.get("fbIdToken");
 
     if (!token) throw { error: "token not found" };
-
-    // console.log({ serverToken: token });
+    // console.log({ token: token });
 
     const decodedToken: any = jwtDecode(token);
     // const decodedToken = {
@@ -100,8 +98,10 @@ MyApp.getInitialProps = async (context) => {
     //   firebase: { identities: [Object], sign_in_provider: "password" },
     // };
 
-    if (Date.now() - decodedToken.exp * 1000 > 0)
-      throw { error: "token expired" };
+    if (Date.now() - decodedToken.exp * 1000 > 0) {
+      preProps.alert = "ログイントークンの有効期限が切れました";
+      throw { errors: "token expired" };
+    }
 
     const userDetailsQry = await fetch(
       `${process.env.baseUrl}/api/users/getuserdetails`,
@@ -109,30 +109,23 @@ MyApp.getInitialProps = async (context) => {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": `application/json`,
         },
       },
-    ).then((res) => res.json());
+    );
+    if (!userDetailsQry.ok) throw { errors: await userDetailsQry.json() };
+    const userDetailsData = await userDetailsQry.json();
 
     preProps = {
       ...preProps,
-      isAuthenticated: true,
-      userDetailsQry: userDetailsQry,
       token: token,
+      userDetailsData: userDetailsData,
     };
-  } catch (err) {
-    console.error(err);
-  }
-
-  // server side
-  try {
-    if (typeof window !== "undefined") throw { error: "not server side" };
   } catch (err) {
     // console.error(err);
   }
-
-  // console.log({ preProps: preProps });
   return { preProps };
+
+  // if (typeof window !== "undefined") throw { error: "not server side" };
 };
 
 export default MyApp;

@@ -3,8 +3,9 @@ import NextRouter from "next/router";
 import { NextPageContext } from "next";
 import * as nookies from "nookies";
 import cookieCutter from "cookie-cutter";
-import Cookies from "universal-cookie";
 import jwtDecode from "jwt-decode";
+// import Cookies from "universal-cookie";
+import Cookies from "util/CookieHandler";
 
 export const SET_LOADING = "user/SET_LOADING" as const;
 export const SET_ERRORS = "user/SET_ERRORS" as const;
@@ -34,29 +35,39 @@ const initialState: State = {
   notifications: [],
 };
 
-export const setAuthorizationHeader = (token) => {
-  // localStorage.setItem("fbIdToken", token);
-  // cookieCutter.set("fbIdToken", token);
+export const setAuthorizationHeader = (token) => (dispatch) => {
   const cookies = new Cookies();
   cookies.set("fbIdToken", token, { path: "/" });
   axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  dispatch(setAuthenticated());
 };
 
-export const logout = () => (dispatch) => {
-  // localStorage.removeItem("fbIdToken");
-  // document.cookie = "fbIdToken" + `=; expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
+export const setAuthenticated = () => ({
+  type: SET_AUTHENTICATED,
+});
+
+export const removeAuthorizationHeader = () => (dispatch) => {
   const cookies = new Cookies();
   cookies.remove("fbIdToken", { path: "/" });
+  cookies.remove("fbIdToken", { path: `window.location.pathname` });
   delete axios.defaults.headers.common["Authorization"];
-  dispatch({ type: SET_UNAUTHENTICATED });
-  console.log("token expired");
+  dispatch(setUnAuthenticated());
+  console.log("removed axios header and cookie");
+};
+
+export const setUnAuthenticated = () => ({
+  type: SET_UNAUTHENTICATED,
+});
+
+export const logout = () => (dispatch) => {
+  dispatch(removeAuthorizationHeader());
   window.location.reload();
 };
 
-export const setUser = (userDetailsQry) => (dispatch) => {
+export const setUser = (userDetailsData) => (dispatch) => {
   dispatch({
     type: SET_USER,
-    payload: userDetailsQry,
+    payload: userDetailsData,
   });
 };
 
@@ -113,11 +124,10 @@ export const signIn = (userData) => async (dispatch) => {
     dispatch({ type: SET_LOADING });
 
     const signInQry = await axios.post("/api/users/signin", userData);
-    setAuthorizationHeader(signInQry.data.token);
+    dispatch(setAuthorizationHeader(signInQry.data.token));
 
-    const decodedToken: any = jwtDecode(signInQry.data.token);
     const userDetailsQry = await axios.post("/api/users/getuserdetails");
-    dispatch(setUser(userDetailsQry));
+    dispatch(setUser(userDetailsQry.data));
 
     dispatch({ type: CLEAR_ERRORS });
     NextRouter.push("/");
@@ -215,33 +225,33 @@ export default function fun(state = initialState, action) {
   }
 }
 
-export const uploadImage = (formData) => (dispatch) => {
-  dispatch({ type: SET_LOADING });
-  axios
-    .post("/user/image", formData)
-    .then(() => {
-      dispatch(setUser());
-    })
-    .catch((err) => console.log(err));
-};
+// export const uploadImage = (formData) => (dispatch) => {
+//   dispatch({ type: SET_LOADING });
+//   axios
+//     .post("/user/image", formData)
+//     .then(() => {
+//       dispatch(setUser());
+//     })
+//     .catch((err) => console.log(err));
+// };
 
-export const editUserDetails = (userDetails) => (dispatch) => {
-  dispatch({ type: SET_LOADING });
-  axios
-    .post("/user", userDetails)
-    .then(() => {
-      dispatch(setUser());
-    })
-    .catch((err) => console.log(err));
-};
+// export const editUserDetails = (userDetails) => (dispatch) => {
+//   dispatch({ type: SET_LOADING });
+//   axios
+//     .post("/user", userDetails)
+//     .then(() => {
+//       dispatch(setUser());
+//     })
+//     .catch((err) => console.log(err));
+// };
 
-export const markNotificationsRead = (notificationIds) => (dispatch) => {
-  axios
-    .post("/notifications", notificationIds)
-    .then((res) => {
-      dispatch({
-        type: MARK_NOTIFICATIONS_READ,
-      });
-    })
-    .catch((err) => console.log(err));
-};
+// export const markNotificationsRead = (notificationIds) => (dispatch) => {
+//   axios
+//     .post("/notifications", notificationIds)
+//     .then((res) => {
+//       dispatch({
+//         type: MARK_NOTIFICATIONS_READ,
+//       });
+//     })
+//     .catch((err) => console.log(err));
+// };

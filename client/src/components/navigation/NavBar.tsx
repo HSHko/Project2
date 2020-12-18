@@ -102,7 +102,7 @@ const Wrapper = styled.div`
 `;
 
 const Appbar = styled.div`
-  width: 90%;
+  width: 100%;
   max-width: ${(p) => p.theme.vars.navbar.maxWidth};
   height: ${(p) => p.theme.vars.navbar.height};
   margin: 0 auto;

@@ -16,6 +16,7 @@ const globalStyle = createGlobalStyle`
   .text-center {text-align: center;}
   .disp-flex {display: flex;}
   .disp-inline {display: inline;}
+  .vr {}
 `;
 
 export default globalStyle;

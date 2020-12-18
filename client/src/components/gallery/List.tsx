@@ -31,9 +31,7 @@ const headSkeleton = {
 };
 
 export default function fun(props) {
-  React.useEffect(() => {
-    // console.log({ postsQry: props.preProps.postsQry });
-  }, []);
+  React.useEffect(() => {}, []);
 
   return (
     <>
@@ -50,25 +48,27 @@ export default function fun(props) {
           </tr>
         </thead>
         <tbody>
-          {props.preProps.postsQry.map((el) => {
-            return (
-              <tr key={el.idx}>
-                <td className="idx">{el.idx}</td>
-                <td className="category">{el.category}</td>
-                <td className="title">
-                  <NextLink href={`${props.routeName}/view?idx=${el.idx}`}>
-                    <a>
-                      {el.title} [{el.comment_cnt}]
-                    </a>
-                  </NextLink>
-                </td>
-                <td className="donor">{el.donor}</td>
-                <td className="created_at">{el.created_at}</td>
-                <td className="view_cnt">{el.view_cnt}</td>
-                <td className="like_cnt">{el.like_cnt}</td>
-              </tr>
-            );
-          })}
+          {props.preProps.postsData !== null
+            ? props.preProps.postsData.map((el) => {
+                return (
+                  <tr key={el.idx}>
+                    <td className="idx">{el.idx}</td>
+                    <td className="category">{el.category}</td>
+                    <td className="title">
+                      <NextLink href={`${props.routeName}/view?idx=${el.idx}`}>
+                        <a>
+                          {el.title} [{el.comment_cnt}]
+                        </a>
+                      </NextLink>
+                    </td>
+                    <td className="donor">{el.donor}</td>
+                    <td className="created_at">{el.created_at}</td>
+                    <td className="view_cnt">{el.view_cnt}</td>
+                    <td className="like_cnt">{el.like_cnt}</td>
+                  </tr>
+                );
+              })
+            : null}
         </tbody>
       </ListBody>
       <ListFooter props={props}></ListFooter>
@@ -114,7 +114,7 @@ const ListBody = styled.table`
       width: 4rem;
     }
     &.category {
-      width: 4rem;
+      width: 5rem;
     }
     &.title {
     }
@@ -130,10 +130,11 @@ const ListBody = styled.table`
     &.like_cnt {
       width: 3rem;
     }
-    td {
-      &.title {
-        text-align: left;
-      }
+  }
+
+  td {
+    &.title {
+      text-align: left;
     }
   }
 `;

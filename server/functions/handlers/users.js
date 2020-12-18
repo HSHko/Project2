@@ -25,8 +25,8 @@ exports.signUp = async (req, res) => {
   const noImg = "mystery-man.png";
 
   try {
-    const dbQry = await db.doc(`/users/${newData.sign_id}`).get();
-    if (dbQry.exists) throw { code: "registered" };
+    const userQry = await db.doc(`/users/${newData.sign_id}`).get();
+    if (userQry.exists) throw { code: "registered" };
 
     const fbData = await firebase
       .auth()
@@ -39,7 +39,7 @@ exports.signUp = async (req, res) => {
       uid: fbData.user.uid,
       custom_id: "",
       authority: "user",
-      created_at: admin.firestore.Timestamp.now().toDate().toISOString(),
+      created_at: admin.firestore.Timestamp.now(),
       img_url: `https://firebasestorage.googleapis.com/v0/b/${pool.storageBucket}/o/${noImg}?alt=media`,
       introduce: "",
     };
@@ -62,11 +62,11 @@ exports.signIn = async (req, res) => {
   if (!isValid) return res.status(400).json(errors);
 
   try {
-    const qryData = await firebase
+    const authQry = await firebase
       .auth()
       .signInWithEmailAndPassword(newData.email, newData.password);
 
-    token = await qryData.user.getIdToken();
+    token = await authQry.user.getIdToken();
     return res.status(200).json({ token: token });
   } catch (err) {
     console.error(err);
@@ -77,70 +77,12 @@ exports.signIn = async (req, res) => {
   }
 };
 
-exports.addUserDetails = async (req, res) => {
-  if (req.body.introduce.trim() !== "") req.body.introduce = req.body.introduce;
-
-  try {
-    await db.doc(`users/${req.fbAuth.sign_id}`).update(req.body);
-    return res.json({ msg: "addUserDetails Done" });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json(err);
-  }
-};
-
 exports.getUserDetails = async (req, res) => {
-  const reqData = {};
-
+  let reqData = {};
   let resData = {};
 
   try {
-    const userQry = await db.doc(`/users/${req.params.user_id}`).get();
-    if (!userQry.exists)
-      throw { error: `userDoc: ${req.params.user_id} not found` };
-
-    resData = userQry.data();
-
-    // const screamDoc = db
-    //   .collection(`screams`)
-    //   .where(`sign_id`, `==`, userQry.data().sign_id)
-    //   .orderBy(`created_at`, `desc`);
-    // const screamQry = await screamDoc.get();
-
-    // newData.screams = [];
-    // screamQry.forEach((doc) => {
-    //   newData.screams.push({
-    //     title: doc.data().title,
-    //     body: doc.data().body,
-    //     created_at: doc.data().created_at,
-    //     like_cnt: doc.data().like_cnt,
-    //     comment_cnt: doc.data().comment_cnt,
-    //   });
-    // });
-
-    return res.status(200).json(resData);
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json(err);
-  }
-};
-
-exports.getUserDetails = async (req, res) => {
-  let reqData = {
-    decodedToken: req.fbAuth,
-    sign_id: req.fbAuth.sign_id,
-  };
-  let newData = {};
-
-  try {
-    const userQry = await db
-      .collection(`users`)
-      .where(`sign_id`, `==`, reqData.sign_id)
-      .limit(1)
-      .get();
-    if (userQry.empty) throw { error: "userQry not found" };
-
-    newData.credentials = userQry.docs[0].data();
+    resData.credentials = req.fbAuth.userData;
 
     // const likeQry = await db
     //   .collection("likes")
@@ -170,7 +112,19 @@ exports.getUserDetails = async (req, res) => {
     //   });
     // });
 
-    return res.json(newData);
+    return res.json(resData);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json(err);
+  }
+};
+
+exports.addUserDetails = async (req, res) => {
+  if (req.body.introduce.trim() !== "") req.body.introduce = req.body.introduce;
+
+  try {
+    await db.doc(`users/${req.fbAuth.sign_id}`).update(req.body);
+    return res.json({ msg: "addUserDetails Done" });
   } catch (err) {
     console.error(err);
     return res.status(500).json(err);

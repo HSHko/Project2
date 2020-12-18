@@ -15,18 +15,14 @@ exports.fbAuth = async (req, res, next) => {
     ) {
       idToken = req.headers.authorization.split("Bearer ")[1];
     } else {
-      throw { error: "token not found" };
+      throw { error: "fbAuth token not found" };
     }
 
     const decodedToken = await admin.auth().verifyIdToken(idToken);
     req.fbAuth = decodedToken;
 
-    const dbQry = await db
-      .collection("users")
-      .where("uid", "==", req.fbAuth.uid)
-      .limit(1)
-      .get();
-    req.fbAuth.sign_id = dbQry.docs[0].data().sign_id;
+    const userQry = await db.collection("users").doc(req.fbAuth.uid).get();
+    req.fbAuth.userData = userQry.data();
     return next();
   } catch (e) {
     console.error("Error while verifying token", e);

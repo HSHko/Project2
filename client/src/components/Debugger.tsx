@@ -17,6 +17,8 @@ import Cookies from "universal-cookie";
 // import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 // import { RootState } from "store";
+import { store } from "store";
+import { userAction } from "store";
 
 // Components
 // import Button from 'atoms/Button';
@@ -28,34 +30,45 @@ export default function fun(props) {
   const dispatch = useDispatch();
 
   React.useEffect(() => {
-    // console.log(nextRouter.pathname);
+    // console.log(new Cookies().get("test"));
   });
 
   // const nextRouter = useRouter();
 
-  const handleOnClickDeleteToken = React.useCallback(() => {
+  const handleOnClick = (label) => {
     const cookies = new Cookies();
-    cookies.remove("fbIdToken", { path: "/" });
-    delete axios.defaults.headers.common["Authorization"];
-    dispatch({ type: "user/SET_UNAUTHENTICATED" });
-  }, []);
-
-  const handleOnClickShowCookie = React.useCallback(() => {
-    const cookies = new Cookies();
-    console.log(cookies.get("fbIdToken"));
-  }, []);
+    switch (label) {
+      case "setCookie":
+        console.log({ label: label });
+        store.dispatch(userAction.setAuthorizationHeader("7272") as any);
+        break;
+      case "deleteCookie":
+        console.log({ label: label });
+        store.dispatch(userAction.removeAuthorizationHeader() as any);
+        // cookies.remove("test", { path: "/" });
+        break;
+      case "getCookie":
+        console.log({ label: label });
+        const cookie = cookies.get("fbIdToken");
+        console.log(cookie);
+        break;
+      default:
+        break;
+    }
+  };
 
   return (
     <>
       <h1>Script</h1>
-      <button onClick={() => handleOnClickDeleteToken()}>
+      <button onClick={() => handleOnClick("setCookie")}>
+        <h1>SET COOKIE</h1>
+      </button>
+      <button onClick={() => handleOnClick("deleteCookie")}>
         <h1>DELETE COOKIE</h1>
       </button>
-      <button onClick={() => handleOnClickShowCookie()}>
+      <button onClick={() => handleOnClick("getCookie")}>
         <h1>SHOW COOKIE</h1>
       </button>
     </>
   );
 }
-
-// const Wrapper = styled.div``;

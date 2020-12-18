@@ -51,7 +51,7 @@ const Wrapper = styled.div`
 
 export async function getServerSideProps(context) {
   let preProps = {
-    postsQry: [],
+    postsData: null,
   };
 
   try {
@@ -60,13 +60,14 @@ export async function getServerSideProps(context) {
       {
         method: "GET",
       },
-    ).then((res) => res.json());
-    if (!postsQry.errors) preProps.postsQry = postsQry;
-  } catch (err) {
-    console.error(err);
-  }
+    );
+    if (!postsQry.ok) throw { errors: await postsQry.json() };
+    const postsData = await postsQry.json();
 
-  console.log({ preProps: preProps });
+    preProps.postsData = postsData;
+  } catch (err) {
+    // console.error(err);
+  }
 
   return { props: { preProps } };
 }

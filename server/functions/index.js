@@ -25,12 +25,13 @@ const { fbAuth, db } = require("./util/admin");
 // app.post("/scream/:scream_id/comment", fbAuth, screams.addCommentOnScream);
 
 const posts = require("./handlers/posts");
-app.get("/posts/getpost", posts.getPost);
+app.get("/posts/getpost/:idx", posts.getPost);
 app.get("/posts/getposts/:page", posts.getPosts);
 app.post("/posts/addpost", fbAuth, posts.addPost);
 
 const comments = require("./handlers/comments");
-app.post("/comments/addcomment", fbAuth, comments.addComment);
+app.get("/comments/getcomments/:idx", comments.getComments);
+app.post("/comments/addcomment/:idx", fbAuth, comments.addComment);
 
 const users = require("./handlers/users");
 app.post("/users/signup", users.signUp);

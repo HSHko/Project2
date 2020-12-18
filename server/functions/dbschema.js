@@ -13,13 +13,13 @@ let db = {
   ],
   posts: [
     {
-      idx: 0,
+      idx: 1,
       status: "",
-      category: "normal",
-      title: "post title",
+      category: "",
+      title: "",
       body: "",
-      created_at: "2019-03-15T10:59:52.798Z",
-      donor: "writerNickName",
+      created_at: TimeStamp,
+      donor: "",
       like_cnt: 0,
       view_cnt: 0,
       comment_cnt: 0,

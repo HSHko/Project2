@@ -41,7 +41,7 @@ export const vars = {
     zIndex: 120,
   },
   navbar: {
-    maxWidth: "1440px",
+    maxWidth: "1080px",
     height: "3.5rem",
     zIndex: 5,
   },

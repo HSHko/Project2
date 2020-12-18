@@ -1,4 +1,5 @@
 import React from "react";
+import styled from "styled-components";
 
 // Communication Stuff
 import { useRouter } from "next/router";
@@ -25,8 +26,16 @@ export default function fun(props) {
       <LoadingUi></LoadingUi>
       <Backdrop></Backdrop>
       <Navbar></Navbar>
-      {props.children}
+      <OuterWrapper>
+        {/* <Debugger></Debugger> */}
+        {props.children}
+      </OuterWrapper>
       <Footer></Footer>
     </>
   );
 }
+
+const OuterWrapper = styled.div`
+  max-width: ${(p) => p.theme.vars.navbar.maxWidth};
+  margin: 0 auto;
+`;

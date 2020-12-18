@@ -85,9 +85,28 @@ export default function fun(props) {
       await axios.post("/api/posts/addpost", {
         ...reqData,
       });
+
       NextRouter.push(`/gallery/list?page=1`);
     } catch (err) {
       console.error(err);
+      let errors: any = {};
+      const res = err.response.data;
+
+      if (res.title)
+        errors.title =
+          "タイトルの内容は2以上、40以下の文字で入力してください。";
+      if (res.body)
+        errors.body = "本文の内容は2以上、2000以下の文字で入力してください";
+
+      let msg = "エラー\n";
+      if (Object.keys(errors)) {
+        for (const x of Object.values(errors)) {
+          msg += x + "\n";
+        }
+      } else {
+        msg += "未知のエラーが発生しました。\n";
+      }
+      alert(msg);
     } finally {
       dispatch(uiAction.lo());
     }
@@ -96,7 +115,7 @@ export default function fun(props) {
   return (
     <Wrapper>
       <WriteHeader>
-        <div className="header">分類</div>
+        <div className="category-head">分類</div>
         {Object.entries(WriteHeaderContents).map((el) => {
           return (
             <Button
@@ -113,18 +132,18 @@ export default function fun(props) {
       </WriteHeader>
       <WriteBody>
         <input
-          className="title"
+          className="write-title"
           type="text"
           placeholder="タイトルを入力してください"
           ref={refs.writeTitle}></input>
         <textarea
-          className="body"
+          className="write-body"
           placeholder="内容を入力してください"
           ref={refs.writeBody}></textarea>
       </WriteBody>
       <WriteFooter>
-        <div className="Left"></div>
-        <div className="Right">
+        <div className="area-left"></div>
+        <div className="area-right">
           <Button onClick={() => handleOnClickGoBack()}>戻る</Button>
           <Button onClick={() => handleOnClickSubmit()} disabled={isLoading}>
             Write
@@ -148,7 +167,7 @@ const WriteHeader = styled.div`
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
 
-  & > .header {
+  & > .category-head {
     margin: 0;
     padding: 0.5rem 1rem;
     border-right: 1px solid ${colors.bluegray[5]};
@@ -159,15 +178,17 @@ const WriteHeader = styled.div`
 const WriteBody = styled.div`
   width: 100%;
 
-  & > .title {
+  & .write-title {
     width: 100%;
     border: 3px solid green;
+    padding: 0 5px;
     height: 2rem;
   }
 
-  & > .body {
+  & .write-body {
     width: 100%;
     border: 3px solid red;
+    padding: 3px 5px;
     margin-top: 0.5rem;
     height: 20rem;
   }
@@ -177,7 +198,7 @@ const WriteFooter = styled.div`
   display: flex;
   justify-content: space-between;
 
-  & > .Right {
+  & .area-right {
     display: flex;
   }
 `;
