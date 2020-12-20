@@ -1,4 +1,5 @@
 const { db, admin } = require("../util/admin");
+const { FieldValue } = require("firebase-admin").firestore;
 
 // 정렬 참고
 // https://firebase.google.com/docs/firestore/query-data/order-limit-data?hl=ko
@@ -43,9 +44,11 @@ exports.getPosts = async (req, res) => {
           category: "",
           title: "このポストはは削除されました",
           created_at: "",
+          updated_at: "",
           donor: "",
           view_cnt: doc.data().view_cnt,
           like_cnt: doc.data().like_cnt,
+          dislike_cnt: doc.data().dislike_cnt,
           comment_cnt: doc.data().comment_cnt,
         });
       } else
@@ -55,9 +58,11 @@ exports.getPosts = async (req, res) => {
           category: doc.data().category,
           title: doc.data().title,
           created_at: doc.data().created_at.toDate().toISOString(),
+          updated_at: doc.data().updated_at.toDate().toISOString(),
           donor: usersQry.data().sign_id,
           view_cnt: doc.data().view_cnt,
           like_cnt: doc.data().like_cnt,
+          dislike_cnt: doc.data().dislike_cnt,
           comment_cnt: doc.data().comment_cnt,
         });
     }
@@ -103,6 +108,9 @@ exports.getPost = async (req, res) => {
       ...postQry.docs[0].data(),
       donor: userQry.data().sign_id,
       created_at: postQry.docs[0].data().created_at.toDate().toISOString(),
+      updated_at: postQry.docs[0].data().updated_at
+        ? postQry.docs[0].data().updated_at.toDate().toISOString()
+        : postQry.docs[0].data().created_at.toDate().toISOString(),
       self_like: likeData,
     };
 
@@ -110,7 +118,7 @@ exports.getPost = async (req, res) => {
       .collection(`posts`)
       .doc(postQry.docs[0].id)
       .update({
-        view_cnt: postQry.docs[0].data().view_cnt + 1,
+        view_cnt: FieldValue.increment(reqData.likeQuantity),
       });
 
     return res.status(200).json(resData);
@@ -152,8 +160,10 @@ exports.addPost = async (req, res) => {
       body: reqData.body,
       donor: reqData.donor,
       created_at: admin.firestore.Timestamp.now(),
+      updated_at: "",
       view_cnt: 0,
       like_cnt: 0,
+      dislike_cnt: 0,
       comment_cnt: 0,
     };
 

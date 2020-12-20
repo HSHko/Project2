@@ -40,6 +40,9 @@ app.post("/users/getuserdetails", fbAuth, users.getUserDetails);
 app.post("/users/adduserdetails", fbAuth, users.addUserDetails);
 app.post("/users/image", fbAuth, users.uploadImg);
 
+const likes = require("./handlers/likes");
+app.post("/likes/addliketopost/:postIdx", fbAuth, likes.addLikeToPost);
+
 // firebase deploy --only "functions:api,functions:createNotificationOnLike"
 // exports.unDeploy = {}
 const { region } = require("./util/config");

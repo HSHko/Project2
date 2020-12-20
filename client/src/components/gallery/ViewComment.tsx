@@ -49,30 +49,38 @@ export default React.memo(function fun(props) {
   });
 
   return (
-    <>
-      {commentsData !== null ? (
-        <CommentDatas>
-          {commentsData.map((doc) => (
-            <></>
-          ))}
-        </CommentDatas>
-      ) : null}
-
-      <CommentInput>
-        <textarea
-          className="comment-body"
-          placeholder="コメントを入力してください"></textarea>
-      </CommentInput>
-    </>
+    <Wrapper>
+      <ScreamdComments></ScreamdComments>
+      <NewComment>
+        <DonorBox>DonorNameisHere</DonorBox>
+        <InputBox>
+          <textarea
+            className="comment-body"
+            placeholder="コメントを入力してください"></textarea>
+        </InputBox>
+      </NewComment>
+    </Wrapper>
   );
 });
 
-const CommentDatas = styled.div``;
-
-const CommentInput = styled.div`
-  & .comment-body {
-    width: 100%;
-    border: 1px solid ${colors.bluegray[5]};
-    padding: 2px 5px;
-  }
+const Wrapper = styled.div`
+  width: 100%;
 `;
+
+const ScreamdComments = styled.div``;
+
+const NewComment = styled.div`
+  border-top: 3rem solid ${colors.deeppurple[3]};
+  border-bottom: 3rem solid ${colors.deeppurple[3]};
+  margin: 0 0.5rem;
+  padding: 0.25rem 1rem;
+
+  display: flex;
+  align-items: flex-start;
+`;
+
+const DonorBox = styled.div`
+  margin: 0 0.25rem;
+`;
+
+const InputBox = styled.div``;

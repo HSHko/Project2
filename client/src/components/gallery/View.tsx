@@ -20,20 +20,9 @@ import styled from "styled-components";
 // Components
 import Button from "atoms/Button";
 import ViewComment from "./ViewComment";
+import ViewLikeBox from "./ViewLikeBox";
 import { Block, SignalWifi1BarLock } from "@material-ui/icons";
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
-
-const skeleton = {
-  status: "",
-  title: "Hello, title!",
-  body:
-    "ックして、起動してください。インストーラが起動しますので、ウィザードに沿いセットアップをして下さい。なお、必須ファイルが古いバージョンの場合に、再起動を促されますので再起動をして下さい。＊デスクトップ等にショートカットは作成されませんので、必要に応じて[スタートメニュー]-[プログラム(XPはすべての",
-  donor: "TESTMAN",
-  created_at: "222222222",
-  view_cnt: 10,
-  like_cnt: 2,
-  comment_cnt: 0,
-};
 
 interface PostState {
   status?: string;
@@ -48,11 +37,10 @@ interface PostState {
 
 export default function fun(props) {
   const { postData } = props.preProps;
-  // const postData = skeleton;
 
   React.useEffect(() => {
     // console.log(nextRouter.pathname);
-    console.log({ postData: postData });
+    // console.log({ postData: postData });
   });
 
   return (
@@ -79,6 +67,7 @@ export default function fun(props) {
             </HeaderDetails>
           </ViewHeader>
           <ViewBody>{postData.body}</ViewBody>
+          <ViewLikeBox preProps={props.preProps}></ViewLikeBox>
           <ViewFooter>
             <div className="Left"></div>
             <div className="Right">

@@ -22,7 +22,7 @@ export default function fun(props) {
   const nextRouter = useRouter();
 
   React.useEffect(() => {
-    console.log(nextRouter.pathname);
+    // console.log(nextRouter.pathname);
   }, []);
 
   // const dispatch = useDispatch();

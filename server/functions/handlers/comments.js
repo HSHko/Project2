@@ -10,7 +10,7 @@ exports.getComments = async (req, res) => {
     const commentsQry = db
       .collection("comments")
       .where(`recipient`, `==`, `reqData.idx`)
-      .orderBy(`created_at`, desc)
+      .orderBy(`created_at`, `desc`)
       .limit(20) // TODO: comment pages
       .get();
 

@@ -49,7 +49,7 @@ export const setAuthenticated = () => ({
 export const removeAuthorizationHeader = () => (dispatch) => {
   const cookies = new Cookies();
   cookies.remove("fbIdToken", { path: "/" });
-  cookies.remove("fbIdToken", { path: `window.location.pathname` });
+  cookies.remove("fbIdToken", { path: `${window.location.pathname}` });
   delete axios.defaults.headers.common["Authorization"];
   dispatch(setUnAuthenticated());
   console.log("removed axios header and cookie");

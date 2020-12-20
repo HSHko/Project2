@@ -15,7 +15,7 @@ exports.fbAuth = async (req, res, next) => {
     ) {
       idToken = req.headers.authorization.split("Bearer ")[1];
     } else {
-      throw { error: "fbAuth token not found" };
+      throw { fb_auth: "fbAuth token not found" };
     }
 
     const decodedToken = await admin.auth().verifyIdToken(idToken);
