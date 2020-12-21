@@ -15,6 +15,7 @@ import TextField from "@material-ui/core/TextField";
 
 // Redux stuff
 import { shallowEqual } from "react-redux";
+import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { RootState } from "store";
 import { userAction } from "store";
@@ -22,7 +23,6 @@ import { userAction } from "store";
 // Components
 import Button from "atoms/Button";
 import LoadingIndicator from "blocks/LoadingIndicator";
-import { useSelector } from "react-redux";
 import { Email } from "@material-ui/icons";
 
 // interface Props {}
@@ -59,6 +59,11 @@ export default function fun(props) {
   const { errors } = {
     errors: useSelector((x: RootState) => x.userReducer.errors, shallowEqual),
   };
+
+  const isLoading = useSelector(
+    (x: RootState) => x.userReducer.isLoading,
+    shallowEqual,
+  );
 
   React.useEffect(() => {
     dispatch({ type: userAction.CLEAR_ERRORS });
@@ -165,7 +170,11 @@ export default function fun(props) {
           variant="outlined"
         />
         <br />
-        <Button style={{ display: "inline" }} type="submit" disabled={false}>
+        <Button
+          style={{ display: "inline" }}
+          type="submit"
+          disabled={isLoading}>
+          {isLoading && <LoadingIndicator></LoadingIndicator>}
           SIGN UP
         </Button>
       </form>

@@ -155,22 +155,20 @@ export default function fun(props) {
 }
 
 const Wrapper = styled.div`
-  width: 80%;
-  max-width: 1200px;
-  margin: 0 auto;
+margin: 0 auto;
 `;
 
 const WriteHeader = styled.div`
   display: flex;
   align-items: center;
-  border: 1px solid ${colors.bluegray[5]};
+  border: 1px solid ${colors.border.main};
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
 
   & > .category-head {
     margin: 0;
     padding: 0.5rem 1rem;
-    border-right: 1px solid ${colors.bluegray[5]};
+    border-right: 1px solid ${colors.border.main};
     background-color: ${colors.gray[4]};
   }
 `;
@@ -181,14 +179,12 @@ const WriteBody = styled.div`
   & .write-title {
     width: 100%;
     border: 3px solid green;
-    padding: 0 5px;
     height: 2rem;
   }
 
   & .write-body {
     width: 100%;
     border: 3px solid red;
-    padding: 3px 5px;
     margin-top: 0.5rem;
     height: 20rem;
   }

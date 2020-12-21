@@ -70,7 +70,7 @@ export default function fun(props) {
 
 const Wrapper = styled.div<{ active?: boolean }>`
   position: fixed;
-  z-index: ${vars.sidebar.zIndex};
+  z-index: ${vars.zIndex.sidebar};
   top: 0;
   width: 16rem;
   max-width: 50vh;
@@ -90,7 +90,7 @@ const Wrapper = styled.div<{ active?: boolean }>`
 
 const AppBar = styled.div`
   &.head {
-    height: ${(p) => p.theme.vars.navbar.height};
+    height: 3.5rem;
     background-color: ${(p) => p.theme.colors.navbar.top.main};
     display: flex;
     align-items: center;

@@ -1,28 +1,27 @@
 import React from "react";
 import styled from "styled-components";
 
+// Communication stuff
+
+// Material-ui stuff
 import CircularProgress from "@material-ui/core/CircularProgress";
 
-import Overlay from "atoms/Overlay";
-import { Props as OverlayProps } from "atoms/Overlay";
+// Redux stuff
 
-export default function fun(props: OverlayProps) {
+// Components
+import Overlay from "atoms/Overlay";
+
+// interface Props {}
+
+export default function fun(props) {
   return (
-    <RelativeDiv>
-      <Overlay
-        type={props.type}
-        align={props.align}
-        boxWidth={props.boxWidth}
-        boxHeight={props.boxHeight}
-        top={props.top}
-        bg={props.bg}
-        opacity={props.opacity}>
-        <CircularProgress size={props.size}></CircularProgress>
-      </Overlay>
-    </RelativeDiv>
+    <Overlay browser={props.browser}>
+      {props.children !== undefined ? (
+        <>{props.children}</>
+      ) : (
+        <CircularProgress
+          size={props.size ? props.size : 30}></CircularProgress>
+      )}
+    </Overlay>
   );
 }
-
-const RelativeDiv = styled.div`
-  position: relative;
-`;

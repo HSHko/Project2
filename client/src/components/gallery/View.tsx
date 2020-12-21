@@ -24,17 +24,6 @@ import ViewLikeBox from "./ViewLikeBox";
 import { Block, SignalWifi1BarLock } from "@material-ui/icons";
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
 
-interface PostState {
-  status?: string;
-  title: string;
-  body: string;
-  donor: string;
-  created_at: string;
-  view_cnt: number;
-  like_cnt: number;
-  comment_cnt: number;
-}
-
 export default function fun(props) {
   const { postData } = props.preProps;
 
@@ -45,7 +34,7 @@ export default function fun(props) {
 
   return (
     <Wrapper>
-      {postData !== null ? (
+      {postData.status !== `disabled` ? (
         <>
           <ViewHeader>
             <HeaderTitle>
@@ -74,7 +63,7 @@ export default function fun(props) {
               <Button>削除</Button>
             </div>
           </ViewFooter>
-          <ViewComment></ViewComment>
+          <ViewComment preProps={props.preProps}></ViewComment>
         </>
       ) : null}
     </Wrapper>

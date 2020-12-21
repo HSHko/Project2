@@ -9,20 +9,13 @@ app.use(cors()); // for firebase deploy
 
 console.log({ msg: "server connected" });
 
+// 아래를 참고
 // https://github.com/hidjou/classsed-react-firebase-functions/tree/master/functions
-// firebase examples: https://firebase.google.com/docs/samples/?authuser=0
+// https://firebase.google.com/docs/samples/?authuser=0
 const { fbAuth, db } = require("./util/admin");
 
+// 모든 기능이 아닌 기능 따로따로 배포하려면
 // firebase deploy --only functions:func1,functions:func2
-
-// const screams = require("./handlers/screams");
-// app.get("/screams", screams.getScreams);
-// app.get("/screams/:scream_id", screams.getScream);
-// app.post("/scream", fbAuth, screams.addScreams);
-// app.delete("/scream/:scream_id", fbAuth, screams.deleteScream);
-// app.get("/scream/:scream_id/like", fbAuth, screams.likeScream);
-// app.get("/scream/:scream_id/unlike", fbAuth, screams.unlikeScream);
-// app.post("/scream/:scream_id/comment", fbAuth, screams.addCommentOnScream);
 
 const posts = require("./handlers/posts");
 app.get("/posts/getpost/:idx", posts.getPost);
@@ -30,8 +23,8 @@ app.get("/posts/getposts/:page", posts.getPosts);
 app.post("/posts/addpost", fbAuth, posts.addPost);
 
 const comments = require("./handlers/comments");
-app.get("/comments/getcomments/:idx", comments.getComments);
-app.post("/comments/addcomment/:idx", fbAuth, comments.addComment);
+app.get("/comments/getcommentsfrompost/:idx", comments.getCommentsFromPost);
+app.post("/comments/addcommenttopost/:idx", fbAuth, comments.addCommentToPost);
 
 const users = require("./handlers/users");
 app.post("/users/signup", users.signUp);
@@ -43,7 +36,6 @@ app.post("/users/image", fbAuth, users.uploadImg);
 const likes = require("./handlers/likes");
 app.post("/likes/addliketopost/:postIdx", fbAuth, likes.addLikeToPost);
 
-// firebase deploy --only "functions:api,functions:createNotificationOnLike"
 // exports.unDeploy = {}
 const { region } = require("./util/config");
 exports.api = functions.region(region).https.onRequest(app);
@@ -66,8 +58,6 @@ exports.deleteNotifOnUnlike = events.deleteNotifOnUnlike;
 // csurf, helmet 모듈 사용, 유저 요청 validate, sanitize
 
 // // 시작 테스트
-// // http://localhost:5001/project2-7396c/us-central1/helloWorld
-// // Hello from Firebase!
 // exports.helloWorld = functions.https.onRequest((request, response) => {
 //   functions.logger.info("Hello logs!", { structuredData: true });
 //   response.send("Hello from Firebase!");

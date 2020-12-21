@@ -22,10 +22,8 @@ import { userAction } from "store";
 
 // Components
 import Button from "atoms/Button";
-import DynamicWrapper from "atoms/DynamicWrapper";
+// import DynamicWrapper from "atoms/DynamicWrapper";
 import LoadingIndicator from "blocks/LoadingIndicator";
-
-// interface Props {}
 
 const styles = makeStyles((theme) => ({
   hover: {
@@ -39,7 +37,7 @@ const styles = makeStyles((theme) => ({
     },
   },
   size: {
-    width: 360,
+    width: 440,
     margin: 12,
   },
 }));
@@ -87,11 +85,8 @@ export default function fun(props) {
   }, []);
 
   return (
-    <>
-      <DynamicWrapper margin="5rem auto" padding="3rem 1.5rem">
-        {isLoading && (
-          <LoadingIndicator top={"7rem"} size={120}></LoadingIndicator>
-        )}
+    <OuterWrapper>
+      <InnerWrapper>
         <h2>MEMBER LOGIN</h2>
         <h6>
           <br></br>
@@ -142,11 +137,37 @@ export default function fun(props) {
             variant="outlined"
           />
           <br />
-          <Button type="submit" disabled={isLoading}>
+          <Button className="submit-button" type="submit" disabled={isLoading}>
+            {isLoading && <LoadingIndicator></LoadingIndicator>}
             Login
           </Button>
         </form>
-      </DynamicWrapper>
-    </>
+      </InnerWrapper>
+    </OuterWrapper>
   );
 }
+
+const OuterWrapper = styled.div`
+  position: relative;
+  display: inline-block;
+  left: 50%;
+  transform: translate(-50%, 0);
+
+  margin-top: 5rem;
+  padding: 3rem 1.5rem;
+
+  border: 3px solid black;
+
+  text-align: center;
+`;
+
+const InnerWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  & .submit-button {
+    width: 440px;
+    margin: 0 12px;
+  }
+`;

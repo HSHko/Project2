@@ -134,6 +134,11 @@ const PostLikeWrapper = styled.div`
     align-items: center;
   }
 
+  & .like,
+  .dislike {
+    margin: 0 0.5rem;
+  }
+
   & .like-cnt,
   .dislike-cnt {
     color: red;

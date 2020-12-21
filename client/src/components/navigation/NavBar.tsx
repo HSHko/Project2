@@ -58,7 +58,7 @@ export default function fun() {
           <CorpLogo>CorpLogo</CorpLogo>
         </div>
         <RWrapper>
-          <Hide shorterThan={"tablet"}>
+          <Hide whenShorterThan={"tablet"}>
             <LinksWrapper>
               {currentMenuItems.map((e) => {
                 if (e.event == "link") {
@@ -103,8 +103,8 @@ const Wrapper = styled.div`
 
 const Appbar = styled.div`
   width: 100%;
-  max-width: ${(p) => p.theme.vars.navbar.maxWidth};
-  height: ${(p) => p.theme.vars.navbar.height};
+  max-width: ${(p) => p.theme.vars.maxWidth.main};
+  height: 3.5rem;
   margin: 0 auto;
   display: flex;
   justify-content: space-between;

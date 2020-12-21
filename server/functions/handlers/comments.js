@@ -1,44 +1,46 @@
 const { db, admin } = require("../util/admin");
 
-exports.getComments = async (req, res) => {
+exports.getCommentsFromPost = async (req, res) => {
   const reqData = {
     idx: req.params.idx,
   };
   let resData = [];
 
   try {
-    const commentsQry = db
-      .collection("comments")
-      .where(`recipient`, `==`, `reqData.idx`)
-      .orderBy(`created_at`, `desc`)
-      .limit(20) // TODO: comment pages
+    const commentsQry = await db
+      .collection(`comments`)
+      .doc(`${reqData.idx}`)
+      .collection(`comments`)
       .get();
-
-    if (commentsQry.empty) throw { errors: "comment not found" };
+    if (commentsQry.empty) throw { comments: "empty" };
 
     for (const doc of commentsQry.docs) {
+      let pushData = {};
+
       const userQry = await db
-        .collection("users")
+        .collection(`users`)
         .doc(`${doc.data().donor}`)
         .get();
+      if (!userQry.exists) continue;
 
-      if (doc.data.status === "disabled") {
-        resData.push({
-          // recipient: "",
-          donor: "",
-          body: "このコメントは削除されました。",
-          created_at: "",
-          like_cnt: 0,
-        });
-      } else {
-        resData.push({
-          // recipient: "",
-          donor: userQry.data().sign_id,
-          body: doc.data().body,
-          created_at: doc.data().created_at,
-          like_cnt: doc.data().like_cnt,
-        });
+      pushData = {
+        status: doc.data().status,
+        donor: userQry.data().sign_id,
+        // donor: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        body: doc.data().body,
+        created_at: doc.data().created_at.toDate().toISOString(),
+      };
+
+      if (doc.data().status === `disabled`) {
+        pushData = {
+          ...pushData,
+          donor: `deleted`,
+          body: `deleted`,
+        };
       }
+
+      resData.push(pushData);
+      console.log({ check: `pushData: ${pushData.donor}` });
     }
 
     return res.status(200).json(resData);
@@ -48,25 +50,68 @@ exports.getComments = async (req, res) => {
   }
 };
 
-exports.addComment = async (req, res) => {
+exports.addCommentToPost = async (req, res) => {
   const reqData = {
-    donor: req.fbAuth.userQry.id,
-    recipient: req.params.idx,
+    donor: req.fbAuth.uid,
+    recipient: parseInt(req.params.idx),
     body: req.body.body,
+  };
+  let resData = {
+    result: `comment added to post idx: ${reqData.recipient}`,
   };
   let newData = {};
 
   try {
+    if (reqData.body.length < 4)
+      throw { body_length: `comment length must be longer than 4 characters` };
+
+    const postQry = await db
+      .collection(`posts`)
+      .where(`idx`, `==`, reqData.recipient)
+      .limit(1)
+      .get();
+    if (postQry.empty) throw { post: "not exist" };
+    console.log({
+      check: `postQry.docs[0].data().idx: ${postQry.docs[0].data().idx}`,
+    });
+
+    const commentsQry = await db
+      .collection(`comments`)
+      .doc(`${postQry.docs[0].data().idx}`)
+      .collection(`comments`)
+      .get();
+    let commentIdx = 1;
+    let postedCommentsQry = null;
+    if (!commentsQry.empty) {
+      console.log({ check: `commentsQry exists` });
+      postedCommentsQry = await db
+        .collection(`comments`)
+        .doc(`${postQry.docs[0].data().idx}`)
+        .collection(`comments`)
+        .orderBy(`created_at`, `desc`)
+        .limit(1)
+        .get();
+      commentIdx = postedCommentsQry.docs[0].data().idx + 1;
+    }
+
     newData = {
-      recipient: reqData.recipient,
+      idx: commentIdx,
+      status: "",
       donor: reqData.donor,
       body: reqData.body,
       created_at: admin.firestore.Timestamp.now(),
       like_cnt: 0,
+      dislike_cnt: 0,
     };
 
-    await db.collection("comments").add(newData);
-    return res.status(200).json(resData);
+    await db
+      .collection(`comments`)
+      .doc(`${reqData.recipient}`)
+      .collection(`comments`)
+      .doc(`${commentIdx}`)
+      .set(newData);
+
+    return res.status(201).json(resData);
   } catch (err) {
     console.error(err);
     return res.status(500).json(err);

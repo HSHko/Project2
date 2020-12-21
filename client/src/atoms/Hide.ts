@@ -16,14 +16,14 @@ export const deviceSize = {
 };
 
 interface Props {
-  shorterThan?: "mobile" | "tablet" | "laptop";
-  longerThan?: "mobile" | "tablet" | "laptop";
+  whenShorterThan?: "mobile" | "tablet" | "laptop";
+  whenLongerThan?: "mobile" | "tablet" | "laptop";
 }
 
 export default styled.div.attrs(() => ({}))<Props>`
   ${(p) => {
-    if (p.shorterThan) {
-      switch (p.shorterThan) {
+    if (p.whenShorterThan) {
+      switch (p.whenShorterThan) {
         case "mobile":
           return `@media(max-width: ${deviceSize.mobile.min}) {display:none;}`;
         case "tablet":
@@ -33,8 +33,8 @@ export default styled.div.attrs(() => ({}))<Props>`
         default:
           break;
       }
-    } else if (p.longerThan) {
-      switch (p.longerThan) {
+    } else if (p.whenLongerThan) {
+      switch (p.whenLongerThan) {
         case "mobile":
           return `@media(min-width: ${deviceSize.mobile.max}) {display:none;}`;
         case "tablet":

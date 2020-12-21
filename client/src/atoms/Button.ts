@@ -17,9 +17,9 @@ export default styled.button.attrs(() => ({}))<Props>`
   z-index: 0;
   position: relative;
   display: flex;
-  align-items: center;
-  margin: ${(p) => (p.margin ? p.margin : `auto 0.5rem`)};
-  padding: 0.5rem 1rem;
+
+  margin: ${(p) => (p.margin ? p.margin : `0`)};
+  padding: 0.4rem 1rem;
 
   overflow: hidden;
   cursor: pointer;
@@ -45,6 +45,9 @@ export default styled.button.attrs(() => ({}))<Props>`
     }
   }};
   background-color: inherit;
+
+  justify-content: center;
+  align-items: center;
 
   line-height: 1.15rem;
   font-weight: 700;

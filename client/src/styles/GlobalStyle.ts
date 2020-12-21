@@ -13,6 +13,14 @@ const globalStyle = createGlobalStyle`
     color: inherit;
   }
   
+  input {
+    padding: 0.8rem;
+  }
+
+  textarea {
+    padding: 0.8rem;
+  }
+  
   .text-center {text-align: center;}
   .disp-flex {display: flex;}
   .disp-inline {display: inline;}

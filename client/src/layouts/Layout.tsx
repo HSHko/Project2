@@ -36,6 +36,6 @@ export default function fun(props) {
 }
 
 const OuterWrapper = styled.div`
-  max-width: ${(p) => p.theme.vars.navbar.maxWidth};
+  max-width: ${(p) => p.theme.vars.maxWidth.main};
   margin: 0 auto;
 `;

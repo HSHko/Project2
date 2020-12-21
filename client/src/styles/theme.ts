@@ -28,22 +28,22 @@ export const colors = {
       bg: phalette.brown[4],
     },
   },
+  border: {
+    main: phalette.bluegray[6],
+    light: phalette.gray[4],
+    dark: phalette.gray[7],
+  },
 };
 
 export const vars = {
-  backdrop: {
-    zIndex: 100,
+  zIndex: {
+    backdrop: 100,
+    overlay: 80,
+    navbar: 5,
+    sidebar: 120,
   },
-  overlay: {
-    zIndex: 80,
-  },
-  sidebar: {
-    zIndex: 120,
-  },
-  navbar: {
-    maxWidth: "1080px",
-    height: "3.5rem",
-    zIndex: 5,
+  maxWidth: {
+    main: "1080px",
   },
   footer: {
     bgColor: colors.black,

@@ -37,7 +37,7 @@ export default function fun(props) {
 
 export async function getServerSideProps(context) {
   let preProps = {
-    postData: null,
+    postData: { status: `disabled` },
   };
 
   try {
@@ -49,8 +49,6 @@ export async function getServerSideProps(context) {
     );
     if (!postQry.ok) throw { errors: await postQry.json() };
     const postData = await postQry.json();
-
-    if (postData.status === "disabled") throw { error: "disabled post" };
 
     preProps.postData = postData;
   } catch (err) {
