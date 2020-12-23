@@ -4,7 +4,7 @@ import { isContext } from "vm";
 
 // Communication stuff
 // import axios from 'axios';
-// import NextLink from "next/link";
+import NextLink from "next/link";
 // import NextRouter from "next/router";
 // import { useRouter } from "next/router";
 
@@ -57,12 +57,14 @@ export default function fun(props) {
   });
 
   const handleOnClick = React.useCallback(() => {
-    console.log("ok, clicked")
-  }, [])
+    console.log("ok, clicked");
+  }, []);
 
   return (
     <Wrapper>
-      <div className="hmh" onClick={() => handleOnClick()}>{testText}</div>
+      <div className="hmh" onClick={() => handleOnClick()}>
+        {testText}
+      </div>
       <Button>
         {/* <Overlay size={30}></Overlay> */}
         {TEXT_NOTHING}
@@ -79,6 +81,14 @@ export default function fun(props) {
           className="textarea-body"
           placeholder="コメントを入力してください"></textarea>
       </div>
+
+      <NextLink href={`/test`}>
+        <a>
+          <button>
+            <h1>AAAA</h1>
+          </button>
+        </a>
+      </NextLink>
     </Wrapper>
   );
 }

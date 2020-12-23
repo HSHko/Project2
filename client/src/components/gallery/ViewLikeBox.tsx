@@ -13,9 +13,9 @@ import GradeIcon from "@material-ui/icons/Grade";
 import TrendingDownIcon from "@material-ui/icons/TrendingDown";
 
 // Redux stuff
-// import { useSelector } from "react-redux";
+import { shallowEqual, useSelector } from "react-redux";
 // import { useDispatch } from "react-redux";
-// import { RootState } from "store";
+import { RootState } from "store";
 
 // Components
 import { colors } from "styles/theme";
@@ -33,30 +33,43 @@ export default function fun(props) {
   const [dislikeCnt, setDislikeCnt] = React.useState(0);
 
   const refs = {
+    isScreening: React.useRef<any>(true),
     isFetching: React.useRef<any>(false),
   };
 
   React.useEffect(() => {
-    setIsLiked(props.preProps.postData.like_cnt > 0 ? true : false);
-    setIsDisliked(props.preProps.postData.dislike_cnt > 0 ? true : false);
     setLikeCnt(props.preProps.postData.like_cnt);
     setDislikeCnt(props.preProps.postData.dislike_cnt);
+    (async function () {
+      try {
+        const likeQry = await axios.post(
+          `/iikes/getselflikequantityfrompost/${nextRouter.query.idx}`,
+        );
+        setIsLiked(likeQry.data > 0 ? true : false);
+        setIsDisliked(likeQry.data > 0 ? true : false);
+      } catch (error) {
+        const res = error.response.data;
+        if (res.fb_auth) console.error({ screeningError: `not logined` });
+      } finally {
+        refs.isScreening.current = false;
+      }
+    })();
   }, []);
 
   const handleOnClickLike = React.useCallback(() => {
+    if (refs.isScreening.current) return;
     if (refs.isFetching.current) return;
 
     refs.isFetching.current = true;
     (async function () {
       try {
-        console.log(`/api/likes/addliketopost/${nextRouter.query.idx}?like=1`);
-        await axios.post(
+        const likeQry = await axios.post(
           `/api/likes/addliketopost/${nextRouter.query.idx}?like=1`,
         );
-        setLikeCnt(likeCnt + 1);
-        setDislikeCnt(isDisliked ? dislikeCnt - 1 : dislikeCnt);
-        setIsLiked(true);
-        setIsDisliked(false);
+        setLikeCnt(likeQry.data.like_cnt);
+        setDislikeCnt(likeQry.data.dislike_cnt);
+        setIsLiked(likeQry.data.selfLikeCnt > 0 ? true : false);
+        setIsDisliked(likeQry.data.selfLikeCnt < 0 ? true : false);
       } catch (err) {
         const res = err.response.data;
         if (res.fb_auth) {
@@ -69,17 +82,18 @@ export default function fun(props) {
   }, [refs.isFetching.current]);
 
   const handleOnClickDislike = React.useCallback(() => {
+    if (refs.isScreening.current) return;
     if (refs.isFetching.current) return;
     refs.isFetching.current = true;
     (async function () {
       try {
-        await axios.post(
+        const likeQry = await axios.post(
           `/api/likes/addliketopost/${nextRouter.query.idx}?like=-1`,
         );
-        setLikeCnt(isLiked ? likeCnt - 1 : likeCnt);
-        setDislikeCnt(dislikeCnt + 1);
-        setIsLiked(false);
-        setIsDisliked(true);
+        setLikeCnt(likeQry.data.like_cnt);
+        setDislikeCnt(likeQry.data.dislike_cnt);
+        setIsLiked(likeQry.data.selfLikeCnt > 0 ? true : false);
+        setIsDisliked(likeQry.data.selfLikeCnt < 0 ? true : false);
       } catch (err) {
         const res = err.response.data;
         if (res.fb_auth) {

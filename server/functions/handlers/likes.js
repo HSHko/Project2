@@ -13,12 +13,13 @@ exports.addLikeToPost = async (req, res) => {
 
   try {
     const likeDoc = db.collection(`likes`).doc(req.fbAuth.uid);
-    const likeQry = await likeDoc.get();
+    let likeQry = await likeDoc.get();
+    if (!likeQry.exists) {
+      await likeDoc.set({});
+      likeQry = await likeDoc.get();
+    }
 
-    let selfLikeCnt = 0;
-    if (!likeQry.data()[reqData.postIdx])
-      await likeDoc.set({ [reqData.postIdx]: 0 });
-    else selfLikeCnt = likeQry.data()[reqData.postIdx];
+    let selfLikeCnt = likeQry.data()[reqData.postIdx] || 0;
 
     if (reqData.likeQuantity > 0 && selfLikeCnt > 0)
       throw { already_liked: "already liked" };
@@ -75,10 +76,8 @@ exports.addLikeToPost = async (req, res) => {
       }
     }
 
-    console.log({ selfLikeCnt: selfLikeCnt, correctionValue: correctionValue });
-
     await likeDoc.update({
-      [reqData.postIdx]: FieldValue.increment(correctionValue.quantity),
+      [reqData.postIdx]: selfLikeCnt + correctionValue.quantity,
     });
 
     await db
@@ -89,9 +88,37 @@ exports.addLikeToPost = async (req, res) => {
         dislike_cnt: FieldValue.increment(correctionValue.dislike),
       });
 
+    resData = {
+      ...resData,
+      selfLikeCnt: selfLikeCnt + correctionValue.quantity,
+      like_cnt: postQry.docs[0].data().like_cnt + correctionValue.like,
+      dislike_cnt: postQry.docs[0].data().dislike_cnt + correctionValue.dislike,
+    };
+
     return res.status(201).json(resData);
   } catch (err) {
     console.error(err);
     return res.status(500).json(err);
+  }
+};
+
+exports.getSelfLikeQuantityFromPost = async (req, res) => {
+  const reqData = {
+    pageIdx: req.query.page,
+  };
+  const resData = 0;
+
+  try {
+    const likeQry = await db.collection(`likes`).doc(req.fbAuth.uid).get();
+    if (!likeQry.exists) throw { likeDoc: "not found" };
+
+    const likeQuantity = likeQry.data()[reqData.pageIdx] || 0;
+
+    resData = likeQuantity;
+
+    res.status(200).json(resData);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json(err);
   }
 };

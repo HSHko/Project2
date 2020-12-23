@@ -33,21 +33,15 @@ export default function fun(props) {
   // const dispatch = useDispatch();
 
   return (
-    <>
+    <Wrapper>
       <h1>GALLERY</h1>
-      <Wrapper>
-        <List preProps={props.preProps} routeName="/gallery"></List>
-      </Wrapper>
-    </>
+
+      <List preProps={props.preProps} routeName="/gallery"></List>
+    </Wrapper>
   );
 }
 
-const Wrapper = styled.div`
-  border: 3px dotted red;
-  width: 80%;
-  margin: 0 auto;
-  margin-top: 1rem;
-`;
+const Wrapper = styled.div``;
 
 export async function getServerSideProps(context) {
   let preProps = {
@@ -56,7 +50,7 @@ export async function getServerSideProps(context) {
 
   try {
     const postsQry = await fetch(
-      `${process.env.baseUrl}/api/posts/getposts/${context.query.page}`,
+      `${process.env.BASE_URL}/api/posts/getposts/${context.query.page}`,
       {
         method: "GET",
       },

@@ -15,7 +15,6 @@ import { MaterialTheme } from "styles/theme";
 import { Provider } from "react-redux";
 import { store } from "store";
 import { userAction } from "store";
-import { refreshToken } from "util/refreshToken";
 
 // Components
 import Layout from "layouts/Layout";
@@ -104,7 +103,7 @@ MyApp.getInitialProps = async (context) => {
     }
 
     const userDetailsQry = await fetch(
-      `${process.env.baseUrl}/api/users/getuserdetails`,
+      `${process.env.BASE_URL}/api/users/getuserdetails`,
       {
         method: "POST",
         headers: {

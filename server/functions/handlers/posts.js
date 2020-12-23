@@ -1,5 +1,7 @@
 const { db, admin } = require("../util/admin");
 const { FieldValue } = require("firebase-admin").firestore;
+const { splitTimeStamp } = require("../util/converters");
+const firebase = require("firebase");
 
 // 정렬 참고
 // https://firebase.google.com/docs/firestore/query-data/order-limit-data?hl=ko
@@ -37,6 +39,16 @@ exports.getPosts = async (req, res) => {
       if (!doc.exists) continue;
       const usersQry = await db.collection(`users`).doc(doc.data().donor).get();
 
+      let createdAt = splitTimeStamp(doc.data().created_at);
+
+      const currentTime = splitTimeStamp(admin.firestore.Timestamp.now());
+
+      if (currentTime.day !== createdAt.day) {
+        createdAt = `${createdAt.month}.${createdAt.day}`;
+      } else {
+        createdAt = `${createdAt.hour}:${createdAt.min}`;
+      }
+
       if (doc.data().status === "disabled") {
         resData.push({
           idx: doc.data().idx,
@@ -44,9 +56,9 @@ exports.getPosts = async (req, res) => {
           category: "",
           title: "このポストはは削除されました",
           created_at: "",
-          updated_at: "",
           donor: "",
           view_cnt: doc.data().view_cnt,
+          like_quantity: doc.data().like_cnt - doc.data().dislike_cnt,
           like_cnt: doc.data().like_cnt,
           dislike_cnt: doc.data().dislike_cnt,
           comment_cnt: doc.data().comment_cnt,
@@ -57,10 +69,10 @@ exports.getPosts = async (req, res) => {
           status: "",
           category: doc.data().category,
           title: doc.data().title,
-          created_at: doc.data().created_at.toDate().toISOString(),
-          updated_at: doc.data().updated_at.toDate().toISOString(),
+          created_at: createdAt,
           donor: usersQry.data().sign_id,
           view_cnt: doc.data().view_cnt,
+          like_quantity: doc.data().like_cnt - doc.data().dislike_cnt,
           like_cnt: doc.data().like_cnt,
           dislike_cnt: doc.data().dislike_cnt,
           comment_cnt: doc.data().comment_cnt,
@@ -98,19 +110,22 @@ exports.getPost = async (req, res) => {
       .get();
     if (!userQry.exists) throw { errors: "user not found" };
 
-    const likeQry = await db
-      .collection(`likes`)
-      .doc(`${userQry.docs[0].id}`)
-      .get();
+    const likeQry = await db.collection(`likes`).doc(`${userQry.id}`).get();
     const likeData = likeQry.data()[postQry.docs[0].id] || 0;
+
+    let createdAt = splitTimeStamp(postQry.docs[0].data().created_at);
+    createdAt = `${createdAt.days} ${createdAt.hours}`;
+    let updatedAt = postQry.docs[0].data().updated_at
+      ? splitTimeStamp(postQry.docs[0].data().updated_at)
+      : "";
+
+    if (updatedAt) updatedAt = `${updatedAt.days} ${updatedAt.hours}`;
 
     resData = {
       ...postQry.docs[0].data(),
       donor: userQry.data().sign_id,
-      created_at: postQry.docs[0].data().created_at.toDate().toISOString(),
-      updated_at: postQry.docs[0].data().updated_at
-        ? postQry.docs[0].data().updated_at.toDate().toISOString()
-        : postQry.docs[0].data().created_at.toDate().toISOString(),
+      created_at: createdAt,
+      updated_at: updatedAt,
       self_like: likeData,
     };
 
@@ -118,7 +133,7 @@ exports.getPost = async (req, res) => {
       .collection(`posts`)
       .doc(postQry.docs[0].id)
       .update({
-        view_cnt: FieldValue.increment(reqData.likeQuantity),
+        view_cnt: FieldValue.increment(1),
       });
 
     return res.status(200).json(resData);
@@ -169,6 +184,42 @@ exports.addPost = async (req, res) => {
 
     await db.collection("posts").add(newData);
     return res.status(201).json({ result: `page ${idx} added` });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json(err);
+  }
+};
+
+exports.disablePost = async (req, res) => {
+  const reqData = {
+    // fbAuth, fbAuth.userData
+    postIdx: parseInt(req.params.postidx),
+  };
+  let resData = {
+    ok: `disabled post idx: ${reqData.postIdx}`,
+  };
+
+  try {
+    const postsQry = db
+      .collection(`posts`)
+      .where(`idx`, `==`, reqData.postIdx)
+      .limit(1)
+      .get();
+    if (postsQry.empty) throw { post: `not found` };
+
+    if (postsQry.docs[0].data().donor !== req.fbAuth.uid)
+      throw {
+        authority: `requested user ${req.fbAuth.uid} and donor ${
+          postsQry.docs[0].data().donor
+        } not match`,
+      };
+
+    await db
+      .collection(`posts`)
+      .doc(postsQry.docs[0].id)
+      .update({ status: `disabled` });
+
+    return res.status(201).json(err);
   } catch (err) {
     console.error(err);
     return res.status(500).json(err);

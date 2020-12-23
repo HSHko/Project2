@@ -28,7 +28,7 @@ export default function fun(props) {
   const { postData } = props.preProps;
 
   React.useEffect(() => {
-    // console.log(nextRouter.pathname);
+    console.log(`rendered`);
     // console.log({ postData: postData });
   });
 
@@ -43,14 +43,14 @@ export default function fun(props) {
             <HeaderDetails>
               <div className="left">
                 {postData.donor}
-                <hr style={{ display: `inline`, margin: `0 5px` }}></hr>
+                <hr className="vr"></hr>
                 {postData.created_at}
               </div>
               <div className="right">
                 조회 {postData.view_cnt}
-                <hr style={{ display: `inline`, margin: `0 5px` }}></hr>
+                <hr className="vr"></hr>
                 추천 {postData.like_cnt}
-                <hr style={{ display: `inline`, margin: `0 5px` }}></hr>
+                <hr className="vr"></hr>
                 댓글 {postData.comment_cnt}
               </div>
             </HeaderDetails>
@@ -72,6 +72,7 @@ export default function fun(props) {
 
 const Wrapper = styled.div`
   width: 100%;
+  padding: 0 0.5rem;
 `;
 
 const ViewHeader = styled.div`
@@ -85,12 +86,11 @@ const HeaderDetails = styled.div`
   display: flex;
   margin: 0 5px;
   justify-content: space-between;
-
-  & .left {
-    display: flex;
-  }
 `;
-const ViewBody = styled.div``;
+
+const ViewBody = styled.div`
+  white-space: pre-wrap;
+`;
 
 const ViewFooter = styled.div`
   display: flex;

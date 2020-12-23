@@ -31,6 +31,7 @@ const headSkeleton = {
 };
 
 export default function fun(props) {
+  const [likeCnt, setLikeCnt] = React.useState(0);
   React.useEffect(() => {}, []);
 
   return (
@@ -64,7 +65,7 @@ export default function fun(props) {
                     <td className="donor">{el.donor}</td>
                     <td className="created_at">{el.created_at}</td>
                     <td className="view_cnt">{el.view_cnt}</td>
-                    <td className="like_cnt">{el.like_cnt}</td>
+                    <td className="like_cnt">{el.like_quantity}</td>
                   </tr>
                 );
               })

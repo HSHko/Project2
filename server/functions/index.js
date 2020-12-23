@@ -1,4 +1,7 @@
 const functions = require("firebase-functions");
+const firebase = require("firebase");
+const pool = require("./util/pool");
+firebase.initializeApp(pool);
 
 const express = require("express");
 const app = express();
@@ -7,7 +10,9 @@ app.use(express.json()); // for parsing application/json
 const cors = require("cors");
 app.use(cors()); // for firebase deploy
 
-console.log({ msg: "server connected" });
+console.log({
+  msg: "server connected",
+});
 
 // 아래를 참고
 // https://github.com/hidjou/classsed-react-firebase-functions/tree/master/functions
@@ -21,10 +26,19 @@ const posts = require("./handlers/posts");
 app.get("/posts/getpost/:idx", posts.getPost);
 app.get("/posts/getposts/:page", posts.getPosts);
 app.post("/posts/addpost", fbAuth, posts.addPost);
+app.post("/posts/disablepost/:pageidx", fbAuth, posts.disablePost);
 
 const comments = require("./handlers/comments");
 app.get("/comments/getcommentsfrompost/:idx", comments.getCommentsFromPost);
 app.post("/comments/addcommenttopost/:idx", fbAuth, comments.addCommentToPost);
+
+const likes = require("./handlers/likes");
+app.post("/likes/addliketopost/:postIdx", fbAuth, likes.addLikeToPost);
+app.post(
+  "/likes/getselflikequantityfrompost/:postIdx",
+  fbAuth,
+  likes.getSelfLikeQuantityFromPost,
+);
 
 const users = require("./handlers/users");
 app.post("/users/signup", users.signUp);
@@ -32,9 +46,6 @@ app.post("/users/signin", users.signIn);
 app.post("/users/getuserdetails", fbAuth, users.getUserDetails);
 app.post("/users/adduserdetails", fbAuth, users.addUserDetails);
 app.post("/users/image", fbAuth, users.uploadImg);
-
-const likes = require("./handlers/likes");
-app.post("/likes/addliketopost/:postIdx", fbAuth, likes.addLikeToPost);
 
 // exports.unDeploy = {}
 const { region } = require("./util/config");

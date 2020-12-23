@@ -1,7 +1,6 @@
 module.exports = {
   env: {
-    // baseUrl: "http://localhost:5001/project2-7396c/asia-northeast1",
-    baseUrl: "http://asia-northeast1-project2-7396c.cloudfunctions.net",
+    BASE_URL: "http://asia-northeast1-project2-7396c.cloudfunctions.net",
   },
 };
 

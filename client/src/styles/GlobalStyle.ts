@@ -1,6 +1,7 @@
 import { createGlobalStyle } from "styled-components";
+import { colors } from "styles/theme";
 
-const globalStyle = createGlobalStyle`
+const GlobalStyle = createGlobalStyle`
   * {margin: 0; padding: 0; box-sizing: border-border-box;}
   *, *::before, *::after {box-sizing: border-box;}
 
@@ -8,9 +9,14 @@ const globalStyle = createGlobalStyle`
     font-family: 'Noto Sans KR', sans-serif;
   }
 
-  a, button {
+  a {
+    position: relative;
     text-decoration: none;
     color: inherit;
+
+    &:visited {
+      color: ${colors.purple[7]};
+    }
   }
   
   input {
@@ -24,10 +30,17 @@ const globalStyle = createGlobalStyle`
   .text-center {text-align: center;}
   .disp-flex {display: flex;}
   .disp-inline {display: inline;}
-  .vr {}
+  .vr {
+    display: inline;
+    margin: 0 0.25em; 
+    height: 1em;
+  }
 `;
 
-export default globalStyle;
+export default GlobalStyle;
+
+// default hr
+// hr { color: gray; border-style: inset; border-width: 1px; margin: 0.5em auto; }
 
 /*
 

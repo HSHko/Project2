@@ -42,14 +42,13 @@ export async function getServerSideProps(context) {
 
   try {
     const postQry = await fetch(
-      `${process.env.baseUrl}/api/posts/getpost/${context.query.idx}`,
+      `${process.env.BASE_URL}/api/posts/getpost/${context.query.idx}`,
       {
         method: "GET",
       },
     );
     if (!postQry.ok) throw { errors: await postQry.json() };
     const postData = await postQry.json();
-
     preProps.postData = postData;
   } catch (err) {
     // console.error(err);

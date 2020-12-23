@@ -1,15 +1,17 @@
 const { db, admin } = require("../util/admin");
+const { FieldValue } = require("firebase-admin").firestore;
+const { splitTimeStamp } = require("../util/converters");
 
 exports.getCommentsFromPost = async (req, res) => {
   const reqData = {
-    idx: req.params.idx,
+    postIdx: parseInt(req.params.idx),
   };
   let resData = [];
 
   try {
     const commentsQry = await db
       .collection(`comments`)
-      .doc(`${reqData.idx}`)
+      .doc(`${reqData.postIdx}`)
       .collection(`comments`)
       .get();
     if (commentsQry.empty) throw { comments: "empty" };
@@ -23,12 +25,13 @@ exports.getCommentsFromPost = async (req, res) => {
         .get();
       if (!userQry.exists) continue;
 
+      const createdAt = splitTimeStamp(doc.data().created_at);
+
       pushData = {
         status: doc.data().status,
-        donor: userQry.data().sign_id,
-        // donor: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        donor: userQry.data().sign_id, // length test => donor: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
         body: doc.data().body,
-        created_at: doc.data().created_at.toDate().toISOString(),
+        created_at: `${createdAt.month}.${createdAt.day} ${createdAt.hours}`,
       };
 
       if (doc.data().status === `disabled`) {
@@ -40,7 +43,7 @@ exports.getCommentsFromPost = async (req, res) => {
       }
 
       resData.push(pushData);
-      console.log({ check: `pushData: ${pushData.donor}` });
+      // console.log({ check: `pushData: ${pushData.donor}` });
     }
 
     return res.status(200).json(resData);
@@ -53,11 +56,11 @@ exports.getCommentsFromPost = async (req, res) => {
 exports.addCommentToPost = async (req, res) => {
   const reqData = {
     donor: req.fbAuth.uid,
-    recipient: parseInt(req.params.idx),
+    postIdx: parseInt(req.params.idx),
     body: req.body.body,
   };
   let resData = {
-    result: `comment added to post idx: ${reqData.recipient}`,
+    result: `comment added to post idx: ${reqData.postIdx}`,
   };
   let newData = {};
 
@@ -67,7 +70,7 @@ exports.addCommentToPost = async (req, res) => {
 
     const postQry = await db
       .collection(`posts`)
-      .where(`idx`, `==`, reqData.recipient)
+      .where(`idx`, `==`, reqData.postIdx)
       .limit(1)
       .get();
     if (postQry.empty) throw { post: "not exist" };
@@ -106,10 +109,17 @@ exports.addCommentToPost = async (req, res) => {
 
     await db
       .collection(`comments`)
-      .doc(`${reqData.recipient}`)
+      .doc(`${reqData.postIdx}`)
       .collection(`comments`)
       .doc(`${commentIdx}`)
       .set(newData);
+
+    await db
+      .collection(`posts`)
+      .doc(`${postQry.docs[0].id}`)
+      .update({
+        comment_cnt: FieldValue.increment(1),
+      });
 
     return res.status(201).json(resData);
   } catch (err) {

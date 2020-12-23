@@ -23,8 +23,6 @@ import { colors } from "styles/theme";
 import Hide from "atoms/Hide";
 import Button from "atoms/Button";
 
-import { refreshToken } from "util/refreshToken";
-
 export default function fun() {
   const nextRouter = useRouter();
   const dispatch = useDispatch();

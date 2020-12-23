@@ -33,7 +33,8 @@ export default function fun(props) {
 
   const refs = {
     newCommentBody: React.useRef<any>(""),
-    isFetching: React.useRef<boolean>(false),
+    isGetCommentsFetching: React.useRef<boolean>(false),
+    isAddCommentFetching: React.useRef<boolean>(false),
   };
 
   const isAuthenticated = useSelector(
@@ -53,32 +54,26 @@ export default function fun(props) {
   }, []);
 
   const getCommentsOfPage = React.useCallback(() => {
-    if (refs.isFetching.current) return;
-    refs.isFetching.current = true;
+    if (refs.isGetCommentsFetching.current) return;
+    refs.isGetCommentsFetching.current = true;
     (async function () {
       try {
         const commentsQry = await axios.get(
           `/api/comments/getcommentsfrompost/${nextRouter.query.idx}`,
         );
-        // console.log(commentsQry.data);
-        // console.log(JSON.stringify(commentsQry.data));
-        // console.log(JSON.parse(JSON.stringify(commentsQry.data)));
         setCommentsData(commentsQry.data);
       } catch (err) {
-        console.error(err);
         const res = err.response.data;
-
-        if (res.body_length) alert(`4文字以上入力してください`);
-        if (res.fbAuth) alert(`ログインが必要です。`);
+        console.error(res);
       } finally {
-        refs.isFetching.current = false;
+        refs.isGetCommentsFetching.current = false;
       }
     })();
   }, []);
 
   const handleOnClickSubmit = React.useCallback(() => {
-    if (refs.isFetching.current) return;
-    refs.isFetching.current = true;
+    if (refs.isAddCommentFetching.current) return;
+    refs.isAddCommentFetching.current = true;
     (async function () {
       try {
         const reqData = {
@@ -90,14 +85,17 @@ export default function fun(props) {
           reqData,
         );
 
-        console.log(`comment added to ${nextRouter.query.idx}`);
-        getCommentsOfPage();
+        (refs.newCommentBody.current.value = ""),
+          // console.log(`comment added to ${nextRouter.query.idx}`);
+          getCommentsOfPage();
       } catch (err) {
-        console.error(err);
         const res = err.response.data;
+        console.error(res);
+
+        if (res.body_length) alert(`4文字以上入力してください`);
         if (res.fb_auth) alert(`ログインが必要です`);
       } finally {
-        refs.isFetching.current = false;
+        refs.isAddCommentFetching.current = false;
       }
     })();
   }, []);
@@ -159,6 +157,7 @@ const CommentBlock = styled.div`
 
   & .body {
     flex-grow: 100;
+    white-space: pre-wrap;
   }
 
   & .created_at {

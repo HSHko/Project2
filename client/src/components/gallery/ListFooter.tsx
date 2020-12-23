@@ -46,57 +46,52 @@ export default function fun(props) {
     setNextExplorer(explorerMaker[0] + exhibitedPagesNum);
   }, [nextRouter.query.page]);
 
-  const handleOnClickWrite = React.useCallback(() => {
-    NextRouter.push("/gallery/write");
-  }, []);
-
-  const handleOnClickExplorer = React.useCallback(() => {
-    NextRouter.push(`list?page=${prevExplorer}`);
-    // NextRouter.reload();
-  }, [prevExplorer]);
-
   return (
     <Wrapper>
-      <PageMover>
-        prev: {prevExplorer} <br />
-        next: {nextExplorer} <br />
-        <Button
-          onClick={() => handleOnClickExplorer()}
-          className="page-link"
-          bg="transparent"
-          shadow="none"
-          as="a">
-          前
-        </Button>
-        {pageExplorers.map((el) => (
-          <NextLink key={`page_${el}`} href={`list?page=${el}`}>
-            <Button
-              className={`page-link ${el}`}
-              bg="transparent"
-              shadow="none"
-              as="a">
-              {el}
-            </Button>
-          </NextLink>
-        ))}
-        <NextLink href={`list?page=${nextExplorer}`}>
-          <Button className="page-link" bg="transparent" shadow="none" as="a">
-            次
-          </Button>
-        </NextLink>
-      </PageMover>
       <WriteMover>
         <div className="left"></div>
         <div className="right">
-          <Button
-            margin="0"
-            borderRadius="none"
-            shadow="none"
-            onClick={() => handleOnClickWrite()}>
-            Write
-          </Button>
+          <NextLink href={`/gallery/write`}>
+            <a>
+              <Button className="write-button" shadow="none">
+                Write
+              </Button>
+            </a>
+          </NextLink>
         </div>
       </WriteMover>
+      <PageMover>
+        <NextLink href={`list?page=${prevExplorer}`}>
+          <a>
+            <Button className="page-link" bg="transparent" shadow="none">
+              前
+            </Button>
+          </a>
+        </NextLink>
+        {pageExplorers.map((el, idx) => (
+          <React.Fragment key={idx}>
+            {idx !== 0 ? <hr className="vr"></hr> : null}
+            <NextLink href={`list?page=${el}`}>
+              <a>
+                <Button
+                  className={`page-link ${el}`}
+                  bg="transparent"
+                  shadow="none"
+                  color={nextRouter.query.page === el ? `red` : `black`}>
+                  {el}
+                </Button>
+              </a>
+            </NextLink>
+          </React.Fragment>
+        ))}
+        <NextLink href={`list?page=${nextExplorer}`}>
+          <a>
+            <Button className="page-link" bg="transparent" shadow="none">
+              次
+            </Button>
+          </a>
+        </NextLink>
+      </PageMover>
     </Wrapper>
   );
 }
@@ -105,21 +100,31 @@ const Wrapper = styled.div`
   width: 100%;
 `;
 
-const PageMover = styled.div`
-  display: flex;
-  justify-content: center;
-  width: 100%;
-
-  & > .page-link {
-    color: black;
-    padding: auto 0.2rem;
-    margin: auto 0.1rem;
-  }
-`;
-
 const WriteMover = styled.div`
   width: 100%;
   display: flex;
   justify-content: space-between;
-  margin-top: 0.33rem;
+  margin-top: 0.6rem;
+
+  & .right {
+    margin-right: 1.2rem;
+  }
+
+  & .write-button {
+    font-size: 1.1rem;
+    padding: 0.5rem 1.2rem;
+    border-radius: 10%;
+    border: 1px solid black;
+  }
+`;
+
+const PageMover = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+
+  & .page-link {
+    color: black;
+  }
 `;

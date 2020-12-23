@@ -5,8 +5,6 @@ const {
 } = require("../util/validators");
 const { uuid } = require("uuidv4");
 const firebase = require("firebase");
-const pool = require("../util/pool");
-firebase.initializeApp(pool);
 
 // created_at: admin.firestore.Timestamp.now().toDate().toISOString(),
 // created_at: admin.firestore.Timestamp.now()

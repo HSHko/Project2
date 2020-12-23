@@ -26,10 +26,12 @@ export default function fun(props) {
   return (
     <>
       <h1>Home!</h1>
-      <img className="t1" src={`/images/0y0.jpg`} alt="" height="400" width="400"></img>
-      <img className="t2" src={`/images/0a0.jpg`}></img>
-      <img className="t3" src={`/images/0b0.jpg`}></img>
-      <img className="t4" src={`/images/0c0.jpg`}></img>
+      <img
+        className="t1"
+        src={`/images/0y0.jpg`}
+        alt=""
+        height="400"
+        width="400"></img>
     </>
   );
 }
