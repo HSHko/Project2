@@ -70,25 +70,9 @@ export default function fun(props) {
         {TEXT_NOTHING}
       </Button>
 
-      <InlineButton onClick={() => handleOnClick()}>
-        {/* <Overlay size={30}></Overlay> */}
-        {TEXT_NOTHING}
-      </InlineButton>
-
-      <div>
-        <h1>TEXTAREA TEST</h1>
-        <textarea
-          className="textarea-body"
-          placeholder="コメントを入力してください"></textarea>
-      </div>
-
-      <NextLink href={`/test`}>
-        <a>
-          <button>
-            <h1>AAAA</h1>
-          </button>
-        </a>
-      </NextLink>
+      <Kotton>
+        <h1>KottonKottonKottonKottonKottonKottonKottonKotton</h1>
+      </Kotton>
     </Wrapper>
   );
 }
@@ -108,4 +92,14 @@ const InlineButton = styled.button`
   display: inline-block;
   left: 50%;
   transform: translate(-50%, 0);
+`;
+
+const media = {
+  t1: `@media(max-width: 800px)`,
+};
+
+const Kotton = styled.div`
+  ${media.t1} {
+    display: none;
+  }
 `;

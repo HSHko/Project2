@@ -1,4 +1,5 @@
 import React from "react";
+import Head from "next/head";
 import GlobalStyle from "styles/GlobalStyle";
 import { ThemeProvider as StyledThemeProvider } from "styled-components";
 import { StyledTheme } from "styles/theme";
@@ -21,12 +22,13 @@ import Layout from "layouts/Layout";
 
 import jwtDecode from "jwt-decode";
 import Axios from "axios";
-// import Cookies from "universal-cookie";
 import Cookies from "util/CookieHandler";
 
 function MyApp({ Component, pageProps, preProps }) {
+  const [key, setKey] = React.useState(0);
+
   React.useEffect(() => {
-    // 오류처리
+    // 오류처리, 참고: https://github.com/mui-org/material-ui/blob/master/examples/nextjs/pages/_app.js
     // Warning: Prop`className` did not match.
     //   Server: "PrivateNotchedOutline-legendLabelled-39"
     //   Client: "PrivateNotchedOutline-legendLabelled-3"
@@ -46,14 +48,23 @@ function MyApp({ Component, pageProps, preProps }) {
       store.dispatch(userAction.setAuthorizationHeader(preProps.token) as any);
       store.dispatch(userAction.setUser(preProps.userDetailsData) as any);
     }
+
+    setKey(1);
   }, []);
 
   return (
     <React.Fragment>
-      <CssBaseline />
-      <GlobalStyle />
-      <StyledThemeProvider theme={StyledTheme}>
+      <Head>
+        <title>My page</title>
+        <meta
+          name="viewport"
+          content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
+        />
+      </Head>
+      <StyledThemeProvider key={key} theme={StyledTheme}>
         <MaterialThemeProvider theme={MaterialTheme}>
+          <CssBaseline />
+          <GlobalStyle />
           <Provider store={store}>
             <Layout>
               <Component {...pageProps} />
@@ -83,7 +94,6 @@ MyApp.getInitialProps = async (context) => {
     if (!token) throw { error: "token not found" };
     // console.log({ token: token });
 
-    const decodedToken: any = jwtDecode(token);
     // const decodedToken = {
     //   iss: "https://securetoken.google.com/${projcetName}",
     //   aud: projectName,
@@ -96,6 +106,7 @@ MyApp.getInitialProps = async (context) => {
     //   email_verified: false,
     //   firebase: { identities: [Object], sign_in_provider: "password" },
     // };
+    const decodedToken: any = jwtDecode(token);
 
     if (Date.now() - decodedToken.exp * 1000 > 0) {
       preProps.alert = "ログイントークンの有効期限が切れました";
@@ -131,7 +142,6 @@ export default MyApp;
 
 // https://qiita.com/matamatanot/items/1735984f40540b8bdf91%E3%80%80
 // getInitialPropsを加えた4つのメソッドの実行環境とタイミングは以下の通りです。
-
 // サーバーサイド	クライアントサイド	実行タイミング
 // getStaticProps	◯	✗	ビルド時 (+ fallback=trueならリクエストに応じて)
 // getStaticPaths	◯	✗	ビルド時のみ

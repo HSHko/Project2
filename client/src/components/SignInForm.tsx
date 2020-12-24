@@ -139,7 +139,7 @@ export default function fun(props) {
           <br />
           <Button className="submit-button" type="submit" disabled={isLoading}>
             {isLoading && <LoadingIndicator></LoadingIndicator>}
-            Login
+            <h2>Login</h2>
           </Button>
         </form>
       </InnerWrapper>
@@ -169,5 +169,6 @@ const InnerWrapper = styled.div`
   & .submit-button {
     width: 440px;
     margin: 0 12px;
+    padding: 1rem;
   }
 `;

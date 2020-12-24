@@ -56,7 +56,7 @@ export default function fun() {
           <CorpLogo>CorpLogo</CorpLogo>
         </div>
         <RWrapper>
-          <Hide whenShorterThan={"tablet"}>
+          <Hide when="lessThanTablet">
             <LinksWrapper>
               {currentMenuItems.map((e) => {
                 if (e.event == "link") {

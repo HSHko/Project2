@@ -4,9 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "set CONFIG_ENV=development && node server.js",
-    "devv": "set CONFIG_ENV=production && node server.js",
     "build": "set CONFIG_ENV=production && next build",
-    "start": "next start",
+    "start": "set CONFIG_ENV=production && node server.js",
     "_dev": "next dev",
     "_build": "next build",
     "_start": "next start"
