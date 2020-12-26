@@ -3,7 +3,7 @@ const next = require("next");
 const { createProxyMiddleware } = require("http-proxy-middleware");
 
 const port = process.env.PORT || 3000;
-const dev = process.env.CONFIG_ENV.trim() === "development";
+const dev = process.env.NODE_ENV.trim() === "development";
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
@@ -12,7 +12,7 @@ const baseUrl = dev
   : "http://asia-northeast1-project2-7396c.cloudfunctions.net";
 
 console.log({
-  CONFIG_ENV: process.env.CONFIG_ENV,
+  NODE_ENV: process.env.NODE_ENV,
   baseUrl: baseUrl,
 });
 

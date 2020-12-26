@@ -26,6 +26,10 @@ const GlobalStyle = createGlobalStyle`
   textarea {
     padding: 0.8rem;
   }
+
+  ul {
+    list-style: none;
+  }
   
   .text-center {text-align: center;}
   .disp-flex {display: flex;}

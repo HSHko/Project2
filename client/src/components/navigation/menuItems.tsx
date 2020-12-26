@@ -5,16 +5,15 @@ import LockOpenIcon from "@material-ui/icons/LockOpen";
 
 interface Props {
   name: string;
-  event: "link" | "event";
-  link: string;
+  link?: string;
+  event?: string;
+  linkHelper?: string;
   label?: string;
   icon?: any;
 }
 
 const initialState: Props = {
   name: "",
-  event: "link",
-  link: "/",
 };
 
 const common: Props[] = [
@@ -22,24 +21,28 @@ const common: Props[] = [
     ...initialState,
     name: "Test",
     link: "/test",
+    linkHelper: "/test",
     icon: <HomeIcon />,
   },
   {
     ...initialState,
     name: "Home",
     link: "/",
+    linkHelper: "/",
     icon: <HomeIcon />,
   },
   {
     ...initialState,
     name: "Blog",
     link: "/blog",
+    linkHelper: "/blog",
     icon: <BookIcon />,
   },
   {
     ...initialState,
     name: "DashBoard",
     link: "/gallery/list?page=1",
+    linkHelper: "/gallery",
     icon: <HowToRegIcon />,
   },
 ];
@@ -48,8 +51,7 @@ const authenticated: Props[] = [
   {
     ...initialState,
     name: "Logout",
-    event: "event",
-    label: "logout",
+    event: "logout",
     icon: <HomeIcon />,
   },
 ];
@@ -59,13 +61,14 @@ const unAuthenticated: Props[] = [
     ...initialState,
     name: "Login",
     link: "/join/signin",
+    linkHelper: "/join/signin",
     icon: <LockOpenIcon />,
   },
   {
     ...initialState,
     name: "SignUp",
-    event: "link",
     link: "/join/signup",
+    linkHelper: "/join/signup",
     icon: <LockOpenIcon />,
   },
 ];

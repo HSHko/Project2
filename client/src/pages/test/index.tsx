@@ -52,12 +52,26 @@ export default function fun(props) {
   // const nextRouter = useRouter();
   // const dispatch = useDispatch();
 
+  const [sHeight, setSHeight] = React.useState(null);
+
+  const refs = {
+    ref: React.useRef({}),
+  };
+
   React.useEffect(() => {
     // console.log(nextRouter.pathname);
-  });
+    refs.ref.current
+      ? console.log({
+          offsetWidth: refs.ref.current["a"].offsetWidth,
+          offsetHeight: refs.ref.current["a"].offsetHeight,
+          offsetParent: refs.ref.current["a"].offsetParent,
+        })
+      : null;
+  }, []);
 
   const handleOnClick = React.useCallback(() => {
     console.log("ok, clicked");
+    setSHeight(`300px`);
   }, []);
 
   return (
@@ -65,7 +79,10 @@ export default function fun(props) {
       <div className="hmh" onClick={() => handleOnClick()}>
         {testText}
       </div>
-      <Button>
+      <Button
+        style={{ width: `${sHeight}` }}
+        ref={(el) => (refs.ref.current["a"] = el)}
+        onClick={() => handleOnClick()}>
         {/* <Overlay size={30}></Overlay> */}
         {TEXT_NOTHING}
       </Button>
@@ -73,6 +90,21 @@ export default function fun(props) {
       <Kotton>
         <h1>KottonKottonKottonKottonKottonKottonKottonKotton</h1>
       </Kotton>
+
+      <ul>
+        AAA
+        <li>BBB</li>
+        <li>BBB</li>
+        <li>BBB</li>
+      </ul>
+
+      <ul>
+        AAA
+        <li>BBB</li>
+        <li>BBB</li>
+        <li>BBB</li>
+        <li>BBB</li>
+      </ul>
     </Wrapper>
   );
 }

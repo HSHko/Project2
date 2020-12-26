@@ -23,16 +23,22 @@ import { colors } from "styles/theme";
 import Hide from "atoms/Hide";
 import Button from "atoms/Button";
 
-export default function fun() {
+export default function fun(props) {
   const nextRouter = useRouter();
   const dispatch = useDispatch();
+
+  const [currentMenuItems, setCurrentMenuItems] = React.useState([]);
+  const [linksHighlighterLeft, setLinksHighlighterLeft] = React.useState("0");
+
+  const refs = {
+    links: React.useRef<any>({}),
+    linksHighlighter: React.useRef<any>(),
+  };
 
   const isAuthenticated = useSelector(
     (x: RootState) => x.userReducer.isAuthenticated,
     shallowEqual,
   );
-
-  const [currentMenuItems, setCurrentMenuItems] = React.useState([]);
 
   React.useEffect(() => {
     console.log("rendered");
@@ -49,22 +55,44 @@ export default function fun() {
     }
   }, []);
 
+  const moveLinksHighlighterPosition = React.useMemo(() => {
+    if (!Object.keys(refs.links.current)) return;
+
+    let left = 0;
+    for (const helper in refs.links.current) {
+      left = refs.links.current[helper].offsetLeft;
+      // console.log({
+      //   helper: helper,
+      //   highlighter_left: left,
+      //   pathname: nextRouter.pathname,
+      // });
+      if (helper === `/`) {
+        if (helper === nextRouter.pathname) break;
+      } else {
+        if (nextRouter.pathname.match(new RegExp(`^${helper}`)) !== null) break;
+      }
+    }
+    setLinksHighlighterLeft(left.toString() + `px`);
+  }, [nextRouter.pathname, refs.links.current[`/`]]);
+
   return (
     <Wrapper>
       <Appbar>
-        <div>
-          <CorpLogo>CorpLogo</CorpLogo>
-        </div>
-        <RWrapper>
+        <div className="appbar-left">CorpLogo</div>
+        <div className="appbar-right">
           <Hide when="lessThanTablet">
-            <LinksWrapper>
+            <LinksBox>
               {currentMenuItems.map((e) => {
-                if (e.event == "link") {
+                if (e.link) {
                   return (
                     <NextLink key={e.name} href={e.link}>
-                      <Button bg={colors.navbar.top.bg} shadow="none" as="a">
-                        {e.name}
-                      </Button>
+                      <a
+                        ref={(el) => (refs.links.current[e.linkHelper] = el)}
+                        onClick={() => handleOnClickMenuItem(e)}>
+                        <Button bg={colors.navbar.top.bg} shadow="none">
+                          {e.name}
+                        </Button>
+                      </a>
                     </NextLink>
                   );
                 } else {
@@ -77,7 +105,11 @@ export default function fun() {
                   );
                 }
               })}
-            </LinksWrapper>
+
+              <LinksHighlighter
+                ref={refs.linksHighlighter}
+                style={{ left: linksHighlighterLeft }}></LinksHighlighter>
+            </LinksBox>
           </Hide>
           <Button
             shadow="transparent"
@@ -88,9 +120,12 @@ export default function fun() {
             }}>
             <MenuIcon></MenuIcon>
           </Button>
-        </RWrapper>
+        </div>
       </Appbar>
       <Sidebar></Sidebar>
+      <NavbarLine>
+        <hr className="Animation"></hr>
+      </NavbarLine>
     </Wrapper>
   );
 }
@@ -108,16 +143,58 @@ const Appbar = styled.div`
   justify-content: space-between;
   align-items: center;
   background-color: ${colors.navbar.top.bg};
+
+  & .appbar-left {
+  }
+
+  & .appbar-right {
+    display: flex;
+    align-items: center;
+  }
 `;
 
-const RWrapper = styled.div`
+const LinksBox = styled.div`
+  position: relative;
   display: flex;
   align-items: center;
 `;
 
-const CorpLogo = styled.div``;
+const LinksHighlighter = styled.div.attrs(() => ({}))`
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translate(0, -50%);
+  width: 20px;
+  height: 20px;
+  border: 1px solid cyan;
+  border-radius: 50%;
 
-const LinksWrapper = styled.div`
-  display: flex;
-  align-items: center;
+  opacity: 0.5;
+`;
+
+const NavbarLine = styled.div`
+  position: relative;
+  width: 100%;
+  height: 5px;
+
+  & .Animation {
+    position: absolute;
+    left: -100%;
+    top: 0;
+    width: 105%;
+    height: 100%;
+
+    background-color: ${colors.bluegray[6]};
+    box-shadow: 0px 1px 4px black;
+
+    animation: NavbarLine 1s ease 0.3s 1 forwards;
+    @keyframes NavbarLine {
+      from {
+        left: -100%;
+      }
+      to {
+        left: 0%;
+      }
+    }
+  }
 `;

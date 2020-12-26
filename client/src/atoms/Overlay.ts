@@ -32,8 +32,8 @@ export default styled.div.attrs(() => ({}))<Props>`
           width: 100%;
           height: 100%;
 
-          animation: anime 0.3s ease 0s 1 forwards;
-          @keyframes anime {
+          animation: OverlayAnime 0.3s ease 0s 1 forwards;
+          @keyframes OverlayAnime {
             from {
               background-color: black;
               opacity: 0;
@@ -66,8 +66,8 @@ export default styled.div.attrs(() => ({}))<Props>`
           width: 100%;
           height: 100%;
 
-          animation: anime 0.3s ease 0s 1 forwards;
-          @keyframes anime {
+          animation: OverlayAnime 0.3s ease 0s 1 forwards;
+          @keyframes OverlayAnime {
             from {
               background-color: black;
               opacity: 0;

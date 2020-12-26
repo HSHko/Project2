@@ -17,6 +17,7 @@ import Grid from "@material-ui/core/Grid";
 
 // Components
 // import Button from 'atoms/Button';
+import Hide from "atoms/Hide";
 import ListFooter from "./ListFooter";
 import { colors } from "styles/theme";
 
@@ -36,6 +37,10 @@ export default function fun(props) {
 
   return (
     <>
+      <ListWrapper>
+        <ListHead></ListHead>
+        <>{Object}</>
+      </ListWrapper>
       <ListBody>
         <thead>
           <tr>
@@ -76,6 +81,20 @@ export default function fun(props) {
     </>
   );
 }
+
+const ListWrapper = styled.div`
+  background-color: ${colors.blue[2]};
+
+  border-top: 1px solid red;
+  border-bottom: 1px solid red;
+`;
+
+const ListHead = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const ListPostBox = styled.div``;
 
 const ListBody = styled.table`
   table-layout: fixed;

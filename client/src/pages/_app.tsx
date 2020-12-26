@@ -8,7 +8,8 @@ import { StyledTheme } from "styles/theme";
 import axios from "axios";
 
 // Material-ui stuff
-import { CssBaseline } from "@material-ui/core";
+import { createGenerateClassName, CssBaseline } from "@material-ui/core";
+import { StylesProvider } from "@material-ui/core";
 import { ThemeProvider as MaterialThemeProvider } from "@material-ui/core";
 import { MaterialTheme } from "styles/theme";
 
@@ -23,6 +24,10 @@ import Layout from "layouts/Layout";
 import jwtDecode from "jwt-decode";
 import Axios from "axios";
 import Cookies from "util/CookieHandler";
+
+const generateClassName = createGenerateClassName({
+  productionPrefix: "myclasses-",
+});
 
 function MyApp({ Component, pageProps, preProps }) {
   const [key, setKey] = React.useState(0);
@@ -49,7 +54,9 @@ function MyApp({ Component, pageProps, preProps }) {
       store.dispatch(userAction.setUser(preProps.userDetailsData) as any);
     }
 
-    setKey(1);
+    if (process.env.NODE_ENV.trim() !== "development") {
+      setKey(1);
+    }
   }, []);
 
   return (
@@ -61,16 +68,19 @@ function MyApp({ Component, pageProps, preProps }) {
           content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
         />
       </Head>
-      <StyledThemeProvider key={key} theme={StyledTheme}>
-        <MaterialThemeProvider theme={MaterialTheme}>
-          <CssBaseline />
-          <GlobalStyle />
-          <Provider store={store}>
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          </Provider>
-        </MaterialThemeProvider>
+
+      <StyledThemeProvider theme={StyledTheme}>
+        <StylesProvider key={key} generateClassName={generateClassName}>
+          <MaterialThemeProvider theme={MaterialTheme}>
+            <CssBaseline />
+            <GlobalStyle />
+            <Provider store={store}>
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+            </Provider>
+          </MaterialThemeProvider>
+        </StylesProvider>
       </StyledThemeProvider>
     </React.Fragment>
   );

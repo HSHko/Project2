@@ -20,6 +20,10 @@
 // One way to fix this, is to force a rerender after hidration.
 // One way to do this, is to update the key prop on your component.
 
+// 2020.12.25 추가:
+// generateClassName을 styles components와 material-ui의 theme provider 사이에 넣으면 해결됨
+// 추가: production 상태에서는 이전과 같은 상태. production 상태일때만 사전렌더링 한번 더 할 것
+
 // ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 // 2020.12.23
 // ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
