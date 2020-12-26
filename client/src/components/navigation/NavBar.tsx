@@ -61,11 +61,7 @@ export default function fun(props) {
     let left = 0;
     for (const helper in refs.links.current) {
       left = refs.links.current[helper].offsetLeft;
-      // console.log({
-      //   helper: helper,
-      //   highlighter_left: left,
-      //   pathname: nextRouter.pathname,
-      // });
+      left += refs.links.current[helper].offsetWidth >> 1;
       if (helper === `/`) {
         if (helper === nextRouter.pathname) break;
       } else {
@@ -159,17 +155,40 @@ const LinksBox = styled.div`
   align-items: center;
 `;
 
+// 참고: https://stackoverflow.com/questions/50659284/how-do-i-make-a-css-rotating-animation/50659362
+// 참고2: https://codemyui.com/elastic-gradient-navigation-tab/
 const LinksHighlighter = styled.div.attrs(() => ({}))`
   position: absolute;
-  left: 0;
+  left: 0px;
   top: 50%;
-  transform: translate(0, -50%);
   width: 20px;
-  height: 20px;
-  border: 1px solid cyan;
+  transform: translate(0, -50%);
   border-radius: 50%;
 
   opacity: 0.5;
+
+  animation: LinksHighlighter 1s ease 0.5s infinite alternate;
+  @keyframes LinksHighlighter {
+    from {
+      border: 1px solid cyan;
+      width: 2rem;
+      height: 2rem;
+      transform: translate(-50%, -50%);
+    }
+    to {
+      border: 2px solid cyan;
+      width: 3rem;
+      height: 3rem;
+      transform: translate(-50%, -50%);
+    }
+  }
+
+  & .active {
+    transition-duration: 0.6s;
+  }
+
+  transition-duration: 0.6s;
+  transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
 `;
 
 const NavbarLine = styled.div`
