@@ -20,14 +20,14 @@ export const colors = {
     light: phalette.white,
     dark: phalette.white,
   },
-  navbar: {
-    top: {
-      bg: phalette.brown[3],
-    },
-    side: {
-      bg: phalette.brown[4],
-    },
-  },
+  // navbar: {
+  //   top: {
+  //     bg: phalette.brown[3],
+  //   },
+  //   side: {
+  //     bg: phalette.brown[4],
+  //   },
+  // },
   border: {
     main: phalette.bluegray[6],
     light: phalette.gray[4],

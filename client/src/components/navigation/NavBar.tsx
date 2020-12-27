@@ -23,16 +23,20 @@ import { colors } from "styles/theme";
 import Hide from "atoms/Hide";
 import Button from "atoms/Button";
 
+const navbarMainColor = colors.bluegray[5];
+
 export default function fun(props) {
   const nextRouter = useRouter();
   const dispatch = useDispatch();
 
   const [currentMenuItems, setCurrentMenuItems] = React.useState([]);
   const [linksHighlighterLeft, setLinksHighlighterLeft] = React.useState("0");
+  const [navbarColor, setNavbarColor] = React.useState(navbarMainColor);
 
   const refs = {
     links: React.useRef<any>({}),
     linksHighlighter: React.useRef<any>(),
+    test: React.useRef<any>(),
   };
 
   const isAuthenticated = useSelector(
@@ -47,17 +51,15 @@ export default function fun(props) {
     } else {
       setCurrentMenuItems([...menuItems.common, ...menuItems.unAuthenticated]);
     }
+
+    refs.links.current = refs.links.current;
+
+    if (nextRouter.pathname === "/") setNavbarColor("transparent");
   }, [isAuthenticated]);
 
-  const handleOnClickMenuItem = React.useCallback((e) => {
-    if (e.name == "Logout") {
-      dispatch(userAction.logout());
-    }
-  }, []);
-
-  const moveLinksHighlighterPosition = React.useMemo(() => {
+  // move links highlighter
+  React.useEffect(() => {
     if (!Object.keys(refs.links.current)) return;
-
     let left = 0;
     for (const helper in refs.links.current) {
       left = refs.links.current[helper].offsetLeft;
@@ -69,15 +71,41 @@ export default function fun(props) {
       }
     }
     setLinksHighlighterLeft(left.toString() + `px`);
-  }, [nextRouter.pathname, refs.links.current[`/`]]);
+  }, [currentMenuItems, nextRouter.pathname]);
+
+  // navbar color maker
+  React.useEffect(() => {
+    if (nextRouter.pathname === "/") setNavbarColor("transparent");
+    else setNavbarColor(navbarMainColor);
+  }, [nextRouter.pathname]);
+
+  const handleOnClickMenuItem = React.useCallback((e) => {
+    if (e.name == "Logout") {
+      dispatch(userAction.logout());
+    }
+  }, []);
 
   return (
-    <Wrapper>
+    <Wrapper bg={navbarColor}>
       <Appbar>
-        <div className="appbar-left">CorpLogo</div>
+        <div
+          ref={(el) => (refs.links.current[`a`] = el)}
+          className="appbar-left">
+          <div className="appbar-logo">
+            <NextLink href="/">
+              <a className="inherit">
+                <h2>Temp logo</h2>
+              </a>
+            </NextLink>
+          </div>
+        </div>
+
         <div className="appbar-right">
           <Hide when="lessThanTablet">
             <LinksBox>
+              <LinksHighlighter
+                ref={refs.linksHighlighter}
+                style={{ left: linksHighlighterLeft }}></LinksHighlighter>
               {currentMenuItems.map((e) => {
                 if (e.link) {
                   return (
@@ -85,7 +113,10 @@ export default function fun(props) {
                       <a
                         ref={(el) => (refs.links.current[e.linkHelper] = el)}
                         onClick={() => handleOnClickMenuItem(e)}>
-                        <Button bg={colors.navbar.top.bg} shadow="none">
+                        <Button
+                          bg="transparent"
+                          shadow="none"
+                          borderRadius={"50%"}>
                           {e.name}
                         </Button>
                       </a>
@@ -101,15 +132,11 @@ export default function fun(props) {
                   );
                 }
               })}
-
-              <LinksHighlighter
-                ref={refs.linksHighlighter}
-                style={{ left: linksHighlighterLeft }}></LinksHighlighter>
             </LinksBox>
           </Hide>
           <Button
             shadow="transparent"
-            bg={colors.navbar.top.bg}
+            bg="transparent"
             onClick={() => {
               dispatch(sidebarAction.hi());
               dispatch(backdropAction.hi(sidebarAction.lo()));
@@ -126,11 +153,12 @@ export default function fun(props) {
   );
 }
 
-const Wrapper = styled.div`
-  background-color: ${(p) => p.theme.colors.lime[2]};
+const Wrapper = styled.div.attrs(() => ({}))<any>`
+  background-color: ${(p) => p.bg};
+  transition: all 0.5s;
 `;
 
-const Appbar = styled.div`
+const Appbar = styled.div.attrs(() => ({}))<any>`
   width: 100%;
   max-width: ${(p) => p.theme.vars.maxWidth.main};
   height: 3.5rem;
@@ -138,9 +166,16 @@ const Appbar = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: ${colors.navbar.top.bg};
+  background-color: ${(p) => p.bg};
+  transition: all 0.5s;
 
   & .appbar-left {
+  }
+
+  & .appbar-logo {
+    margin-left: 1rem;
+    font-family: "Hanalei Fill", cursive;
+    color: black;
   }
 
   & .appbar-right {
@@ -155,36 +190,41 @@ const LinksBox = styled.div`
   align-items: center;
 `;
 
-// 참고: https://stackoverflow.com/questions/50659284/how-do-i-make-a-css-rotating-animation/50659362
-// 참고2: https://codemyui.com/elastic-gradient-navigation-tab/
+const highlighterColor = colors.deeporange[5];
+
 const LinksHighlighter = styled.div.attrs(() => ({}))`
   position: absolute;
   left: 0px;
   top: 50%;
-  width: 20px;
-  transform: translate(0, -50%);
+  width: 2.2rem;
+  height: 2.2rem;
+  border: 2px solid ${highlighterColor};
   border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
 
   opacity: 0.5;
+
+  &::before {
+    position: absolute;
+    content: "";
+    left: 50%;
+    top: 50%;
+    width: 70%;
+    height: 70%;
+    transform: translate(-50%, -50%);
+    border: 2px solid ${highlighterColor};
+    border-radius: 50%;
+  }
 
   animation: LinksHighlighter 1s ease 0.5s infinite alternate;
   @keyframes LinksHighlighter {
     from {
-      border: 1px solid cyan;
-      width: 2rem;
-      height: 2rem;
-      transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%) scale(1);
     }
     to {
-      border: 2px solid cyan;
-      width: 3rem;
-      height: 3rem;
-      transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%) scale(1.2);
     }
-  }
-
-  & .active {
-    transition-duration: 0.6s;
   }
 
   transition-duration: 0.6s;
@@ -200,7 +240,7 @@ const NavbarLine = styled.div`
     position: absolute;
     left: -100%;
     top: 0;
-    width: 105%;
+    width: 100%;
     height: 100%;
 
     background-color: ${colors.bluegray[6]};

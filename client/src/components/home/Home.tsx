@@ -35,13 +35,14 @@ const icons = [
   `atomic_design.png`,
   `styled_components.png`,
   `express.png`,
+  `typescript.png`,
 ];
 
 export default function fun(props) {
   React.useEffect(() => {});
 
   return (
-    <>
+    <Wrapper>
       <h1>Home!</h1>
       <SkillsArea>
         Front End Development A JavaScript developer, familiar with several
@@ -49,17 +50,21 @@ export default function fun(props) {
         Back End Development Node, NoSQL, and ExpressJS server setup for API
         or/routing. <br />
         Development Tools Git, AWS, Webpack and more <br />
-        {icons.map((icon, idx) => (
+        {/* {icons.map((icon, idx) => (
           <img
             className="skill-icon"
             key={idx}
             src={`/images/home/icons/${icon}`}
             alt={icon}></img>
-        ))}
+        ))} */}
       </SkillsArea>
-    </>
+    </Wrapper>
   );
 }
+
+const Wrapper = styled.div`
+  background-color: red;
+`;
 
 const SkillsArea = styled.div`
   background-color: ${colors.gray[3]};

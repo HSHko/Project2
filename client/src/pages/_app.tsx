@@ -67,6 +67,9 @@ function MyApp({ Component, pageProps, preProps }) {
           name="viewport"
           content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
         />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Hanalei+Fill&display=swap"
+          rel="stylesheet"></link>
       </Head>
 
       <StyledThemeProvider theme={StyledTheme}>

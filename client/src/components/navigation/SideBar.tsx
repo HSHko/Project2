@@ -75,7 +75,7 @@ const Wrapper = styled.div<{ active?: boolean }>`
   width: 16rem;
   max-width: 50vh;
   height: 100vh;
-  background-color: ${colors.navbar.side.bg};
+  background-color: ${colors.brown[4]};
   ${(p) =>
     p.active === false
       ? css`
@@ -91,7 +91,7 @@ const Wrapper = styled.div<{ active?: boolean }>`
 const AppBar = styled.div`
   &.head {
     height: 3.5rem;
-    background-color: ${(p) => p.theme.colors.navbar.top.main};
+    background-color: ${colors.brown[4]};
     display: flex;
     align-items: center;
   }

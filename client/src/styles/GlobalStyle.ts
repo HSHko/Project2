@@ -2,6 +2,7 @@ import { createGlobalStyle } from "styled-components";
 import { colors } from "styles/theme";
 
 const GlobalStyle = createGlobalStyle`
+
   * {margin: 0; padding: 0; box-sizing: border-border-box;}
   *, *::before, *::after {box-sizing: border-box;}
 
@@ -16,6 +17,12 @@ const GlobalStyle = createGlobalStyle`
 
     &:visited {
       color: ${colors.purple[7]};
+    }
+  }
+
+  a.inherit {
+    &:visited {
+      color: inherit;
     }
   }
   
