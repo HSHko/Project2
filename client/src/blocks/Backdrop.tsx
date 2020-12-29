@@ -35,10 +35,6 @@ export default function fun(props) {
   );
 }
 
-const RButton = styled.button`
-  position: absolute;
-`;
-
 // const Backdrop = styled.button.attrs(() => ({}))<Props>`
 //   z-index: ${vars.backdrop.zIndex};
 //   position: absolute;

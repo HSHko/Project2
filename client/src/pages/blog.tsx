@@ -24,12 +24,6 @@ import { useRouter } from "next/router";
 export default function fun(props) {
   const nextRouter = useRouter();
 
-  React.useEffect(() => {
-    console.log(nextRouter.pathname);
-  });
-
-  // const dispatch = useDispatch();
-
   return (
     <>
       <h1>Blog</h1>

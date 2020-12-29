@@ -20,10 +20,14 @@ import MenuIcon from "@material-ui/icons/Menu";
 import Sidebar from "./Sidebar";
 import menuItems from "./menuItems";
 import { colors } from "styles/theme";
+import { vars } from "styles/theme";
 import Hide from "atoms/Hide";
 import Button from "atoms/Button";
 
-const navbarMainColor = colors.bluegray[5];
+const navbarMainColor = {
+  home: "transparent",
+  normal: colors.bluegray[5],
+};
 
 export default function fun(props) {
   const nextRouter = useRouter();
@@ -31,7 +35,8 @@ export default function fun(props) {
 
   const [currentMenuItems, setCurrentMenuItems] = React.useState([]);
   const [linksHighlighterLeft, setLinksHighlighterLeft] = React.useState("0");
-  const [navbarColor, setNavbarColor] = React.useState(navbarMainColor);
+  const [navbarColor, setNavbarColor] = React.useState(navbarMainColor.normal);
+  const [navbarPosition, setNavbarPosition] = React.useState("relative");
 
   const refs = {
     links: React.useRef<any>({}),
@@ -44,6 +49,7 @@ export default function fun(props) {
     shallowEqual,
   );
 
+  // set menu items
   React.useEffect(() => {
     console.log("rendered");
     if (isAuthenticated) {
@@ -52,12 +58,10 @@ export default function fun(props) {
       setCurrentMenuItems([...menuItems.common, ...menuItems.unAuthenticated]);
     }
 
-    refs.links.current = refs.links.current;
-
-    if (nextRouter.pathname === "/") setNavbarColor("transparent");
+    if (nextRouter.pathname === "/home") setNavbarColor(navbarMainColor.home);
   }, [isAuthenticated]);
 
-  // move links highlighter
+  // move link highlighter
   React.useEffect(() => {
     if (!Object.keys(refs.links.current)) return;
     let left = 0;
@@ -73,10 +77,16 @@ export default function fun(props) {
     setLinksHighlighterLeft(left.toString() + `px`);
   }, [currentMenuItems, nextRouter.pathname]);
 
-  // navbar color maker
+  // set navbar state by pathname
   React.useEffect(() => {
-    if (nextRouter.pathname === "/") setNavbarColor("transparent");
-    else setNavbarColor(navbarMainColor);
+    console.log({ path: nextRouter.pathname });
+    if (nextRouter.pathname === "/home") {
+      setNavbarColor(navbarMainColor.home);
+      setNavbarPosition("absolute");
+    } else {
+      setNavbarColor(navbarMainColor.normal);
+      setNavbarPosition("relative");
+    }
   }, [nextRouter.pathname]);
 
   const handleOnClickMenuItem = React.useCallback((e) => {
@@ -86,13 +96,13 @@ export default function fun(props) {
   }, []);
 
   return (
-    <Wrapper bg={navbarColor}>
+    <Wrapper position={navbarPosition} bg={navbarColor}>
       <Appbar>
         <div
           ref={(el) => (refs.links.current[`a`] = el)}
           className="appbar-left">
           <div className="appbar-logo">
-            <NextLink href="/">
+            <NextLink href="/home">
               <a className="inherit">
                 <h2>Temp logo</h2>
               </a>
@@ -145,7 +155,6 @@ export default function fun(props) {
           </Button>
         </div>
       </Appbar>
-      <Sidebar></Sidebar>
       <NavbarLine>
         <hr className="Animation"></hr>
       </NavbarLine>
@@ -154,11 +163,15 @@ export default function fun(props) {
 }
 
 const Wrapper = styled.div.attrs(() => ({}))<any>`
+  position: ${(p) => p.position};
+  z-index: ${vars.zIndex.navbar};
+  width: 100%;
   background-color: ${(p) => p.bg};
   transition: all 0.5s;
 `;
 
 const Appbar = styled.div.attrs(() => ({}))<any>`
+  position: relative;
   width: 100%;
   max-width: ${(p) => p.theme.vars.maxWidth.main};
   height: 3.5rem;
@@ -167,20 +180,20 @@ const Appbar = styled.div.attrs(() => ({}))<any>`
   justify-content: space-between;
   align-items: center;
   background-color: ${(p) => p.bg};
-  transition: all 0.5s;
 
-  & .appbar-left {
+  .appbar-left {
   }
 
-  & .appbar-logo {
+  .appbar-logo {
     margin-left: 1rem;
     font-family: "Hanalei Fill", cursive;
     color: black;
   }
 
-  & .appbar-right {
+  .appbar-right {
     display: flex;
     align-items: center;
+    margin-right: 2.5rem;
   }
 `;
 
@@ -202,8 +215,6 @@ const LinksHighlighter = styled.div.attrs(() => ({}))`
   border-radius: 50%;
   transform: translate(-50%, -50%);
   pointer-events: none;
-
-  opacity: 0.5;
 
   &::before {
     position: absolute;
@@ -236,7 +247,7 @@ const NavbarLine = styled.div`
   width: 100%;
   height: 5px;
 
-  & .Animation {
+  .Animation {
     position: absolute;
     left: -100%;
     top: 0;

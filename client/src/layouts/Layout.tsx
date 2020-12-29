@@ -6,10 +6,10 @@ import { useRouter } from "next/router";
 
 // Components
 import Navbar from "components/navigation/Navbar";
+import Sidebar from "components/navigation/Sidebar";
 import Footer from "components/footer/Footer";
 import Backdrop from "blocks/Backdrop";
 import LoadingUi from "components/LoadingUi";
-import Debugger from "components/Debugger";
 
 // 참고: nextjs에서 navigation bar 만들기
 // https://github.com/mukeshphulwani66/mystore2021-Ecommerce-nextjs/blob/master/components/Layout.js
@@ -26,16 +26,17 @@ export default function fun(props) {
       <LoadingUi></LoadingUi>
       <Backdrop></Backdrop>
       <Navbar></Navbar>
-      <OuterWrapper>
-        {/* <Debugger></Debugger> */}
-        {props.children}
-      </OuterWrapper>
-      <Footer></Footer>
+      <Sidebar></Sidebar>
+      <OuterWrapper>{props.children}</OuterWrapper>
+      {nextRouter.pathname !== "/home" && <Footer></Footer>}
     </>
   );
 }
 
 const OuterWrapper = styled.div`
+  position: relative;
+  z-index: 0;
+  width: 100%;
   max-width: ${(p) => p.theme.vars.maxWidth.main};
   margin: 0 auto;
 `;

@@ -4,7 +4,12 @@ import { colors } from "styles/theme";
 const GlobalStyle = createGlobalStyle`
 
   * {margin: 0; padding: 0; box-sizing: border-border-box;}
-  *, *::before, *::after {box-sizing: border-box;}
+  *::before, *::after {box-sizing: border-box;}
+
+  html {
+    /* scroll-behavior: smooth; */
+    
+  }
 
   body {
     font-family: 'Noto Sans KR', sans-serif;
@@ -41,11 +46,17 @@ const GlobalStyle = createGlobalStyle`
   .text-center {text-align: center;}
   .disp-flex {display: flex;}
   .disp-inline {display: inline;}
+
   .vr {
     display: inline;
     margin: 0 0.25em; 
     height: 1em;
   }
+
+  .displayNone {
+    display: none;
+  }
+
 `;
 
 export default GlobalStyle;

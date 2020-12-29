@@ -17,7 +17,7 @@ export default styled.div.attrs(() => ({}))<Props>`
         z-index: ${vars.zIndex.backdrop};
         top: 50%;
         left: 50%;
-        width: 100vh;
+        width: 100vw;
         height: 100vh;
 
         display: flex;
@@ -29,8 +29,8 @@ export default styled.div.attrs(() => ({}))<Props>`
         &::before {
           content: "";
           position: fixed;
-          width: 100%;
-          height: 100%;
+          width: 100vw;
+          height: 100vh;
 
           animation: OverlayAnime 0.3s ease 0s 1 forwards;
           @keyframes OverlayAnime {

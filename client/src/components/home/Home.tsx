@@ -17,62 +17,21 @@ import styled from "styled-components";
 // import { RootState } from "store";
 
 // Components
+import Introduce from "components/home/Introduce";
 // import Button from 'atoms/Button';
 import { colors } from "styles/theme";
-
-const icons = [
-  `javascript.png`,
-  `cpp.png`,
-  `css.png`,
-  `rest_client.png`,
-  `material_ui.png`,
-  `thunk.jpg`,
-  `redux.png`,
-  `nodejs.png`,
-  `firebase.png`,
-  `csharp.png`,
-  `axios.png`,
-  `atomic_design.png`,
-  `styled_components.png`,
-  `express.png`,
-  `typescript.png`,
-];
+import { vars } from "styles/theme";
 
 export default function fun(props) {
   React.useEffect(() => {});
 
   return (
-    <Wrapper>
-      <h1>Home!</h1>
-      <SkillsArea>
-        Front End Development A JavaScript developer, familiar with several
-        frameworks: <br />
-        Back End Development Node, NoSQL, and ExpressJS server setup for API
-        or/routing. <br />
-        Development Tools Git, AWS, Webpack and more <br />
-        {/* {icons.map((icon, idx) => (
-          <img
-            className="skill-icon"
-            key={idx}
-            src={`/images/home/icons/${icon}`}
-            alt={icon}></img>
-        ))} */}
-      </SkillsArea>
-    </Wrapper>
+    <>
+      <Introduce></Introduce>
+    </>
   );
 }
 
 const Wrapper = styled.div`
-  background-color: red;
-`;
-
-const SkillsArea = styled.div`
-  background-color: ${colors.gray[3]};
-
-  & .skill-icon {
-    border-radius: 70%;
-    width: 10rem;
-    height: 10rem;
-    object-fit: cover;
-  }
+  position: relative;
 `;

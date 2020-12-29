@@ -166,7 +166,7 @@ const InnerWrapper = styled.div`
   flex-direction: column;
   align-items: center;
 
-  & .submit-button {
+  .submit-button {
     width: 440px;
     margin: 0 12px;
     padding: 1rem;

@@ -27,8 +27,8 @@ const common: Props[] = [
   {
     ...initialState,
     name: "Home",
-    link: "/",
-    linkHelper: "/",
+    link: "/home",
+    linkHelper: "/home",
     icon: <HomeIcon />,
   },
   {

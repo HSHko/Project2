@@ -20,14 +20,6 @@ export const colors = {
     light: phalette.white,
     dark: phalette.white,
   },
-  // navbar: {
-  //   top: {
-  //     bg: phalette.brown[3],
-  //   },
-  //   side: {
-  //     bg: phalette.brown[4],
-  //   },
-  // },
   border: {
     main: phalette.bluegray[6],
     light: phalette.gray[4],
@@ -37,10 +29,10 @@ export const colors = {
 
 export const vars = {
   zIndex: {
-    backdrop: 100,
-    overlay: 80,
+    sidebar: 20,
+    backdrop: 10,
+    overlay: 8,
     navbar: 5,
-    sidebar: 120,
   },
   maxWidth: {
     main: "1080px",

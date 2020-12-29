@@ -86,25 +86,15 @@ export default function fun(props) {
         {/* <Overlay size={30}></Overlay> */}
         {TEXT_NOTHING}
       </Button>
-
-      <Kotton>
-        <h1>KottonKottonKottonKottonKottonKottonKottonKotton</h1>
-      </Kotton>
-
-      <ul>
-        AAA
-        <li>BBB</li>
-        <li>BBB</li>
-        <li>BBB</li>
-      </ul>
-
-      <ul>
-        AAA
-        <li>BBB</li>
-        <li>BBB</li>
-        <li>BBB</li>
-        <li>BBB</li>
-      </ul>
+      <Custom>
+        <section className="container">
+          <h1 className="child">Slide 1</h1>
+          <h1 className="child">Slide 2</h1>
+          <h1 className="child">Slide 3</h1>
+          <h1 className="child">Slide 4</h1>
+          <h1 className="child">Slide 5</h1>
+        </section>
+      </Custom>
     </Wrapper>
   );
 }
@@ -119,19 +109,30 @@ const Wrapper = styled.div`
   }
 `;
 
-const InlineButton = styled.button`
-  position: relative;
-  display: inline-block;
-  left: 50%;
-  transform: translate(-50%, 0);
-`;
+const Custom = styled.div`
+  .container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
 
-const media = {
-  t1: `@media(max-width: 800px)`,
-};
+    scroll-snap-type: y mandatory;
+    scroll-padding: 10px;
+    overflow-y: scroll;
 
-const Kotton = styled.div`
-  ${media.t1} {
-    display: none;
+    & > * {
+      position: relative;
+      height: 100%;
+      overflow: auto;
+
+      scroll-snap-align: center;
+    }
+  }
+
+  .child :nth-child(odd) {
+    background-color: red;
+  }
+
+  .child :nth-child(even) {
+    background-color: green;
   }
 `;
