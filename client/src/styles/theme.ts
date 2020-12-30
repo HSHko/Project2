@@ -29,10 +29,10 @@ export const colors = {
 
 export const vars = {
   zIndex: {
-    sidebar: 20,
-    backdrop: 10,
-    overlay: 8,
-    navbar: 5,
+    sidebar: 220,
+    backdrop: 210,
+    overlay: 208,
+    navbar: 205,
   },
   maxWidth: {
     main: "1080px",

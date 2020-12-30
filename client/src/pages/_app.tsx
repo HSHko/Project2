@@ -70,6 +70,9 @@ function MyApp({ Component, pageProps, preProps }) {
         <link
           href="https://fonts.googleapis.com/css2?family=Hanalei+Fill&display=swap"
           rel="stylesheet"></link>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Open+Sans"
+          rel="stylesheet"></link>
       </Head>
 
       <StyledThemeProvider theme={StyledTheme}>
