@@ -98,9 +98,9 @@ const ListPostBox = styled.div``;
 
 const ListBody = styled.table`
   table-layout: fixed;
+  border-collapse: collapse;
   width: 100%;
   margin: 0;
-  border-collapse: collapse;
 
   thead {
     tr {

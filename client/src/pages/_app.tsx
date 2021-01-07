@@ -71,7 +71,7 @@ function MyApp({ Component, pageProps, preProps }) {
           href="https://fonts.googleapis.com/css2?family=Hanalei+Fill&display=swap"
           rel="stylesheet"></link>
         <link
-          href="https://fonts.googleapis.com/css2?family=Open+Sans"
+          href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700;800"
           rel="stylesheet"></link>
       </Head>
 

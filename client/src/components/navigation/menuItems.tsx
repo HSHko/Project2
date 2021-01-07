@@ -19,28 +19,28 @@ const initialState: Props = {
 const common: Props[] = [
   {
     ...initialState,
-    name: "Test",
+    name: "TEST",
     link: "/test",
     linkHelper: "/test",
     icon: <HomeIcon />,
   },
   {
     ...initialState,
-    name: "Home",
+    name: "HOME",
     link: "/home",
     linkHelper: "/home",
     icon: <HomeIcon />,
   },
   {
     ...initialState,
-    name: "Blog",
+    name: "BLOG",
     link: "/blog",
     linkHelper: "/blog",
     icon: <BookIcon />,
   },
   {
     ...initialState,
-    name: "DashBoard",
+    name: "DASH BOARD",
     link: "/gallery/list?page=1",
     linkHelper: "/gallery",
     icon: <HowToRegIcon />,
@@ -50,7 +50,7 @@ const common: Props[] = [
 const authenticated: Props[] = [
   {
     ...initialState,
-    name: "Logout",
+    name: "LOGOUT",
     event: "logout",
     icon: <HomeIcon />,
   },
@@ -59,14 +59,14 @@ const authenticated: Props[] = [
 const unAuthenticated: Props[] = [
   {
     ...initialState,
-    name: "Login",
+    name: "LOGIN",
     link: "/join/signin",
     linkHelper: "/join/signin",
     icon: <LockOpenIcon />,
   },
   {
     ...initialState,
-    name: "SignUp",
+    name: "SIGN UP",
     link: "/join/signup",
     linkHelper: "/join/signup",
     icon: <LockOpenIcon />,

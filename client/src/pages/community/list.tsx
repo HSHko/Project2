@@ -18,39 +18,39 @@ import Grid from "@material-ui/core/Grid";
 
 // Components
 // import Button from 'atoms/Button';
-import List from "components/gallery/List";
+import List from "components/community/List";
 
 // interface Props {}
 
 export default function fun(props) {
   return (
     <Wrapper>
-      <List preProps={props.preProps} routeName="/gallery"></List>
+      <List></List>
     </Wrapper>
   );
 }
 
 const Wrapper = styled.div``;
 
-export async function getServerSideProps(context) {
-  let preProps = {
-    postsData: null,
-  };
+// export async function getServerSideProps(context) {
+//   let preProps = {
+//     postsData: null,
+//   };
 
-  try {
-    const postsQry = await fetch(
-      `${process.env.BASE_URL}/api/posts/getposts/${context.query.page}`,
-      {
-        method: "GET",
-      },
-    );
-    if (!postsQry.ok) throw { errors: await postsQry.json() };
-    const postsData = await postsQry.json();
+//   try {
+//     const postsQry = await fetch(
+//       `${process.env.BASE_URL}/api/posts/getposts/${context.query.page}`,
+//       {
+//         method: "GET",
+//       },
+//     );
+//     if (!postsQry.ok) throw { errors: await postsQry.json() };
+//     const postsData = await postsQry.json();
 
-    preProps.postsData = postsData;
-  } catch (err) {
-    // console.error(err);
-  }
+//     preProps.postsData = postsData;
+//   } catch (err) {
+//     // console.error(err);
+//   }
 
-  return { props: { preProps } };
-}
+//   return { props: { preProps } };
+// }

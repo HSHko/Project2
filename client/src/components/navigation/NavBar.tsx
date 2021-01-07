@@ -104,7 +104,7 @@ export default function fun(props) {
           <div className="appbar-logo">
             <NextLink href="/home">
               <a className="inherit">
-                <h2>Temp logo</h2>
+                <h1>HSH</h1>
               </a>
             </NextLink>
           </div>
@@ -186,7 +186,7 @@ const Appbar = styled.div.attrs(() => ({}))<any>`
 
   .appbar-logo {
     margin-left: 1rem;
-    font-family: "Hanalei Fill", cursive;
+    font-family: "Hanalei Fill", cursive, sans-serif;
     color: black;
   }
 

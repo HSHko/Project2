@@ -6,6 +6,72 @@ const firebase = require("firebase");
 // 정렬 참고
 // https://firebase.google.com/docs/firestore/query-data/order-limit-data?hl=ko
 
+exports.getPostsFromPage = async (req, res) => {
+  const reqData = {
+    page: parseInt(req.params.page),
+    postNumPerPage: 10,
+  };
+  let resData = [];
+
+  try {
+    // 見せるページの数は次のようにします
+    // first post = {(latest post idx) - (target page - 1)*(postNum per page)} から
+    // last post = (first post) - (postNum per page + 1)まで
+    if (reqData.page < 1) throw { errors: "invalid page" };
+
+    const latestPostQry = await db
+      .collection(`posts`)
+      .orderBy("idx", "desc")
+      .limit(1)
+      .get();
+    if (latestPost.empty) throw { errors: "no post found" };
+
+    const targetPage = reqData.page;
+    const postNumPerPage = reqData.postNumPerPage;
+    const latestPostIdx = latestPostQry.docs[0].data().idx;
+    let lastPostIdx = latestPostIdx - (targetPage - 1) * postNumPerPage;
+    let firstPostIdx = Math.max(1, latestPostIdx - postNumPerPage + 1);
+    if (lastPostIdx < firstPostIdx) lastPostIdx = firstPostIdx;
+
+    const postsListQry = await db
+      .collection(`posts`)
+      .where(`idx`, `<=`, lastPostIdx)
+      .where(`idx`, `>=`, firstPostIdx)
+      .limit(postNumPerPage)
+      .get();
+
+    for (const doc of postsListQry.docs) {
+      if (!doc.exists) continue;
+
+      let createdAt = splitTimeStamp(doc.data().created_at);
+      const currentTime = splitTimeStamp(admin.firestore.Timestamp.now());
+      if (currentTime.day !== createdAt.day) {
+        createdAt = `${createdAt.month}.${createdAt.day}`;
+      } else {
+        createdAt = `${createdAt.hour}:${createdAt.min}`;
+      }
+
+      let newData = {
+        idx: doc.data().idx,
+        status: doc.data().idx,
+        category: doc.data().category,
+        created_at: createdAt,
+        donor: doc.data().donor,
+        view_cnt: doc.data().view_cnt,
+        like_quantity: doc.data().like_cnt - doc.data().dislike_cnt,
+        comment_cnt: doc.data().comment_cnt,
+      };
+
+      resData.push(newData);
+    }
+
+    return res.status(200).json(resData);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json(err);
+  }
+};
+
 exports.getPosts = async (req, res) => {
   const reqData = {
     page: parseInt(req.params.page),

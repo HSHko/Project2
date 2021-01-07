@@ -27,16 +27,24 @@ export default function fun(props) {
       <Backdrop></Backdrop>
       <Navbar></Navbar>
       <Sidebar></Sidebar>
-      <OuterWrapper>{props.children}</OuterWrapper>
+      <OuterWrapper pathname={nextRouter.pathname}>
+        {props.children}
+      </OuterWrapper>
       {nextRouter.pathname !== "/home" && <Footer></Footer>}
     </>
   );
 }
 
-const OuterWrapper = styled.div`
+const OuterWrapper = styled.div.attrs(() => ({}))<any>`
   position: relative;
   z-index: 0;
   width: 100%;
-  max-width: ${(p) => p.theme.vars.maxWidth.main};
+  max-width: ${(p) => {
+    if (p.pathname === "/home") {
+      return `none`;
+    } else {
+      return p.theme.vars.maxWidth.main;
+    }
+  }};
   margin: 0 auto;
 `;

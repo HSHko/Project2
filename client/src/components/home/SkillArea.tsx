@@ -1,5 +1,6 @@
 import React from "react";
 import styled, { css } from "styled-components";
+import { useInView } from "react-intersection-observer";
 
 // Communication stuff
 // import axios from 'axios';
@@ -18,29 +19,18 @@ import CloseIcon from "@material-ui/icons/Close";
 
 // Components
 // import Button from 'atoms/Button';
-
-const icons = {
-  path: `/images/home/icons/`,
-  front: [
-    `typescript.png`,
-    `nodejs.png`,
-    `css.png`,
-    `styled_components.png`,
-    `atomic_design.png`,
-    `redux.png`,
-    `thunk.jpg`,
-    `material_ui.png`,
-    `axios.png`,
-    `rest_client.png`,
-  ],
-  back: [`javascript.png`, `express.png`, `firebase.png`],
-  other: [`cpp.png`, `csharp.png`, `github.png`, `vscode.png`],
-  // github
-};
+import { vars } from "styles/theme";
+import { icons } from "./tooltips";
 
 export default function fun(props) {
   const [renderer, setRenderer] = React.useState(false);
-  // const nextRouter = useRouter();
+  const [isGuideHi, setIsGuideHi] = React.useState(true);
+  const [guideCountdown, setGuideCountdown] = React.useState(5);
+  const [slideFlicker, setSlideFlicker] = React.useState(false);
+
+  const [inViewRef, inView] = useInView({
+    rootMargin: "500px 0px",
+  });
 
   const refs = {
     componentWrapper: React.useRef<any>(),
@@ -65,6 +55,34 @@ export default function fun(props) {
     }),
   };
 
+  // inView内に入った時、ガイドバブルのカウントダウンを開始
+  React.useEffect(() => {
+    if (!inView) return;
+
+    let start = 5;
+    let now = start;
+    setGuideCountdown(start);
+
+    let timer = setInterval(() => {
+      if (now <= 0 || refs.skillPresentBox.current["isOnProgress"]) {
+        handleOnClickSkillPresentBox("openBox");
+        clearInterval(timer);
+        setIsGuideHi(false);
+        return;
+      }
+
+      now--;
+      setGuideCountdown(now);
+      setSlideFlicker(true);
+      setSlideFlicker(false);
+    }, 1000);
+    return () => {
+      clearInterval(timer);
+    };
+  }, [inView]);
+
+  React.useEffect(() => {}, [guideCountdown]);
+
   const handleOnClickSkillPresentBox = React.useCallback(
     async (target) => {
       if (refs.skillPresentBox.current["isOnProgress"]) return;
@@ -72,6 +90,9 @@ export default function fun(props) {
 
       switch (target) {
         case "openBox":
+          setIsGuideHi(false);
+
+          // ボックスが開いている場合は、閉じて初期化する
           if (refs.skillPresentBox.current["isBoxOpened"]) {
             refs.skillPresentBox.current["isBoxOpened"] = false;
             refs.skillPresentBox.current["isCategoryOpened"] = false;
@@ -81,6 +102,7 @@ export default function fun(props) {
           } else {
             refs.skillPresentBox.current["isBoxOpened"] = true;
 
+            // カテゴリーの円を拡散させる
             const circleDist = 8;
             refs.skillPresentBox.current["trajectory"] = {
               ...refs.skillPresentBox.current["trajectory"],
@@ -90,6 +112,7 @@ export default function fun(props) {
             };
             setRenderer(!renderer);
 
+            // 各カテゴリーを移動させ、四角型に広げる
             await new Promise((x) => setTimeout(x, 800));
             const leftSideOffset =
               -(refs.componentWrapper.current.offsetWidth >> 1) +
@@ -130,6 +153,7 @@ export default function fun(props) {
             refs.skillPresentBox.current["isCategoryOpened"] = true;
             setRenderer(renderer);
 
+            // 間を入れてカテゴリーの各アイコンが乱雑にtransitionすることを防止する
             await new Promise((x) => setTimeout(x, 200));
             refs.skillPresentBox.current["isCategoryReady"] = true;
             setRenderer(!renderer);
@@ -142,12 +166,28 @@ export default function fun(props) {
     [renderer],
   );
 
-  React.useEffect(() => {});
-
   return (
     <Wrapper ref={refs.componentWrapper}>
       <SkillsPresentBox
         ref={(el) => (refs.skillPresentBox.current["canvas"] = el)}>
+        {isGuideHi && (
+          <GuideBubble ref={inViewRef}>
+            <h1>
+              現在の技術スタックについての紹介です{`\n`}
+              {!slideFlicker && (
+                <Slider padding={"2rem 1rem"}>
+                  <div>{guideCountdown}</div>
+                </Slider>
+              )}
+              秒後、または
+              <Slider padding={"2rem 4rem"}>
+                <div>クリック</div>
+              </Slider>
+              で開きます。
+            </h1>
+          </GuideBubble>
+        )}
+
         <SkillBoxOpener
           trajectory={refs.skillPresentBox.current["trajectory"]}
           isBoxOpened={refs.skillPresentBox.current["isBoxOpened"]}
@@ -160,40 +200,44 @@ export default function fun(props) {
           )}
         </SkillBoxOpener>
         <SkillCategory
-          className="front-end"
+          className="frontend"
           trajectory={refs.skillPresentBox.current["trajectory"]}
           isBoxOpened={refs.skillPresentBox.current["isBoxOpened"]}
           isCategoryOpened={refs.skillPresentBox.current["isCategoryOpened"]}>
           <div className="title">FRONTEND</div>
           {refs.skillPresentBox.current["isCategoryReady"] && (
             <div className="body">
-              {icons.front.map((icon) => {
+              {Object.entries(icons.front).map((icon) => {
                 return (
-                  <img
-                    key={icon}
-                    className="skillIcon"
-                    src={icons.path + icon}
-                    alt={icon}></img>
+                  <ImageWithTooltip key={icon[0]}>
+                    <img
+                      className="skillIcon"
+                      src={icons.path + icon[0]}
+                      alt={icon[0]}></img>
+                    <div className="tooltip">{icon[1]}</div>
+                  </ImageWithTooltip>
                 );
               })}
             </div>
           )}
         </SkillCategory>
         <SkillCategory
-          className="back-end"
+          className="backend"
           trajectory={refs.skillPresentBox.current["trajectory"]}
           isBoxOpened={refs.skillPresentBox.current["isBoxOpened"]}
           isCategoryOpened={refs.skillPresentBox.current["isCategoryOpened"]}>
           <div className="title">BACKEND</div>
           {refs.skillPresentBox.current["isCategoryReady"] && (
             <div className="body">
-              {icons.back.map((icon) => {
+              {Object.entries(icons.back).map((icon) => {
                 return (
-                  <img
-                    key={icon}
-                    className="skillIcon"
-                    src={icons.path + icon}
-                    alt={icon}></img>
+                  <ImageWithTooltip key={icon[0]}>
+                    <img
+                      className="skillIcon"
+                      src={icons.path + icon[0]}
+                      alt={icon[0]}></img>
+                    <div className="tooltip">{icon[1]}</div>
+                  </ImageWithTooltip>
                 );
               })}
             </div>
@@ -207,13 +251,15 @@ export default function fun(props) {
           <div className="title">OTHERS</div>
           {refs.skillPresentBox.current["isCategoryReady"] && (
             <div className="body">
-              {icons.other.map((icon) => {
+              {Object.entries(icons.other).map((icon) => {
                 return (
-                  <img
-                    key={icon}
-                    className="skillIcon"
-                    src={icons.path + icon}
-                    alt={icon}></img>
+                  <ImageWithTooltip key={icon[0]}>
+                    <img
+                      className="skillIcon"
+                      src={icons.path + icon[0]}
+                      alt={icon[0]}></img>
+                    <div className="tooltip">{icon[1]}</div>
+                  </ImageWithTooltip>
                 );
               })}
             </div>
@@ -226,8 +272,12 @@ export default function fun(props) {
 
 const Wrapper = styled.div`
   position: relative;
+  left: 50%;
   width: 100%;
+  max-width: ${vars.maxWidth.main};
   height: 100%;
+
+  transform: translate(-50%, 0);
 `;
 
 const SkillsPresentBox = styled.nav.attrs(() => ({}))<any>`
@@ -239,24 +289,85 @@ const SkillsPresentBox = styled.nav.attrs(() => ({}))<any>`
   width: 5.2rem;
   height: 5.2rem;
   margin: auto;
+`;
 
-  & > * {
+const GuideBubble = styled.section.attrs(() => ({}))<any>`
+  position: absolute;
+  top: 10rem;
+  left: 50%;
+  display: inline-block;
+  transform: translate(-50%, 0);
+  padding: 2rem;
+  padding-top: 4rem;
+
+  background-color: white;
+  border-radius: 10px;
+
+  word-break: keep-all;
+  white-space: pre;
+
+  &::after {
+    content: "";
     position: absolute;
+    top: 0;
+    left: 50%;
 
-    width: 5rem;
-    height: 5rem;
+    transform: translate(-30px, -30px);
+    border-bottom: 30px solid white;
+    border-left: 30px solid transparent;
+    border-right: 30px solid transparent;
+  }
 
-    border: none;
-    border-radius: 100%;
-    box-shadow: 3px 3px rgba(0, 0, 0, 0.12);
+  p {
+    position: relative;
+    display: inline-block;
 
-    cursor: pointer;
+    color: red;
+    font-size: 1.6em;
+  }
+`;
+
+const Slider = styled.div.attrs(() => ({}))<{
+  padding: string;
+}>`
+  position: relative;
+  display: inline-block;
+  padding: ${(p) => p.padding};
+  padding-bottom: 0;
+
+  div {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
+    font-size: 1.8rem;
+    color: red;
+
+    animation: sliderAnime 0.5s ease 0s 1 forwards;
+    @keyframes sliderAnime {
+      from {
+        transform: translate(-50%, -50%);
+      }
+      to {
+        transform: translate(-50%, -15%);
+      }
+    }
   }
 `;
 
 const SkillBoxOpener = styled.nav.attrs(() => ({}))<any>`
+  position: absolute;
   z-index: 2;
   left: 0;
+
+  width: 5rem;
+  height: 5rem;
+  border: none;
+  border-radius: 100%;
+  box-shadow: 3px 3px rgba(0, 0, 0, 0.12);
+
+  cursor: pointer;
 
   background-color: white;
 
@@ -291,7 +402,14 @@ const SkillBoxOpener = styled.nav.attrs(() => ({}))<any>`
 `;
 
 const SkillCategory = styled.nav.attrs(() => ({}))<any>`
+  position: absolute;
   z-index: 1;
+
+  width: 5rem;
+  height: 5rem;
+  border: none;
+  border-radius: 100%;
+  box-shadow: 3px 3px rgba(0, 0, 0, 0.12);
 
   transition: all 0.3s ease;
   transform: translate(0, 0);
@@ -300,7 +418,7 @@ const SkillCategory = styled.nav.attrs(() => ({}))<any>`
   flex-direction: column;
   justify-content: flex-start;
 
-  &.front-end {
+  &.frontend {
     background-color: #11698e;
 
     ${(p) => {
@@ -312,7 +430,7 @@ const SkillCategory = styled.nav.attrs(() => ({}))<any>`
     }}
   }
 
-  &.back-end {
+  &.backend {
     background-color: #19456b;
 
     ${(p) => {
@@ -339,6 +457,8 @@ const SkillCategory = styled.nav.attrs(() => ({}))<any>`
   ${(p) => {
     if (p.isBoxOpened) {
       return css`
+        position: absolute;
+        z-index: 0;
         ${p.trajectory.common};
       `;
     }
@@ -377,9 +497,88 @@ const SkillCategory = styled.nav.attrs(() => ({}))<any>`
     background: white;
 
     transition: all 0.3s ease;
+    transform: scale(1);
+
+    &:hover {
+      transform: scale(1.4);
+    }
   }
 
   .body {
-    overflow: hidden;
+  }
+`;
+
+const ImageWithTooltip = styled.div`
+  position: relative;
+  width: 4.5rem;
+  height: 4.5rem;
+
+  display: inline-block;
+  margin-right: 1rem;
+  border-radius: 100%;
+
+  background: white;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.3s ease;
+    transform: scale(1);
+
+    cursor: pointer;
+  }
+
+  .tooltip {
+    position: absolute;
+    z-index: 17;
+    top: -1rem;
+    left: calc(100% + 2.5rem);
+
+    min-width: 18rem;
+
+    overflow-wrap: break-word;
+
+    display: none;
+    padding: 1.6rem;
+    background-color: brown;
+
+    color: white;
+    text-align: left;
+
+    &::after {
+      content: "";
+      position: absolute;
+      z-index: 17;
+      top: 30%;
+      left: 0%;
+      transform: translate(-15px, 0px);
+
+      border-right: 15px solid brown;
+      border-top: 15px solid transparent;
+      border-bottom: 15px solid transparent;
+    }
+
+    animation: tooltipAnime 0.5s ease 0s 1 forwards;
+    @keyframes tooltipAnime {
+      from {
+        opacity: 0.2;
+        transform: translate(0, -25px);
+      }
+      to {
+        opacity: 1;
+        transform: translate(0, 0);
+      }
+    }
+  }
+
+  &:hover {
+    img {
+      transform: scale(1.4);
+    }
+
+    .tooltip {
+      display: inline-block;
+    }
   }
 `;
