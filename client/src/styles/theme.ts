@@ -21,9 +21,12 @@ export const colors = {
     dark: phalette.white,
   },
   border: {
-    main: phalette.bluegray[6],
+    main: phalette.bluegray[3],
     light: phalette.gray[4],
     dark: phalette.gray[7],
+  },
+  user: {
+    main: phalette.blue[9],
   },
 };
 

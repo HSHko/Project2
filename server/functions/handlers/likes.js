@@ -4,8 +4,86 @@ const { FieldValue } = require("firebase-admin").firestore;
 exports.addLikeToPost = async (req, res) => {
   const reqData = {
     // fbAuth
-    postIdx: parseInt(req.params.postIdx),
-    likeQuantity: parseInt(req.query.like) >= 0 ? 1 : -1,
+    idx: parseInt(req.params.idx, 10),
+    cond: req.params.cond,
+  };
+  let resData = {};
+
+  try {
+    if (!["like", "dislike"].includes(reqData.cond))
+      throw { errors: "invalid condition" };
+
+    const likeDoc = db.collection(`likes`).doc(req.fbAuth.uid);
+    let likeQry = await likeDoc.get();
+    if (!likeQry.exists) {
+      await db.collection(`likes`).doc(req.fbAuth.uid).set({});
+      likeQry = await likeDoc.get();
+    }
+
+    const likeQuantity = likeQry.data()[reqData.idx] || 0;
+    const postQry = await db
+      .collection(`posts`)
+      .where(`idx`, `==`, reqData.idx)
+      .limit(1)
+      .get();
+    console.log({
+      doc: postQry.docs[0].id,
+    });
+    const postDoc = db.collection(`posts`).doc(postQry.docs[0].id);
+
+    switch (reqData.cond) {
+      case "like":
+        if (likeQuantity > 0) {
+          throw { rebundancy: "alreay liked" };
+        } else if (likeQuantity === 0) {
+          await postDoc.update({
+            like_cnt: FieldValue.increment(1),
+            dislike_cnt: FieldValue.increment(0),
+          });
+        } else {
+          await postDoc.update({
+            like_cnt: FieldValue.increment(1),
+            dislike_cnt: FieldValue.increment(-1),
+          });
+        }
+        await likeDoc.update({
+          [reqData.idx]: 1,
+        });
+        break;
+      case "dislike":
+        if (likeQuantity > 0) {
+          await postDoc.update({
+            like_cnt: FieldValue.increment(-1),
+            dislike_cnt: FieldValue.increment(1),
+          });
+        } else if (likeQuantity === 0) {
+          await postDoc.update({
+            like_cnt: FieldValue.increment(0),
+            dislike_cnt: FieldValue.increment(1),
+          });
+        } else {
+          throw { rebundancy: "already disliked" };
+        }
+        await likeDoc.update({
+          [reqData.idx]: -1,
+        });
+        break;
+      default:
+        throw { errors: "invalid condition" };
+    }
+
+    return res.status(201).json(resData);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json(err);
+  }
+};
+
+exports.addfLikeToPost = async (req, res) => {
+  const reqData = {
+    // fbAuth
+    postIdx: parseInt(req.params.postIdx, 10),
+    likeQuantity: parseInt(req.query.like, 10) >= 0 ? 1 : -1,
   };
   let resData = {
     ok: `like to post: ${reqData.postIdx} amount: ${reqData.likeQuantity} done`,

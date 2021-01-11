@@ -6,7 +6,6 @@ import axios from "axios";
 // import NextLink from "next/link";
 import NextRouter from "next/router";
 import { useRouter } from "next/router";
-import cookieCutter from "cookie-cutter";
 
 // Material-ui stuff
 // import Grid from "@material-ui/core/Grid";
@@ -98,7 +97,7 @@ export default function fun(props) {
       if (res.body)
         errors.body = "本文の内容は2以上、2000以下の文字で入力してください";
 
-      let msg = "エラー\n";
+      let msg = "エラー: \n";
       if (Object.keys(errors)) {
         for (const x of Object.values(errors)) {
           msg += x + "\n";
@@ -155,7 +154,7 @@ export default function fun(props) {
 }
 
 const Wrapper = styled.div`
-margin: 0 auto;
+  margin: 0 auto;
 `;
 
 const WriteHeader = styled.div`

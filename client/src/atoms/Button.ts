@@ -19,7 +19,7 @@ export default styled.button.attrs(() => ({}))<Props>`
   display: flex;
 
   margin: ${(p) => (p.margin ? p.margin : `0`)};
-  padding: 0.4rem 1rem;
+  padding: 0.4em 1em;
 
   overflow: hidden;
   cursor: pointer;
@@ -49,9 +49,17 @@ export default styled.button.attrs(() => ({}))<Props>`
   justify-content: center;
   align-items: center;
 
-  line-height: 1.15rem;
+  line-height: 1.15em;
   font-weight: 700;
-  color: ${(p) => (p.color ? p.color : `${colors.font.main}`)};
+  font-size: 1em;
+
+  ${(p) => {
+    if (p.color) {
+      return css`
+        color: ${p.color};
+      `;
+    }
+  }};
 
   transition: all 0.3s;
 

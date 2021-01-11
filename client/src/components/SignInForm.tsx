@@ -60,20 +60,7 @@ export default function fun(props) {
     shallowEqual,
   );
 
-  const isAuthenticated = useSelector(
-    (x: RootState) => x.userReducer.isAuthenticated,
-    shallowEqual,
-  );
-
   const dispatch = useDispatch();
-
-  React.useEffect(() => {
-    if (isAuthenticated) {
-      NextRouter.push("/");
-    }
-    dispatch({ type: userAction.CLEAR_ERRORS });
-    console.log("render");
-  }, [isAuthenticated]);
 
   const handleOnSubmit = React.useCallback((e) => {
     e.preventDefault();
@@ -137,7 +124,11 @@ export default function fun(props) {
             variant="outlined"
           />
           <br />
-          <Button className="submit-button" type="submit" disabled={isLoading}>
+          <Button
+            className="submit-button"
+            type="submit"
+            disabled={isLoading}
+            style={{ color: "white" }}>
             {isLoading && <LoadingIndicator></LoadingIndicator>}
             <h2>Login</h2>
           </Button>

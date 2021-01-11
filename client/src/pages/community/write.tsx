@@ -8,9 +8,6 @@ import NextRouter from "next/router";
 import { useRouter } from "next/router";
 
 // Material-ui stuff
-// import Grid from "@material-ui/core/Grid";
-// import TextField from "@material-ui/core/TextField";
-// import PersonIcon from "@material-ui/icons/Person";
 
 // Redux stuff
 import { useSelector } from "react-redux";
@@ -19,8 +16,7 @@ import { RootState } from "store";
 import { shallowEqual } from "react-redux";
 
 // Components
-import Button from "atoms/Button";
-import Write from "components/gallery/Write";
+import Write from "components/community/Write";
 
 export default function fun(props) {
   const isAuthenticated = useSelector(
@@ -30,8 +26,8 @@ export default function fun(props) {
 
   React.useEffect(() => {
     if (!isAuthenticated) {
-      alert("書き込みにはログインが必要です。");
       NextRouter.push("/join/signin");
+      alert("書き込みにはログインが必要です。");
     }
   }, []);
 
@@ -43,7 +39,6 @@ export default function fun(props) {
 }
 
 const Wrapper = styled.div`
-  width: 80%;
-  max-width: 1200px;
+  width: 90%;
   margin: 0 auto;
 `;

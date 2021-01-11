@@ -30,7 +30,7 @@ export default function fun(props) {
 
   React.useEffect(() => {
     const exhibitedPagesNum = 5;
-    const currentPage = parseInt(nextRouter.query.page as string);
+    const currentPage = parseInt(nextRouter.query.page as string, 10);
     const startPage =
       (Math.floor((currentPage - 1 + exhibitedPagesNum) / exhibitedPagesNum) -
         1) *

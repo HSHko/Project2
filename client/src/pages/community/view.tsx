@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 // Communication stuff
 import axios from "axios";
-import NextRouter from "next/router";
+// import NextLink from "next/link";
 import { useRouter } from "next/router";
 
 // Material-ui stuff
@@ -15,19 +15,15 @@ import { useRouter } from "next/router";
 
 // Components
 // import Button from 'atoms/Button';
-import List from "components/community/List";
+import View from "components/community/View";
 
-import skeleton from "./listSkeleton";
+// interface Props {}
 
 export default function fun(props) {
-  const nextRouter = useRouter();
-
-  React.useEffect(() => {
-    if (!nextRouter.query.page) NextRouter.push("/community/list?page=1");
-  }, []);
-
   return (
-    <Wrapper>{nextRouter.query.page && <List ssp={props.ssp}></List>}</Wrapper>
+    <Wrapper>
+      <View ssp={props.ssp}></View>
+    </Wrapper>
   );
 }
 
@@ -38,19 +34,12 @@ const Wrapper = styled.div`
 
 export async function getServerSideProps(context) {
   let ssp = {
-    postsData: null,
-    pageData: null,
-  };
-
-  // ssp.postsData = skeleton;
-  ssp.pageData = {
-    postNumPerPage: 10,
-    // latestPostIdx: 320,
+    postData: null,
   };
 
   try {
     const dataQry = await fetch(
-      `${process.env.BASE_URL}/api/posts/getpostsfromlist/${context.query.page}`,
+      `${process.env.BASE_URL}/api/posts/getpost/${context.query.idx}`,
       {
         method: "GET",
       },
@@ -62,6 +51,5 @@ export async function getServerSideProps(context) {
   } catch (err) {
     // console.error(err);
   }
-
   return { props: { ssp } };
 }

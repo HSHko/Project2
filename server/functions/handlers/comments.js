@@ -4,7 +4,7 @@ const { splitTimeStamp } = require("../util/converters");
 
 exports.getCommentsFromPost = async (req, res) => {
   const reqData = {
-    postIdx: parseInt(req.params.idx),
+    postIdx: parseInt(req.params.idx, 10),
   };
   let resData = [];
 
@@ -56,7 +56,7 @@ exports.getCommentsFromPost = async (req, res) => {
 exports.addCommentToPost = async (req, res) => {
   const reqData = {
     donor: req.fbAuth.uid,
-    postIdx: parseInt(req.params.idx),
+    postIdx: parseInt(req.params.idx, 10),
     body: req.body.body,
   };
   let resData = {

@@ -6,15 +6,20 @@ const firebase = require("firebase");
 // 정렬 참고
 // https://firebase.google.com/docs/firestore/query-data/order-limit-data?hl=ko
 
-exports.getPostsFromPage = async (req, res) => {
+exports.getPostsFromList = async (req, res) => {
   const reqData = {
-    page: parseInt(req.params.page),
+    page: parseInt(req.params.page, 10),
     postNumPerPage: 10,
   };
-  let resData = [];
+  let resData = {
+    postsData: [],
+    pageData: {
+      latestPostIdx: 0,
+    },
+  };
 
   try {
-    // 見せるページの数は次のようにします
+    // 表示版の見せるページの数を次のようにします
     // first post = {(latest post idx) - (target page - 1)*(postNum per page)} から
     // last post = (first post) - (postNum per page + 1)まで
     if (reqData.page < 1) throw { errors: "invalid page" };
@@ -24,7 +29,7 @@ exports.getPostsFromPage = async (req, res) => {
       .orderBy("idx", "desc")
       .limit(1)
       .get();
-    if (latestPost.empty) throw { errors: "no post found" };
+    if (latestPostQry.empty) throw { errors: "no post found" };
 
     const targetPage = reqData.page;
     const postNumPerPage = reqData.postNumPerPage;
@@ -42,6 +47,8 @@ exports.getPostsFromPage = async (req, res) => {
 
     for (const doc of postsListQry.docs) {
       if (!doc.exists) continue;
+      const donorQry = await db.collection(`users`).doc(doc.data().donor).get();
+      if (!donorQry.exists) continue;
 
       let createdAt = splitTimeStamp(doc.data().created_at);
       const currentTime = splitTimeStamp(admin.firestore.Timestamp.now());
@@ -55,15 +62,18 @@ exports.getPostsFromPage = async (req, res) => {
         idx: doc.data().idx,
         status: doc.data().idx,
         category: doc.data().category,
+        title: doc.data().title,
         created_at: createdAt,
-        donor: doc.data().donor,
+        donor: donorQry.data().sign_id,
         view_cnt: doc.data().view_cnt,
         like_quantity: doc.data().like_cnt - doc.data().dislike_cnt,
         comment_cnt: doc.data().comment_cnt,
       };
 
-      resData.push(newData);
+      resData.postsData.push(newData);
     }
+    resData.postsData.reverse();
+    resData.pageData.latestPostIdx = lastPostIdx;
 
     return res.status(200).json(resData);
   } catch (err) {
@@ -72,82 +82,48 @@ exports.getPostsFromPage = async (req, res) => {
   }
 };
 
-exports.getPosts = async (req, res) => {
+exports.createPost = async (req, res) => {
+  const categories = ["一般", "情報", "その他"];
   const reqData = {
-    page: parseInt(req.params.page),
+    donor: req.fbAuth.uid,
+    category: req.body.category,
+    title: req.body.title,
+    body: req.body.body,
   };
 
-  let resData = [];
-
   try {
+    if (reqData.title.length < 2 || reqData.title.length > 40)
+      throw { title: "length limitation error" };
+    if (reqData.body.length < 2 || reqData.body.length > 2000)
+      throw { body: "length limitation error" };
+    if (!categories.includes(reqData.category))
+      throw { category: "invalid category" };
+
+    let idx = 1;
     const latestPostQry = await db
-      .collection(`posts`)
+      .collection("posts")
       .orderBy("idx", "desc")
       .limit(1)
       .get();
-    if (latestPostQry.empty) throw { errors: "no post found" };
+    if (!latestPostQry.empty) idx = latestPostQry.docs[0].data().idx + 1;
 
-    const max = latestPostQry.docs[0].data().idx;
-    let hi = max - (reqData.page - 1) * 10;
-    let lo = hi - 9;
-    if (lo < 1) lo = 1;
-    if (hi < 1)
-      throw { errors: "invalid page (page exceeded number of valid posts)" };
+    const newData = {
+      idx: idx,
+      status: "",
+      donor: reqData.donor,
+      category: reqData.category,
+      title: reqData.title,
+      body: reqData.body,
+      created_at: admin.firestore.Timestamp.now(),
+      updated_at: "",
+      view_cnt: 0,
+      like_cnt: 0,
+      dislike_cnt: 0,
+      comment_cnt: 0,
+    };
 
-    const postsQry = await db
-      .collection(`posts`)
-      .where(`idx`, `<=`, hi)
-      .where(`idx`, `>=`, lo)
-      .limit(10)
-      .get();
-
-    for (const doc of postsQry.docs) {
-      if (!doc.exists) continue;
-      const usersQry = await db.collection(`users`).doc(doc.data().donor).get();
-
-      let createdAt = splitTimeStamp(doc.data().created_at);
-
-      const currentTime = splitTimeStamp(admin.firestore.Timestamp.now());
-
-      if (currentTime.day !== createdAt.day) {
-        createdAt = `${createdAt.month}.${createdAt.day}`;
-      } else {
-        createdAt = `${createdAt.hour}:${createdAt.min}`;
-      }
-
-      if (doc.data().status === "disabled") {
-        resData.push({
-          idx: doc.data().idx,
-          status: "",
-          category: "",
-          title: "このポストはは削除されました",
-          created_at: "",
-          donor: "",
-          view_cnt: doc.data().view_cnt,
-          like_quantity: doc.data().like_cnt - doc.data().dislike_cnt,
-          like_cnt: doc.data().like_cnt,
-          dislike_cnt: doc.data().dislike_cnt,
-          comment_cnt: doc.data().comment_cnt,
-        });
-      } else
-        resData.push({
-          idx: doc.data().idx,
-          status: "",
-          category: doc.data().category,
-          title: doc.data().title,
-          created_at: createdAt,
-          donor: usersQry.data().sign_id,
-          view_cnt: doc.data().view_cnt,
-          like_quantity: doc.data().like_cnt - doc.data().dislike_cnt,
-          like_cnt: doc.data().like_cnt,
-          dislike_cnt: doc.data().dislike_cnt,
-          comment_cnt: doc.data().comment_cnt,
-        });
-    }
-
-    resData.reverse();
-
-    return res.status(200).json(resData);
+    await db.collection("posts").add(newData);
+    return res.status(201).json({ result: `page ${idx} added` });
   } catch (err) {
     console.error(err);
     return res.status(500).json(err);
@@ -156,48 +132,49 @@ exports.getPosts = async (req, res) => {
 
 exports.getPost = async (req, res) => {
   const reqData = {
-    idx: parseInt(req.params.idx),
+    idx: parseInt(req.params.idx, 10),
   };
-  let resData = {};
+  let resData = {
+    postData: {},
+    commentsData: {},
+  };
 
   try {
-    const postQry = await db
+    const postsQry = await db
       .collection(`posts`)
       .where(`idx`, `==`, reqData.idx)
       .limit(1)
       .get();
-    if (postQry.empty) throw { errors: "doc not found" };
-    if (postQry.docs[0].data().status === "disabled")
-      throw { errors: "disabled doc" };
+    if (postsQry.empty) throw { errors: "doc not found" };
+    if (postsQry.docs[0].data().status === "disabled")
+      throw { disabled: "disabled doc" };
 
     const userQry = await db
       .collection(`users`)
-      .doc(postQry.docs[0].data().donor)
+      .doc(postsQry.docs[0].data().donor)
       .get();
     if (!userQry.exists) throw { errors: "user not found" };
 
-    const likeQry = await db.collection(`likes`).doc(`${userQry.id}`).get();
-    const likeData = likeQry.data()[postQry.docs[0].id] || 0;
-
-    let createdAt = splitTimeStamp(postQry.docs[0].data().created_at);
+    let createdAt = splitTimeStamp(postsQry.docs[0].data().created_at);
     createdAt = `${createdAt.days} ${createdAt.hours}`;
-    let updatedAt = postQry.docs[0].data().updated_at
-      ? splitTimeStamp(postQry.docs[0].data().updated_at)
-      : "";
 
-    if (updatedAt) updatedAt = `${updatedAt.days} ${updatedAt.hours}`;
-
-    resData = {
-      ...postQry.docs[0].data(),
+    resData.postData = {
+      ...postsQry.docs[0].data(),
+      // idx
+      // status
+      // view_cnt
+      // like_cnt
+      // dislike_cnt
       donor: userQry.data().sign_id,
+      like_quantity:
+        postsQry.docs[0].data().like_cnt - postsQry.docs[0].data().dislike_cnt,
       created_at: createdAt,
-      updated_at: updatedAt,
-      self_like: likeData,
+      updated_at: postsQry.docs[0].data().updated_at || undefined,
     };
 
     await db
       .collection(`posts`)
-      .doc(postQry.docs[0].id)
+      .doc(postsQry.docs[0].id)
       .update({
         view_cnt: FieldValue.increment(1),
       });
@@ -259,7 +236,7 @@ exports.addPost = async (req, res) => {
 exports.disablePost = async (req, res) => {
   const reqData = {
     // fbAuth, fbAuth.userData
-    postIdx: parseInt(req.params.postidx),
+    postIdx: parseInt(req.params.postidx, 10),
   };
   let resData = {
     ok: `disabled post idx: ${reqData.postIdx}`,

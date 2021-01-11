@@ -29,7 +29,7 @@ const generateClassName = createGenerateClassName({
   productionPrefix: "myclasses-",
 });
 
-function MyApp({ Component, pageProps, preProps }) {
+function MyApp({ Component, pageProps, ssp }) {
   const [key, setKey] = React.useState(0);
 
   React.useEffect(() => {
@@ -44,14 +44,14 @@ function MyApp({ Component, pageProps, preProps }) {
       jssStyles.parentElement.removeChild(jssStyles);
     }
 
-    if (preProps.alert) {
+    if (ssp.alert) {
       store.dispatch(userAction.logout() as any);
-      alert(preProps.alert);
+      alert(ssp.alert);
     }
 
-    if (preProps.userDetailsData) {
-      store.dispatch(userAction.setAuthorizationHeader(preProps.token) as any);
-      store.dispatch(userAction.setUser(preProps.userDetailsData) as any);
+    if (ssp.userDetailsData) {
+      store.dispatch(userAction.setAuthorizationHeader(ssp.token) as any);
+      store.dispatch(userAction.setUser(ssp.userDetailsData) as any);
     }
 
     if (process.env.NODE_ENV.trim() !== "development") {
@@ -93,7 +93,7 @@ function MyApp({ Component, pageProps, preProps }) {
 }
 
 MyApp.getInitialProps = async (context) => {
-  let preProps = {
+  let ssp = {
     userDetailsData: null,
     token: null,
     alert: null,
@@ -125,7 +125,7 @@ MyApp.getInitialProps = async (context) => {
     const decodedToken: any = jwtDecode(token);
 
     if (Date.now() - decodedToken.exp * 1000 > 0) {
-      preProps.alert = "ログイントークンの有効期限が切れました";
+      ssp.alert = "ログイントークンの有効期限が切れました";
       throw { errors: "token expired" };
     }
 
@@ -141,15 +141,15 @@ MyApp.getInitialProps = async (context) => {
     if (!userDetailsQry.ok) throw { errors: await userDetailsQry.json() };
     const userDetailsData = await userDetailsQry.json();
 
-    preProps = {
-      ...preProps,
+    ssp = {
+      ...ssp,
       token: token,
       userDetailsData: userDetailsData,
     };
   } catch (err) {
     // console.error(err);
   }
-  return { preProps };
+  return { ssp };
 
   // if (typeof window !== "undefined") throw { error: "not server side" };
 };

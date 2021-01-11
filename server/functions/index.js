@@ -23,17 +23,19 @@ const { fbAuth, db } = require("./util/admin");
 // firebase deploy --only functions:func1,functions:func2
 
 const posts = require("./handlers/posts");
+app.get("/posts/getpostsfromlist/:page", posts.getPostsFromList);
+app.post("/posts/createpost", fbAuth, posts.createPost);
 app.get("/posts/getpost/:idx", posts.getPost);
-app.get("/posts/getposts/:page", posts.getPosts);
-app.post("/posts/addpost", fbAuth, posts.addPost);
-app.post("/posts/disablepost/:pageidx", fbAuth, posts.disablePost);
+// app.get("/posts/getposts/:page", posts.getPosts);
+// app.post("/posts/addpost", fbAuth, posts.addPost);
+// app.post("/posts/disablepost/:pageidx", fbAuth, posts.disablePost);
 
 const comments = require("./handlers/comments");
 app.get("/comments/getcommentsfrompost/:idx", comments.getCommentsFromPost);
 app.post("/comments/addcommenttopost/:idx", fbAuth, comments.addCommentToPost);
 
 const likes = require("./handlers/likes");
-app.post("/likes/addliketopost/:postIdx", fbAuth, likes.addLikeToPost);
+app.post("/likes/addliketopost/:idx/:cond", fbAuth, likes.addLikeToPost);
 app.post(
   "/likes/getselflikequantityfrompost/:postIdx",
   fbAuth,

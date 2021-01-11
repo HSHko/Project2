@@ -26,7 +26,7 @@ import Button from "atoms/Button";
 
 const navbarMainColor = {
   home: "transparent",
-  normal: colors.bluegray[5],
+  normal: colors.bluegray[7],
 };
 
 export default function fun(props) {
@@ -65,17 +65,24 @@ export default function fun(props) {
   React.useEffect(() => {
     if (!Object.keys(refs.links.current)) return;
     let left = 0;
+
+    // Object.keys(refs.links.current).map((x) => console.log({ links: x }));
     for (const helper in refs.links.current) {
+      if (!refs.links.current[helper]) continue;
       left = refs.links.current[helper].offsetLeft;
       left += refs.links.current[helper].offsetWidth >> 1;
-      if (helper === `/`) {
-        if (helper === nextRouter.pathname) break;
+      if (nextRouter.pathname === "/home") {
+        if (nextRouter.query.pos) {
+          if (nextRouter.query.pos === helper) break;
+        } else {
+          if (nextRouter.pathname === helper) break;
+        }
       } else {
         if (nextRouter.pathname.match(new RegExp(`^${helper}`)) !== null) break;
       }
     }
     setLinksHighlighterLeft(left.toString() + `px`);
-  }, [currentMenuItems, nextRouter.pathname]);
+  }, [currentMenuItems, nextRouter.pathname, nextRouter.query]);
 
   // set navbar state by pathname
   React.useEffect(() => {
@@ -89,21 +96,13 @@ export default function fun(props) {
     }
   }, [nextRouter.pathname]);
 
-  const handleOnClickMenuItem = React.useCallback((e) => {
-    if (e.name == "Logout") {
-      dispatch(userAction.logout());
-    }
-  }, []);
-
   return (
     <Wrapper position={navbarPosition} bg={navbarColor}>
       <Appbar>
-        <div
-          ref={(el) => (refs.links.current[`a`] = el)}
-          className="appbar-left">
+        <div className="appbar-left">
           <div className="appbar-logo">
             <NextLink href="/home">
-              <a className="inherit">
+              <a className="inherit" style={{ color: "white" }}>
                 <h1>HSH</h1>
               </a>
             </NextLink>
@@ -120,11 +119,10 @@ export default function fun(props) {
                 if (e.link) {
                   return (
                     <NextLink key={e.name} href={e.link}>
-                      <a
-                        ref={(el) => (refs.links.current[e.linkHelper] = el)}
-                        onClick={() => handleOnClickMenuItem(e)}>
+                      <a ref={(el) => (refs.links.current[e.linkHelper] = el)}>
                         <Button
                           bg="transparent"
+                          color="white"
                           shadow="none"
                           borderRadius={"50%"}>
                           {e.name}
@@ -136,7 +134,11 @@ export default function fun(props) {
                   return (
                     <Button
                       key={e.name}
-                      onClick={() => handleOnClickMenuItem(e)}>
+                      bg="transparent"
+                      color="white"
+                      shadow="none"
+                      borderRadius={"50%"}
+                      onClick={() => dispatch(userAction.logout())}>
                       {e.name}
                     </Button>
                   );
@@ -147,6 +149,7 @@ export default function fun(props) {
           <Button
             shadow="transparent"
             bg="transparent"
+            color="white"
             onClick={() => {
               dispatch(sidebarAction.hi());
               dispatch(backdropAction.hi(sidebarAction.lo()));

@@ -1,8 +1,6 @@
 import axios from "axios";
 import NextRouter from "next/router";
 import { NextPageContext } from "next";
-import * as nookies from "nookies";
-import cookieCutter from "cookie-cutter";
 import jwtDecode from "jwt-decode";
 // import Cookies from "universal-cookie";
 import Cookies from "util/CookieHandler";
@@ -52,7 +50,7 @@ export const removeAuthorizationHeader = () => (dispatch) => {
   cookies.remove("fbIdToken", { path: `${window.location.pathname}` });
   delete axios.defaults.headers.common["Authorization"];
   dispatch(setUnAuthenticated());
-  console.log("removed axios header and cookie");
+  // console.log("removed axios header and cookie");
 };
 
 export const setUnAuthenticated = () => ({
@@ -130,7 +128,6 @@ export const signIn = (userData) => async (dispatch) => {
     dispatch(setUser(userDetailsQry.data));
 
     dispatch({ type: CLEAR_ERRORS });
-    NextRouter.push("/");
   } catch (err) {
     console.error(err);
     const res = err.response.data;

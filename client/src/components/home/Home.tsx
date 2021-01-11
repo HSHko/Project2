@@ -6,7 +6,7 @@ import { useInView } from "react-intersection-observer";
 // import axios from 'axios';
 // import NextLink from "next/link";
 // import NextRouter from "next/router";
-// import { useRouter } from "next/router";
+import { useRouter } from "next/router";
 
 // Material-ui stuff
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
@@ -24,14 +24,34 @@ import IntroduceArea from "./IntroduceArea";
 import SkillArea from "./SkillArea";
 
 export default function fun(props) {
+  const nextRouter = useRouter();
+
   const refs = {
     componentWrapper: React.useRef<any>(),
     mainComponent: React.useRef<any>(),
-    reactComponent: React.useRef<any>(),
+    introduceComponent: React.useRef<any>(),
     skillComponent: React.useRef<any>(),
   };
 
-  React.useEffect(() => {}, []);
+  React.useEffect(() => {
+    refs.introduceComponent.current.focus();
+    if (!nextRouter.query.pos) {
+      refs["mainComponent"].current.scrollIntoView({
+        block: "center",
+      });
+    } else {
+      if (nextRouter.query.pos === `introduce`) {
+        refs["introduceComponent"].current.scrollIntoView({
+          block: "center",
+        });
+        console.log("co intro");
+      } else if (nextRouter.query.pos === `skill`) {
+        refs["skillComponent"].current.scrollIntoView({
+          block: "center",
+        });
+      }
+    }
+  }, [nextRouter.query]);
 
   const handleOnClickArrow = React.useCallback((target) => {
     if (!refs[target]) return;
@@ -46,12 +66,12 @@ export default function fun(props) {
       <div ref={refs.mainComponent} className="pageArea main">
         <ScrollButton
           direction="down"
-          onClick={() => handleOnClickArrow("reactComponent")}>
+          onClick={() => handleOnClickArrow("introduceComponent")}>
           <ArrowDropDownIcon></ArrowDropDownIcon>
         </ScrollButton>
         <MainArea></MainArea>
       </div>
-      <div ref={refs.reactComponent} className="pageArea introduce">
+      <div ref={refs.introduceComponent} className="pageArea introduce">
         <ScrollButton
           direction="up"
           onClick={() => handleOnClickArrow("mainComponent")}>
@@ -67,7 +87,7 @@ export default function fun(props) {
       <div ref={refs.skillComponent} className="pageArea skill">
         <ScrollButton
           direction="up"
-          onClick={() => handleOnClickArrow("reactComponent")}>
+          onClick={() => handleOnClickArrow("introduceComponent")}>
           <ArrowDropDownIcon></ArrowDropDownIcon>
         </ScrollButton>
         <SkillArea></SkillArea>
